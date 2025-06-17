@@ -4,7 +4,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.dev
     ports:
-      - "3000:3000"
+      - "3000:3001"
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://localhost:8000
@@ -29,11 +29,12 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=8001
+      - DATABASE_URL=postgresql://chromia:chromia_password@postgres:5432/chromia
       - CHROMIA_URL=http://chromia-node:7740
       - REDIS_URL=redis://redis:6379
       - ETHEREUM_RPC_URL=https://sepolia.drpc.org
       - ETHEREUM_RPC_URL_ANVIL=http://anvil:8545
-      - JWT_SECRET=${JWT_SECRET}
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
       - CHAINLINK_API_KEY=${CHAINLINK_API_KEY}
       - ETHERSCAN_API_KEY=${ETHERSCAN_API_KEY}
       - ALCHEMY_API_KEY=${ALCHEMY_API_KEY}
@@ -49,12 +50,9 @@ services:
       - ./backend:/app
       - /app/node_modules
     depends_on:
-      redis:
-        condition: service_healthy
-      chromia-node:
-        condition: service_healthy
-      anvil:
-        condition: service_healthy  # ✅ AGORA FUNCIONARÁ!
+      - redis
+      - postgres
+      - anvil
     networks:
       - riskguardian-network
     restart: unless-stopped
@@ -137,7 +135,7 @@ services:
       - DEBUG=true
       - LOG_LEVEL=DEBUG
     volumes:
-      - ./chromia/config:/app/config:ro
+      - ./chromia/config:/app/config
       - ./chromia/src:/app/src:ro
       - chromia_data:/app/data
       - chromia_logs:/app/logs
