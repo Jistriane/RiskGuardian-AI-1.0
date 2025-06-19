@@ -1,31 +1,60 @@
-import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { sepolia } from 'wagmi/chains';
-import { config } from './env';
+'use client'
 
+import { http, createConfig } from 'wagmi'
+import { getDefaultConfig } from '@rainbow-me/rainbowkit'
+import {
+  mainnet,
+  sepolia,
+  polygon,
+  polygonMumbai,
+} from 'wagmi/chains'
+
+// Configuração com RainbowKit
 export const wagmiConfig = getDefaultConfig({
-  appName: config.app.name,
-  projectId: 'your-walletconnect-project-id', // Obtenha em https://cloud.walletconnect.com
-  chains: [sepolia],
+  appName: 'RiskGuardian AI',
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6', // Project ID válido ou fallback
+  chains: [sepolia, polygonMumbai, mainnet, polygon],
+  transports: {
+    [sepolia.id]: http(),
+    [polygonMumbai.id]: http(),
+    [mainnet.id]: http(),
+    [polygon.id]: http(),
+  },
   ssr: true,
-});
+})
 
-// Configuração de chain customizada para Sepolia
-export const sepoliaChain = {
-  id: 11155111,
-  name: 'Sepolia',
-  network: 'sepolia',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Ether',
-    symbol: 'ETH',
+// Configurações adicionais para testnet
+export const TESTNET_CHAINS = [
+  sepolia,
+  polygonMumbai,
+]
+
+export const MAINNET_CHAINS = [
+  mainnet,
+  polygon,
+]
+
+// Endereços de contratos por rede
+export const CONTRACT_ADDRESSES = {
+  [sepolia.id]: {
+    riskRegistry: '0x123...',
+    portfolioAnalyzer: '0x456...',
+    riskOracle: '0x789...',
+    alertSystem: '0xabc...',
+    riskInsurance: '0xdef...',
   },
-  rpcUrls: {
-    public: { http: [config.blockchain.rpcUrl] },
-    default: { http: [config.blockchain.rpcUrl] },
+  [polygonMumbai.id]: {
+    riskRegistry: '0x123...',
+    portfolioAnalyzer: '0x456...',
+    riskOracle: '0x789...',
+    alertSystem: '0xabc...',
+    riskInsurance: '0xdef...',
   },
-  blockExplorers: {
-    etherscan: { name: 'Etherscan', url: 'https://sepolia.etherscan.io' },
-    default: { name: 'Etherscan', url: 'https://sepolia.etherscan.io' },
-  },
-  testnet: true,
-} as const; 
+} as const
+
+// Configuração de desenvolvimento
+export const DEV_CONFIG = {
+  skipWalletValidation: true,
+  mockWalletConnection: true,
+  enableTestnetsOnly: true,
+} 

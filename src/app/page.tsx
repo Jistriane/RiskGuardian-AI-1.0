@@ -1,303 +1,255 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { DashboardLayout } from '@/components/layout/dashboard-layout'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { WalletButton } from '@/components/wallet/wallet-button'
+import Link from 'next/link'
 import { useAccount } from 'wagmi'
-import DashboardLayout from '@/components/layout/DashboardLayout'
-import PortfolioOverview from '@/components/dashboard/PortfolioOverview'
-import RiskMetrics from '@/components/dashboard/RiskMetrics'
-import AlertsPanel from '@/components/dashboard/AlertsPanel'
-import AIInsights from '@/components/dashboard/AIInsights'
-import TradingViewChart from '@/components/charts/TradingViewChart'
-import SystemStatus from '@/components/dashboard/SystemStatus'
-import WalletButton from '@/components/wallet/WalletButton'
-import { useAppStore } from '@/store'
-import { webSocketService } from '@/services/websocket'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { TrendingUp, Shield, Zap, Activity, AlertTriangle, CheckCircle } from 'lucide-react'
+import {
+  BarChart3,
+  Briefcase,
+  Shield,
+  Brain,
+  Settings,
+  Activity,
+  PieChart,
+  TrendingUp
+} from 'lucide-react'
 
 export default function Dashboard() {
-  const { address, isConnected } = useAccount()
-  const [selectedAsset, setSelectedAsset] = useState('ETH/USD')
-  const { 
-    alerts, 
-    wsConnected, 
-    systemStatus,
-    addAlert,
-    setWsConnected,
-    setSystemStatus 
-  } = useAppStore()
-
-  useEffect(() => {
-    // Configurar callbacks do WebSocket
-    webSocketService.setCallbacks({
-      onConnect: () => {
-        setWsConnected(true)
-        setSystemStatus({
-          ...systemStatus,
-          services: { ...systemStatus.services, websocket: true }
-        })
-      },
-      onDisconnect: () => {
-        setWsConnected(false)
-        setSystemStatus({
-          ...systemStatus,
-          services: { ...systemStatus.services, websocket: false }
-        })
-      },
-      onAlert: (alert) => {
-        addAlert(alert)
-      },
-      onError: (error) => {
-        console.error('WebSocket Error:', error)
-      }
-    })
-
-    // Subscrever a alertas globais
-    if (wsConnected) {
-      webSocketService.subscribeToGlobalAlerts()
-    }
-
-    return () => {
-      // Cleanup se necessário
-    }
-  }, [wsConnected])
-
-  const getAlertIcon = (type: string) => {
-    switch (type) {
-      case 'critical':
-        return <AlertTriangle className="h-4 w-4 text-red-500" />
-      case 'warning':
-        return <Shield className="h-4 w-4 text-yellow-500" />
-      default:
-        return <CheckCircle className="h-4 w-4 text-blue-500" />
-    }
-  }
-
-  const getAlertVariant = (type: string) => {
-    switch (type) {
-      case 'critical':
-        return 'destructive'
-      case 'warning':
-        return 'default'
-      default:
-        return 'default'
-    }
-  }
+  const { isConnected } = useAccount()
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <div className="max-w-md w-full mx-auto p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              🛡️ RiskGuardian AI
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-md w-full space-y-8 p-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              RiskGuardian AI
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
-              Dashboard Analítico de Risco DeFi com IA em Tempo Real
+            <p className="mt-4 text-gray-600 dark:text-gray-300">
+              Conecte sua carteira para acessar a plataforma de análise de risco DeFi
             </p>
-            <div className="space-y-4 text-sm text-gray-500 dark:text-gray-400 mb-8">
-              <div className="flex items-center justify-center space-x-2">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                <span>Análise em tempo real com IA</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                <span>Multi-chain: Sepolia, Mumbai, Fuji</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                <span>Hedging automático de riscos</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 text-center">
-              Conecte sua carteira para começar
-            </h2>
-            <div className="flex justify-center">
+            <div className="mt-6">
               <WalletButton />
             </div>
-          </div>
-          
-          <div className="mt-8 text-center text-xs text-gray-400">
-            Suporte para testnet apenas • Sepolia • Polygon Mumbai • Avalanche Fuji
           </div>
         </div>
       </div>
     )
   }
 
+  const dashboardCards = [
+    {
+      title: 'Dashboard',
+      description: 'Visão geral do sistema',
+      icon: BarChart3,
+      href: '/dashboard',
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50 dark:bg-blue-900/20'
+    },
+    {
+      title: 'Portfólio',
+      description: 'Análise do portfólio',
+      icon: Briefcase,
+      href: '/portfolio',
+      color: 'text-green-600',
+      bgColor: 'bg-green-50 dark:bg-green-900/20'
+    },
+    {
+      title: 'Análise de Risco',
+      description: 'Métricas de risco em tempo real',
+      icon: TrendingUp,
+      href: '/risk-analysis',
+      color: 'text-red-600',
+      bgColor: 'bg-red-50 dark:bg-red-900/20'
+    },
+    {
+      title: 'Seguros DeFi',
+      description: 'Proteção de protocolos',
+      icon: Shield,
+      href: '/insurance',
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50 dark:bg-purple-900/20'
+    },
+    {
+      title: 'IA Insights',
+      description: 'Análises inteligentes',
+      icon: Brain,
+      href: '/ai-insights',
+      color: 'text-indigo-600',
+      bgColor: 'bg-indigo-50 dark:bg-indigo-900/20'
+    },
+    {
+      title: 'Automação',
+      description: 'Upkeeps Chainlink',
+      icon: Settings,
+      href: '/automation',
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50 dark:bg-orange-900/20'
+    },
+    {
+      title: 'Monitoramento',
+      description: 'Status do sistema',
+      icon: Activity,
+      href: '/monitoring',
+      color: 'text-cyan-600',
+      bgColor: 'bg-cyan-50 dark:bg-cyan-900/20'
+    },
+    {
+      title: 'Analytics',
+      description: 'Relatórios detalhados',
+      icon: PieChart,
+      href: '/analytics',
+      color: 'text-pink-600',
+      bgColor: 'bg-pink-50 dark:bg-pink-900/20'
+    }
+  ]
+
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        {/* Header com informações da carteira */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Dashboard RiskGuardian
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300">
-              Análise completa do seu portfólio DeFi
-            </p>
-          </div>
-          <div className="flex items-center space-x-4">
-            <WalletButton />
-          </div>
+      <div className="space-y-8">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Dashboard
+          </h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">
+            Bem-vindo ao RiskGuardian AI - Sua plataforma de análise de risco DeFi
+          </p>
         </div>
 
-        {/* Status do sistema */}
-        <SystemStatus />
-
-        {/* Recent Alerts */}
-        {alerts.length > 0 && (
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Activity className="h-5 w-5" />
-                <span>Alertas Recentes</span>
-              </CardTitle>
-              <CardDescription>
-                Últimas notificações do sistema
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {alerts.slice(0, 3).map((alert) => (
-                <Alert key={alert.id} variant={getAlertVariant(alert.type) as any}>
-                  <div className="flex items-start space-x-2">
-                    {getAlertIcon(alert.type)}
-                    <div className="flex-1">
-                      <AlertDescription className="text-sm">
-                        {alert.message}
-                      </AlertDescription>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {new Date(alert.timestamp).toLocaleString('pt-BR')}
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    Portfólios Ativos
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    3
+                  </p>
+                </div>
+                <Briefcase className="w-8 h-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    Valor Total
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    $125,430
+                  </p>
+                </div>
+                <BarChart3 className="w-8 h-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    Risco Médio
+                  </p>
+                  <p className="text-2xl font-bold text-yellow-600">
+                    Médio
+                  </p>
+                </div>
+                <TrendingUp className="w-8 h-8 text-yellow-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    Alertas Ativos
+                  </p>
+                  <p className="text-2xl font-bold text-red-600">
+                    2
+                  </p>
+                </div>
+                <Activity className="w-8 h-8 text-red-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Navigation Cards */}
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+            Serviços Disponíveis
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {dashboardCards.map((card) => {
+              const Icon = card.icon
+              return (
+                <Link key={card.href} href={card.href}>
+                  <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer group">
+                    <CardHeader className="pb-3">
+                      <div className={`w-12 h-12 rounded-lg ${card.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                        <Icon className={`w-6 h-6 ${card.color}`} />
+                      </div>
+                      <CardTitle className="text-lg">
+                        {card.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {card.description}
                       </p>
-                    </div>
-                  </div>
-                </Alert>
-              ))}
-            </CardContent>
-          </Card>
-        )}
+                    </CardContent>
+                  </Card>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
 
-        {/* Grid principal do dashboard */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Coluna esquerda - Portfolio e Métricas */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Portfolio Overview */}
-            <PortfolioOverview address={address} />
-            
-            {/* Gráfico TradingView */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  Análise de Mercado
-                </h2>
-                <select 
-                  value={selectedAsset}
-                  onChange={(e) => setSelectedAsset(e.target.value)}
-                  className="px-3 py-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
-                >
-                  <option value="ETH/USD">ETH/USD</option>
-                  <option value="BTC/USD">BTC/USD</option>
-                  <option value="AVAX/USD">AVAX/USD</option>
-                  <option value="MATIC/USD">MATIC/USD</option>
-                </select>
+        {/* Recent Activity */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Atividade Recente</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Portfólio DeFi atualizado</p>
+                  <p className="text-xs text-gray-500">há 2 minutos</p>
+                </div>
               </div>
-              <TradingViewChart symbol={selectedAsset} />
+              <div className="flex items-center space-x-4">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Novo alerta de risco detectado</p>
+                  <p className="text-xs text-gray-500">há 15 minutos</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Análise de IA completada</p>
+                  <p className="text-xs text-gray-500">há 1 hora</p>
+                </div>
+              </div>
             </div>
-          </div>
-
-          {/* Coluna direita - Alertas e IA */}
-          <div className="space-y-6">
-            {/* Métricas de Risco */}
-            <RiskMetrics address={address} />
-            
-            {/* Alertas */}
-            <AlertsPanel />
-            
-            {/* Insights de IA */}
-            <AIInsights address={address} />
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <TrendingUp className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Analytics</h3>
-                  <p className="text-sm text-gray-600">Ver relatórios detalhados</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Shield className="h-6 w-6 text-purple-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Gestão de Risco</h3>
-                  <p className="text-sm text-gray-600">Configurar proteções</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <Zap className="h-6 w-6 text-yellow-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">AI Insights</h3>
-                  <p className="text-sm text-gray-600">Análises personalizadas</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Activity className="h-6 w-6 text-green-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Automação</h3>
-                  <p className="text-sm text-gray-600">Configurar triggers</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Development Info */}
-        {process.env.NODE_ENV === 'development' && (
-          <Card className="border-dashed border-2 border-gray-300">
-            <CardContent className="p-6">
-              <h3 className="font-semibold text-gray-900 mb-2">🚧 Ambiente de Desenvolvimento</h3>
-              <div className="text-sm text-gray-600 space-y-1">
-                <p>• Backend: localhost:3001</p>
-                <p>• ElizaOS: localhost:3000</p>
-                <p>• Chromia: localhost:8080</p>
-                <p>• WebSocket: {wsConnected ? '✅ Conectado' : '❌ Desconectado'}</p>
-                <p>• Rede: Sepolia Testnet</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   )

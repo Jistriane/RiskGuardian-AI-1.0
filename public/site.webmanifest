@@ -1,0 +1,40 @@
+{
+    "name": "RiskGuardian AI",
+    "short_name": "RiskGuardian",
+    "description": "Plataforma inteligente de análise e gerenciamento de risco DeFi com IA integrada",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#3b82f6",
+    "orientation": "portrait-primary",
+    "categories": ["finance", "productivity", "business"],
+    "lang": "pt-BR",
+    "icons": [{
+        "src": "/favicon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml"
+    }],
+    "shortcuts": [{
+            "name": "Dashboard",
+            "short_name": "Dashboard",
+            "description": "Acesso direto ao dashboard",
+            "url": "/dashboard",
+            "icons": [{
+                "src": "/favicon.svg",
+                "sizes": "any",
+                "type": "image/svg+xml"
+            }]
+        },
+        {
+            "name": "Portfólio",
+            "short_name": "Portfólio",
+            "description": "Análise do portfólio",
+            "url": "/portfolio",
+            "icons": [{
+                "src": "/favicon.svg",
+                "sizes": "any",
+                "type": "image/svg+xml"
+            }]
+        }
+    ]
+}

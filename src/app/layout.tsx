@@ -1,64 +1,80 @@
-import type { Metadata } from 'next'
-import localFont from 'next/font/local'
+import type { Metadata, Viewport } from 'next'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
-import { RootProvider } from '@/providers/RootProvider'
-import { config } from '@/config/env'
+import { RootProvider } from '@/providers/root-provider'
+import { ThemeProvider } from '@/providers/theme-provider'
+import { Toaster } from '@/components/ui/toaster'
 
-const geistSans = localFont({
-  src: './fonts/GeistVF.woff2',
-  variable: '--font-geist-sans',
-  weight: '100 900',
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
 })
-const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff2',
-  variable: '--font-geist-mono',
-  weight: '100 900',
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-mono',
 })
 
 export const metadata: Metadata = {
-  title: config.app.name,
-  description: 'AI-powered DeFi risk management and portfolio optimization platform',
-  keywords: ['DeFi', 'Risk Management', 'AI', 'Blockchain', 'Portfolio', 'Automation'],
+  title: 'RiskGuardian AI - Portfolio Risk Management',
+  description: 'AI-powered portfolio risk analysis and automated protection for DeFi investments',
+  keywords: ['DeFi', 'Risk Management', 'AI', 'Portfolio', 'Blockchain', 'Automation'],
   authors: [{ name: 'RiskGuardian Team' }],
   openGraph: {
-    title: config.app.name,
-    description: 'AI-powered DeFi risk management and portfolio optimization',
+    title: 'RiskGuardian AI',
+    description: 'AI-powered portfolio risk analysis and automated protection for DeFi investments',
     type: 'website',
-    url: config.app.url,
+    locale: 'pt_BR',
   },
   twitter: {
     card: 'summary_large_image',
-    title: config.app.name,
-    description: 'AI-powered DeFi risk management',
+    title: 'RiskGuardian AI',
+    description: 'AI-powered portfolio risk analysis and automated protection for DeFi investments',
   },
-  robots: {
-    index: false, // Not indexing testnet app
-    follow: false,
+  manifest: '/site.webmanifest',
+  other: {
+    'mobile-web-app-capable': 'yes',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#09090b' }
+  ],
 }
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" />
-        <meta name="theme-color" content="#3b82f6" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-slate-50 via-blue-50/20 to-purple-50/20 min-h-screen`}
-      >
-        <RootProvider>
-          {children}
-        </RootProvider>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <RootProvider>
+            <div className="relative min-h-screen bg-background text-foreground">
+              {children}
+            </div>
+          </RootProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   )

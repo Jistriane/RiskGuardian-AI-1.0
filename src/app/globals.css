@@ -3,6 +3,37 @@
 @tailwind utilities;
 @layer base {
      :root {
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+        --card: 0 0% 100%;
+        --card-foreground: 222.2 84% 4.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+        --primary: 221.2 83.2% 53.3%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 210 40% 96%;
+        --secondary-foreground: 222.2 84% 4.9%;
+        --muted: 210 40% 96%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+        --accent: 210 40% 96%;
+        --accent-foreground: 222.2 84% 4.9%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 221.2 83.2% 53.3%;
+        --chart-1: 12 76% 61%;
+        --chart-2: 173 58% 39%;
+        --chart-3: 197 37% 24%;
+        --chart-4: 43 74% 66%;
+        --chart-5: 27 87% 67%;
+        --radius: 0.5rem;
+        --success: 142 76% 36%;
+        --success-foreground: 355.7 100% 97.3%;
+        --warning: 38 92% 50%;
+        --warning-foreground: 48 96% 89%;
+    }
+    .dark {
         --background: 222.2 84% 4.9%;
         --foreground: 210 40% 98%;
         --card: 222.2 84% 4.9%;
@@ -22,7 +53,11 @@
         --border: 217.2 32.6% 17.5%;
         --input: 217.2 32.6% 17.5%;
         --ring: 224.3 76.3% 94.1%;
-        --radius: 0.75rem;
+        --chart-1: 220 70% 50%;
+        --chart-2: 160 60% 45%;
+        --chart-3: 30 80% 55%;
+        --chart-4: 280 65% 60%;
+        --chart-5: 340 75% 55%;
     }
 }
 
@@ -34,220 +69,132 @@
         @apply bg-background text-foreground;
         font-feature-settings: "rlig" 1, "calt" 1;
     }
-    html {
-        scroll-behavior: smooth;
-    }
-    /* Custom scrollbar */
-     ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-     ::-webkit-scrollbar-track {
-        @apply bg-secondary/50;
-    }
-     ::-webkit-scrollbar-thumb {
-        @apply bg-primary/30 rounded-full;
-    }
-     ::-webkit-scrollbar-thumb:hover {
-        @apply bg-primary/50;
-    }
-}
-
-@layer components {
-    /* Dashboard Grid */
-    .dashboard-grid {
-        @apply grid gap-6 grid-cols-1 md: grid-cols-2 lg: grid-cols-3;
-    }
-    /* Card Styles */
-    .card-gradient {
-        @apply bg-gradient-to-br from-card to-card/80;
-        backdrop-filter: blur(20px);
-        border: 1px solid hsl(var(--border));
-    }
-    .card-hover {
-        @apply transition-all duration-300 hover: shadow-lg hover: shadow-primary/20 hover: -translate-y-1;
-    }
-    /* Button Variants */
-    .btn-primary {
-        @apply bg-primary text-primary-foreground hover: bg-primary/90 shadow-lg shadow-primary/25 transition-all duration-200;
-    }
-    .btn-secondary {
-        @apply bg-secondary text-secondary-foreground hover: bg-secondary/80 border border-border transition-all duration-200;
-    }
-    .btn-ghost {
-        @apply hover: bg-accent hover: text-accent-foreground transition-all duration-200;
-    }
-    /* Status Indicators */
-    .status-online {
-        @apply text-green-400 bg-green-400/20;
-    }
-    .status-offline {
-        @apply text-red-400 bg-red-400/20;
-    }
-    .status-warning {
-        @apply text-yellow-400 bg-yellow-400/20;
-    }
-    /* Animated Elements */
-    .pulse-ring {
-        @apply before: absolute before: inset-0 before: rounded-full before: animate-ping before: bg-current before: opacity-75;
-    }
-    .glow-effect {
-        @apply shadow-lg shadow-current/30;
-    }
-    /* Loading States */
-    .skeleton {
-        @apply animate-pulse bg-muted rounded;
-    }
-    .shimmer {
-        @apply relative overflow-hidden bg-muted;
-    }
-    .shimmer::after {
-        @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer;
-        content: '';
-    }
-    /* Typography */
-    .text-gradient {
-        @apply bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent;
-    }
-    .text-glow {
-        text-shadow: 0 0 20px hsl(var(--primary));
-    }
-    /* Layout Utilities */
-    .container-padding {
-        @apply px-4 sm: px-6 lg: px-8;
-    }
-    .section-spacing {
-        @apply py-8 sm: py-12 lg: py-16;
-    }
-    /* Form Elements */
-    .input-field {
-        @apply bg-input border-border text-foreground placeholder: text-muted-foreground focus: border-primary focus: ring-1 focus: ring-primary;
-    }
-    /* Dashboard Specific */
-    .metric-card {
-        @apply card-gradient card-hover p-6 rounded-lg;
-    }
-    .chart-container {
-        @apply w-full h-64 md: h-80 lg: h-96;
-    }
-    /* Animation Utilities */
-    .fade-in {
-        @apply animate-fade-in;
-    }
-    .slide-up {
-        @apply animate-fade-up;
-    }
-    /* Grid Patterns */
-    .grid-bg {
-        background-image: var(--grid-pattern);
-        background-size: 40px 40px;
-    }
 }
 
 @layer utilities {
-    /* Glass Effect */
-    .glass {
-        backdrop-filter: blur(16px) saturate(180%);
-        background-color: rgba(17, 25, 40, 0.75);
-        border: 1px solid rgba(255, 255, 255, 0.125);
-    }
-    /* Gradient Borders */
-    .gradient-border {
-        background: linear-gradient(var(--background), var(--background)) padding-box, linear-gradient(45deg, hsl(var(--primary)), hsl(var(--secondary))) border-box;
-        border: 1px solid transparent;
-    }
-    /* Text Effects */
-    .text-shadow {
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    }
-    /* Hover Effects */
-    .hover-lift {
-        @apply transition-transform duration-200 hover: -translate-y-1;
-    }
-    .hover-glow {
-        @apply transition-shadow duration-200 hover: shadow-lg hover: shadow-primary/25;
-    }
-    /* Focus States */
-    .focus-ring {
-        @apply focus: outline-none focus: ring-2 focus: ring-primary focus: ring-offset-2 focus: ring-offset-background;
+    .text-balance {
+        text-wrap: balance;
     }
 }
 
 
-/* Custom animations for loading states */
+/* Custom scrollbar */
 
-@keyframes float {
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
 }
 
-@keyframes glow {
-    0%,
-    100% {
-        box-shadow: 0 0 5px hsl(var(--primary));
-    }
-    50% {
-        box-shadow: 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary));
-    }
+::-webkit-scrollbar-track {
+    @apply bg-muted;
 }
 
-@keyframes slideInRight {
+::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-md;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent-foreground/20;
+}
+
+
+/* Loading animations */
+
+@keyframes spin-slow {
     from {
-        transform: translateX(100%);
-        opacity: 0;
+        transform: rotate(0deg);
     }
     to {
-        transform: translateX(0);
-        opacity: 1;
+        transform: rotate(360deg);
     }
 }
 
-@keyframes slideInLeft {
-    from {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+.animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
 }
 
 
-/* Responsive utilities */
+/* Gradient text */
 
-@media (max-width: 768px) {
-    .dashboard-grid {
-        @apply grid-cols-1;
-    }
-    .chart-container {
-        @apply h-64;
-    }
+.gradient-text {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
 }
 
 
-/* Dark mode adjustments */
+/* Glassmorphism effect */
 
-@media (prefers-color-scheme: dark) {
-     :root {
-        --background: 222.2 84% 4.9%;
-        --foreground: 210 40% 98%;
-    }
+.glass {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+.glass-dark {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
 }
 
 
-/* Print styles */
+/* Chart styles */
 
-@media print {
-    .no-print {
-        display: none !important;
-    }
-    .print-only {
-        display: block !important;
-    }
+.recharts-responsive-container {
+    @apply w-full h-full;
+}
+
+.recharts-default-tooltip {
+    @apply bg-popover text-popover-foreground border border-border rounded-md shadow-md;
+}
+
+
+/* TradingView chart container */
+
+.tradingview-chart {
+    @apply w-full h-full rounded-lg overflow-hidden;
+}
+
+
+/* Custom animations for dashboard */
+
+.dashboard-card {
+    @apply transition-all duration-300 ease-in-out;
+}
+
+.dashboard-card:hover {
+    @apply scale-[1.02] shadow-lg;
+}
+
+
+/* Responsive font sizes (corrected) */
+
+
+/* Status indicators */
+
+.status-online {
+    @apply text-green-500;
+}
+
+.status-offline {
+    @apply text-red-500;
+}
+
+.status-warning {
+    @apply text-yellow-500;
+}
+
+
+/* Pulse animation for real-time indicators */
+
+.pulse-green {
+    @apply animate-pulse bg-green-500/20 text-green-500;
+}
+
+.pulse-red {
+    @apply animate-pulse bg-red-500/20 text-red-500;
+}
+
+.pulse-yellow {
+    @apply animate-pulse bg-yellow-500/20 text-yellow-500;
 }

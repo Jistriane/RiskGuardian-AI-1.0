@@ -96,27 +96,10 @@ pnpm-lock.yaml
 # TypeScript cache
 *.tsbuildinfo
 
-# =============================================================================
-# ⚛️ FRONTEND (NEXT.JS)
-# =============================================================================
-# Next.js build outputs
-.next/
+# Build outputs (general)
 out/
 build/
 dist/
-
-# Static exports
-next-export/
-
-# Vercel deployment
-.vercel/
-
-# Storybook
-storybook-static/
-
-# Bundle analysis
-.bundlestats.html
-.bundlestats.json
 
 # =============================================================================
 # 🔧 BACKEND (NODE.JS)
@@ -466,7 +449,7 @@ node_modules/
 # Testing
 coverage/
 
-# Next.js
+# Build directories
 .next/
 out/
 
@@ -493,7 +476,7 @@ yarn-error.log*
 
 # TypeScript
 *.tsbuildinfo
-next-env.d.ts
+# next-env.d.ts (removed - no longer using Next.js)
 
 # IDE
 .idea/
