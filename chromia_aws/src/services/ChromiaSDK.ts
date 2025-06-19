@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { AlertSystemConfig } from '../../config/alert-system.config';
+import { AlertSystemConfig } from '../config/alert-system.config';
 import { ChromiaRealService, PortfolioData, RiskMetrics } from './ChromiaRealService';
 
 export interface ChromiaTransaction {

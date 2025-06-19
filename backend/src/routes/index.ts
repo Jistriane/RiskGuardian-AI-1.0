@@ -1,25 +1,27 @@
 import { Router } from 'express';
 import { authRoutes } from './auth.routes';
-import { registryRoutes } from './registry.routes';
 import { portfolioRoutes } from './portfolio.routes';
 import { insuranceRoutes } from './insurance.routes';
+import { registryRoutes } from './registry.routes';
+import monitoringRoutes from './monitoring.routes';
 
 const router = Router();
 
-// Health check endpoint
+// Health check geral
 router.get('/health', (req, res) => {
   res.json({
-    status: 'ok',
-    message: 'RiskGuardian API is healthy',
+    status: 'healthy',
     timestamp: new Date().toISOString(),
-    version: '1.0.0'
+    version: process.env.npm_package_version || '1.0.0',
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// API routes
+// Rotas da API
 router.use('/auth', authRoutes);
-router.use('/registry', registryRoutes);
 router.use('/portfolio', portfolioRoutes);
 router.use('/insurance', insuranceRoutes);
+router.use('/registry', registryRoutes);
+router.use('/monitoring', monitoringRoutes);
 
 export default router;

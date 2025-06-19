@@ -1,5 +1,5 @@
 import { Pool, PoolClient } from 'pg';
-import { AlertSystemConfig } from '../../config/alert-system.config';
+import { AlertSystemConfig } from '../config/alert-system.config';
 import { Alert } from './ChromiaStorageService';
 
 export interface ChromiaQueryResult {
@@ -63,7 +63,6 @@ export class ChromiaRealService {
             database: process.env.POSTGRES_DB || 'chromia',
             user: process.env.POSTGRES_USER || 'chromia',
             password: process.env.POSTGRES_PASSWORD || 'chromia_password',
-            schema: 'chromia',
             max: 20,
             idleTimeoutMillis: 30000,
             connectionTimeoutMillis: 2000,
@@ -74,7 +73,7 @@ export class ChromiaRealService {
             console.log('🔗 Chromia: Conectado ao PostgreSQL');
         });
 
-        this.pool.on('error', (err) => {
+        this.pool.on('error', (err: any) => {
             console.error('❌ Chromia: Erro na conexão PostgreSQL:', err);
         });
     }
@@ -472,5 +471,78 @@ export class ChromiaRealService {
     public async close(): Promise<void> {
         await this.pool.end();
         console.log('🔗 Chromia: Conexões PostgreSQL fechadas');
+    }
+
+    /**
+     * Criar um novo alerta
+     */
+    public async createAlert(
+        portfolioId: string,
+        alertType: string,
+        message: string,
+        severity: string,
+        currentValue?: number,
+        thresholdValue?: number
+    ): Promise<ChromiaQueryResult> {
+        const alertData = {
+            currentValue,
+            thresholdValue,
+            metadata: {
+                createdBy: 'chromia-node-integration',
+                source: 'automated'
+            }
+        };
+
+        const query = `
+            INSERT INTO portfolio_alerts (portfolio_id, alert_type, message, alert_data, severity)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id, created_at
+        `;
+
+        const params = [
+            portfolioId,
+            alertType,
+            message,
+            JSON.stringify(alertData),
+            this.getAlertSeverity(alertType)
+        ];
+
+        const result = await this.executeQuery(query, params);
+        
+        if (result.success) {
+            console.log(`✅ Alerta criado no Chromia - Portfolio: ${portfolioId}, Tipo: ${alertType}`);
+        }
+
+        return result;
+    }
+
+    /**
+     * Obter métricas de risco
+     */
+    public async getRiskMetrics(portfolioId: string): Promise<RiskMetrics | null> {
+        const query = `
+            SELECT * FROM portfolio_risk_metrics 
+            WHERE portfolio_id = $1 
+            ORDER BY calculated_at DESC 
+            LIMIT 1
+        `;
+
+        const result = await this.executeQuery(query, [portfolioId]);
+        
+        if (result.success && result.data && result.data.length > 0) {
+            const row = result.data[0];
+            return {
+                portfolioId: row.portfolio_id,
+                volatility: row.volatility,
+                var95: row.var95,
+                var99: row.var99,
+                sharpeRatio: row.sharpe_ratio,
+                maxDrawdown: row.max_drawdown,
+                correlationScore: row.correlation_score,
+                calculatedAt: row.calculated_at
+            };
+        }
+
+        return null;
     }
 } 

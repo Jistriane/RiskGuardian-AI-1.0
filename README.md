@@ -1,31 +1,42 @@
-# ��️ RiskGuardian AI
+# 🛡️ RiskGuardian Multi-Chain
 
-![RiskGuardian AI](https://img.shields.io/badge/RiskGuardian-AI-blue?style=for-the-badge)
-![Version](https://img.shields.io/badge/version-1.0.0-green?style=for-the-badge)
+![RiskGuardian AI](https://img.shields.io/badge/RiskGuardian-MultiChain-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-2.0.0-green?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge)
-![Status](https://img.shields.io/badge/status-Active-brightgreen?style=for-the-badge)
+![Status](https://img.shields.io/badge/status-Production--Ready-brightgreen?style=for-the-badge)
 
-Sistema inteligente avançado de análise de risco e automação de hedge para portfólios DeFi, utilizando Chainlink CCIP para operações cross-chain, integração com Chromia e agentes de IA powered by ElizaOS.
+**Plataforma de gerenciamento de risco multi-chain com IA avançada** para análise e proteção de ativos DeFi em tempo real. Suporte nativo a 4 testnets com indexação contínua, cache Redis distribuído e comunicação cross-chain via Chainlink CCIP.
 
 ## 🎯 Visão Geral
 
-O **RiskGuardian AI** é uma plataforma de última geração que combina:
-- **Contratos Inteligentes** para automação de hedge
-- **Chainlink CCIP** para operações cross-chain
-- **Chainlink Automation** para execução automática
-- **Chromia** para armazenamento descentralizado
-- **ElizaOS** para agentes de IA inteligentes
-- **Interface Web** moderna e responsiva
+O **RiskGuardian Multi-Chain** é uma plataforma de próxima geração que oferece:
+- **🔗 Multi-Chain Nativo** - Suporte a 4 testnets simultaneamente
+- **⚡ Cache Redis** - Performance otimizada com hit rate > 90%
+- **📊 Indexação Real-Time** - Blocos indexados a cada 30 segundos
+- **🌐 APIs REST Modernas** - Endpoints para monitoramento e portfolio
+- **🎛️ Dashboard Unificado** - Interface Material-UI responsiva
+- **🔄 Cross-Chain CCIP** - Comunicação entre blockchains
+- **💾 PostgreSQL + Redis** - Persistência e cache otimizados
 
 ### 🚀 Principais Funcionalidades
 
-✅ **Análise de Risco em Tempo Real**  
-✅ **Hedge Automatizado Cross-Chain**  
-✅ **Agentes de IA para Trading**  
-✅ **Integração Multi-Blockchain**  
-✅ **Dashboard Analítico Avançado**  
-✅ **APIs REST e WebSocket**  
-✅ **Notificações Inteligentes**  
+✅ **📈 Monitoramento Multi-Chain em Tempo Real**  
+✅ **🔗 Portfolio Agregado Cross-Chain**  
+✅ **⚡ Cache Distribuído de Alta Performance**  
+✅ **📊 Dashboard Unificado Moderno**  
+✅ **🔄 Indexação Automática de 4 Testnets**  
+✅ **🌐 APIs REST Completas**  
+✅ **💾 Infraestrutura Docker Otimizada**  
+✅ **🔍 Health Checks e Métricas Detalhadas**
+
+### 🌐 Redes Suportadas
+
+| Network | Chain ID | Status | RPC | Explorer |
+|---------|----------|--------|-----|----------|
+| **Sepolia** | 11155111 | 🟢 Ativo | Alchemy/Infura | etherscan.io |
+| **Mumbai** | 80001 | 🟢 Ativo | Polygon RPC | polygonscan.com |
+| **Fuji** | 43113 | 🟢 Ativo | Avalanche RPC | snowtrace.io |
+| **BSC Testnet** | 97 | 🟢 Ativo | BSC RPC | bscscan.com |  
 
 ---
 
@@ -60,11 +71,12 @@ O **RiskGuardian AI** é uma plataforma de última geração que combina:
 ### Pré-requisitos
 
 ```bash
-# Instalar dependências
+# Dependências obrigatórias
 - Docker >= 20.10
-- Docker Compose >= 2.0
+- Docker Compose >= 2.0  
 - Node.js >= 18.0
 - Git
+- 8GB RAM mínimo (recomendado 16GB)
 ```
 
 ### 1. Clone e Configure
@@ -74,49 +86,177 @@ O **RiskGuardian AI** é uma plataforma de última geração que combina:
 git clone https://github.com/uederson-ferreira/riskguardian-ai.git
 cd riskguardian-ai
 
-# Configurar ambiente
-./scripts/setup.sh
-
-# Iniciar ambiente de desenvolvimento
-./scripts/start-dev.sh
+# 🔥 MÉTODO MAIS SIMPLES - Sistema Unificado Completo
+./riskguardian-start.sh start
 ```
 
-### 2. Acesso aos Serviços
+### 📋 Sistema Completo de Inicialização
 
-| Serviço | URL | Status |
+O RiskGuardian AI possui um **sistema de inicialização unificado** que gerencia todos os componentes automaticamente:
+
+```bash
+# 🚀 Inicialização completa (recomendado)
+./riskguardian-start.sh start
+
+# ⚡ Início rápido (desenvolvimento)
+./riskguardian-start.sh quick-start
+
+# 📊 Verificar status dos serviços
+./riskguardian-start.sh status
+
+# 🛑 Parar todos os serviços
+./riskguardian-start.sh stop
+
+# ❓ Ver todos os comandos disponíveis
+./riskguardian-start.sh help
+```
+
+**📚 Documentação Completa:**
+- [📖 **SISTEMA_INICIALIZACAO.md**](SISTEMA_INICIALIZACAO.md) - Documentação completa do sistema
+- [⚡ **QUICK_START.md**](QUICK_START.md) - Guia de início rápido  
+- [🔧 **env.example**](env.example) - Configuração de ambiente
+
+### 2. Sistema Multi-Chain Ativo! 🎉
+
+Após inicialização (~ 3-5 minutos):
+
+| Serviço | URL | Função |
 |---------|-----|---------|
-| 🌐 **Frontend** | http://localhost:3000 | Interface principal |
-| 🔌 **Backend API** | http://localhost:8001 | Documentação da API |
-| 🤖 **ElizaOS Agent** | http://localhost:3001 | Agentes de IA |
-| ⛓️ **Anvil RPC** | http://localhost:8545 | Blockchain local |
+| 🌐 **Frontend Multi-Chain** | http://localhost:3000 | Dashboard unificado |
+| 🔌 **Backend API** | http://localhost:3001 | API REST + Monitoring |
+| 📊 **Health Check** | http://localhost:3001/monitoring/health | Status do sistema |
+| 🔍 **System Status** | http://localhost:3001/monitoring/status | Métricas detalhadas |
+| 💾 **Redis Cache** | localhost:6379 | Cache distribuído |
 | 🗄️ **PostgreSQL** | localhost:5432 | Banco de dados |
-| 💾 **Redis** | localhost:6379 | Cache |
-| 🔗 **Chromia** | http://localhost:7740 | Blockchain Chromia |
+
+### 3. Verificações Rápidas
+
+```bash
+# 1. Status do sistema
+curl http://localhost:3001/monitoring/health
+
+# 2. Status das chains
+curl http://localhost:3001/monitoring/chains
+
+# 3. Métricas do cache
+curl http://localhost:3001/monitoring/cache/stats
+
+# 4. Parar sistema
+./stop-multichain.sh
+```
+
+---
+
+## 🌐 APIs Multi-Chain Disponíveis
+
+### 📊 Monitoramento e Health Check
+
+```bash
+# Status geral do sistema
+GET /monitoring/health
+GET /monitoring/status
+
+# Status por chain
+GET /monitoring/chains
+GET /monitoring/chains/:chainId
+
+# Métricas e estatísticas
+GET /monitoring/metrics
+GET /monitoring/cache/stats
+```
+
+### 💼 Portfolio Multi-Chain
+
+```bash
+# Portfolio agregado de todas as chains
+GET /portfolio/multi-chain/:address
+
+# Ativos por chain específica
+GET /portfolio/chain/:chainId/assets/:address
+
+# Análise de risco cross-chain
+GET /portfolio/risk-analysis/:address
+
+# Histórico de transações
+GET /portfolio/history/:address
+```
+
+### 🔄 Cross-Chain Operations
+
+```bash
+# Mensagens CCIP cross-chain
+GET /monitoring/cross-chain-messages
+
+# Status de mensagens cross-chain
+GET /monitoring/cross-chain-status/:messageId
+
+# Executar operação cross-chain
+POST /monitoring/execute-cross-chain
+```
+
+### 💾 Cache Management
+
+```bash
+# Limpar cache
+DELETE /monitoring/cache/clear
+DELETE /monitoring/cache/clear/:pattern
+
+# Estatísticas de cache
+GET /monitoring/cache/stats
+GET /monitoring/cache/keys/:pattern
+```
+
+### 📈 Market Data
+
+```bash
+# Preços de tokens por chain
+GET /market-data/prices/:chainId
+GET /market-data/price/:chainId/:tokenAddress
+
+# Dados de mercado agregados
+GET /market-data/aggregated
+```
 
 ---
 
 ## 📋 Comandos Principais
 
+### 🌐 Sistema Multi-Chain (Recomendado)
+
+```bash
+# 🔥 Iniciar sistema completo multi-chain
+./start-multichain.sh
+
+# 🛑 Parar sistema multi-chain
+./stop-multichain.sh
+
+# 📊 Status do sistema em tempo real
+curl http://localhost:3001/monitoring/status
+
+# 📈 Ver métricas das chains
+curl http://localhost:3001/monitoring/chains
+
+# 📝 Ver logs do sistema
+tail -f logs/multichain.log
+```
+
 ### 🐳 Docker e Ambiente
 
 ```bash
-# Iniciar todos os serviços
-./scripts/start-dev.sh
-
-# Parar todos os serviços  
-./scripts/stop.sh
-
 # Ver status dos containers
 docker-compose ps
 
 # Ver logs de um serviço específico
-docker-compose logs -f [frontend|backend|elizaos-agent|chromia-node]
+docker-compose logs -f [backend|frontend|redis|postgres]
 
 # Reiniciar um serviço
 docker-compose restart [service-name]
 
-# Limpar ambiente (CUIDADO: Remove todos os dados)
-./scripts/docker-cleanup.sh
+# Verificar uso de recursos
+docker stats
+
+# Limpar cache Docker (se necessário)
+./stop-multichain.sh --clean-logs
 ```
 
 ### 🔧 Scripts de Desenvolvimento

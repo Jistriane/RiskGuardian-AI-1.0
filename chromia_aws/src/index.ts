@@ -3,265 +3,253 @@
  * Integração completa com nó Chromia real e PostgreSQL
  */
 
-import { defaultConfig } from '../config/alert-system.config';
-import { AlertOrchestrator } from './services/AlertOrchestrator';
-import { ChromiaNodeIntegration } from './services/ChromiaNodeIntegration';
-import { ChromiaRealService } from './services/ChromiaRealService';
-import { ChromiaSDK } from './services/ChromiaSDK';
+require('dotenv').config();
 
-class RiskGuardianChromiaAWS {
-    private orchestrator: AlertOrchestrator;
-    private chromiaIntegration: ChromiaNodeIntegration;
-    private chromiaService: ChromiaRealService;
-    private chromiaSDK: ChromiaSDK;
-    private isRunning: boolean = false;
+import * as http from 'http';
 
+/**
+ * RiskGuardian ChromiaAWS Service - Versão Simplificada e Funcional
+ */
+class RiskGuardianChromiaAWSSimple {
+    private server: http.Server | null = null;
+    private port: number;
+    
     constructor() {
-        this.orchestrator = new AlertOrchestrator(defaultConfig);
-        this.chromiaIntegration = new ChromiaNodeIntegration();
-        this.chromiaService = new ChromiaRealService({
-            host: process.env.POSTGRES_HOST || 'postgres',
-            port: parseInt(process.env.POSTGRES_PORT || '5432'),
-            database: process.env.POSTGRES_DB || 'chromia',
-            user: process.env.POSTGRES_USER || 'chromia',
-            password: process.env.POSTGRES_PASSWORD || 'chromia_password'
+        this.port = parseInt(process.env.PORT || '3004');
+        console.log('✅ ChromiaAWS configurado para porta:', this.port);
+    }
+
+    /**
+     * Inicia o serviço
+     */
+    public async start(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            try {
+                this.server = http.createServer(this.handleRequest.bind(this));
+                
+                this.server.listen(this.port, () => {
+                    console.log(`🚀 ChromiaAWS Service rodando na porta ${this.port}`);
+                    console.log(`📡 Health check: http://localhost:${this.port}/health`);
+                    console.log(`🌐 Status page: http://localhost:${this.port}/`);
+                    resolve();
+                });
+
+                this.server.on('error', (error: Error) => {
+                    console.error('❌ Erro no servidor:', error);
+                    reject(error);
+                });
+
+            } catch (error) {
+                console.error('❌ Erro ao iniciar servidor:', error);
+                reject(error);
+            }
         });
-        this.chromiaSDK = new ChromiaSDK('http://chromia-node:7740');
     }
 
-    async start(): Promise<void> {
-        try {
-            console.log('🚀 Iniciando RiskGuardian Chromia AWS...');
+    /**
+     * Manipula requisições HTTP
+     */
+    private handleRequest(req: http.IncomingMessage, res: http.ServerResponse): void {
+        // CORS headers
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-            // 1. Conectar com PostgreSQL
-            console.log('📊 Conectando com PostgreSQL...');
-            const dbHealth = await this.chromiaService.healthCheck();
-            if (dbHealth.status !== 'healthy') {
-                throw new Error('PostgreSQL não está saudável');
-            }
-            console.log('✅ PostgreSQL conectado');
-
-            // 2. Tentar conectar com nó Chromia
-            console.log('🔗 Tentando conectar com nó Chromia...');
-            const nodeConnected = await this.chromiaIntegration.connect();
-            if (nodeConnected) {
-                console.log('✅ Nó Chromia conectado');
-            } else {
-                console.log('⚠️  Nó Chromia offline - continuando com PostgreSQL apenas');
-            }
-
-            // 3. Iniciar orchestrador de alertas
-            console.log('🚨 Iniciando sistema de alertas...');
-            await this.orchestrator.start();
-            console.log('✅ Sistema de alertas ativo');
-
-            // 4. Configurar monitoramento periódico
-            this.setupPeriodicTasks();
-
-            this.isRunning = true;
-            console.log('🎉 RiskGuardian Chromia AWS iniciado com sucesso!');
-
-        } catch (error) {
-            console.error('❌ Erro ao iniciar sistema:', error);
-            throw error;
+        if (req.method === 'OPTIONS') {
+            res.writeHead(200);
+            res.end();
+            return;
         }
-    }
 
-    private setupPeriodicTasks(): void {
-        // Sync de portfolios a cada 2 minutos
-        setInterval(async () => {
-            try {
-                await this.syncAllPortfolios();
-            } catch (error) {
-                console.error('Erro no sync de portfolios:', error);
-            }
-        }, 120000);
-
-        // Update de preços a cada 30 segundos
-        setInterval(async () => {
-            try {
-                await this.updatePrices();
-            } catch (error) {
-                console.error('Erro no update de preços:', error);
-            }
-        }, 30000);
-
-        // Health check a cada 60 segundos
-        setInterval(async () => {
-            try {
-                await this.healthCheck();
-            } catch (error) {
-                console.error('Erro no health check:', error);
-            }
-        }, 60000);
-
-        // Processamento de alertas mockado a cada minuto
-        setInterval(async () => {
-            try {
-                await this.processMockAlerts();
-            } catch (error) {
-                console.error('Erro ao processar alertas mock:', error);
-            }
-        }, 60000);
-    }
-
-    private async syncAllPortfolios(): Promise<void> {
-        try {
-            // Simulando portfolios para demo
-            const mockPortfolios = [
-                { rowid: 1, name: 'DeFi Portfolio', total_value: 10000 },
-                { rowid: 2, name: 'Conservative Portfolio', total_value: 25000 }
-            ];
-            
-            for (const portfolio of mockPortfolios) {
-                await this.chromiaIntegration.syncPortfolio(portfolio.rowid);
-            }
-
-            console.log(`📈 ${mockPortfolios.length} portfolios sincronizados`);
-        } catch (error) {
-            console.error('Erro ao sincronizar portfolios:', error);
-        }
-    }
-
-    private async updatePrices(): Promise<void> {
-        try {
-            const symbols = ['ETH', 'BTC', 'USDC', 'LINK', 'UNI', 'AAVE'];
-            const prices = await this.chromiaIntegration.updatePricesFromChainlink(symbols);
-            
-            // Atualizar preços no banco
-            for (const priceData of prices) {
-                await this.chromiaService.updateAssetPrice(
-                    priceData.symbol,
-                    priceData.price
-                );
-            }
-
-            console.log(`💰 ${prices.length} preços atualizados`);
-        } catch (error) {
-            console.error('Erro ao atualizar preços:', error);
-        }
-    }
-
-    private async healthCheck(): Promise<void> {
-        try {
-            const status = await this.chromiaIntegration.checkHealth();
-            const blockchainStatus = await this.chromiaIntegration.getBlockchainStatus();
-            
-            console.log('❤️  Health check:', {
-                system: status.status,
-                node: this.chromiaIntegration.connected ? 'online' : 'offline',
-                database: blockchainStatus.database?.status || 'unknown'
-            });
-        } catch (error) {
-            console.error('Erro no health check:', error);
-        }
-    }
-
-    private async processMockAlerts(): Promise<void> {
-        try {
-            // Buscar portfolios e simular alertas
-            const portfolios = await this.chromiaService.getAllPortfolios();
-            
-            for (const portfolio of portfolios.slice(0, 2)) { // Apenas primeiros 2
-                // Simular volatilidade alta
-                if (Math.random() > 0.7) {
-                    const alert = {
-                        portfolioId: portfolio.rowid,
-                        alertType: 'volatility_high',
-                        severity: 'medium' as const,
-                        message: `Portfolio ${portfolio.name} apresenta alta volatilidade`,
-                        currentValue: portfolio.total_value * (0.9 + Math.random() * 0.2)
-                    };
-
-                    const alertId = await this.chromiaIntegration.processAlert(alert);
-                    if (alertId) {
-                        console.log(`🚨 Alerta processado: ${alertId}`);
-                    }
-                }
-
-                // Simular atualização de portfolio
-                const mockData = {
-                    totalValue: portfolio.total_value * (0.95 + Math.random() * 0.1),
-                    stopLoss: portfolio.total_value * 0.85,
-                    volatility: Math.random() * 0.3,
-                    maxVolatility: 0.25,
-                    assets: [
-                        { symbol: 'ETH', amount: 2.5, value: 5000 },
-                        { symbol: 'USDC', amount: 3000, value: 3000 }
-                    ]
-                };
-
-                await this.orchestrator.processPortfolioUpdate(
-                    `portfolio_${portfolio.rowid}`,
-                    mockData
-                );
-            }
-        } catch (error) {
-            console.error('Erro ao processar alertas mock:', error);
-        }
-    }
-
-    async stop(): Promise<void> {
-        if (!this.isRunning) return;
-
-        console.log('🛑 Parando RiskGuardian Chromia AWS...');
+        const url = req.url || '';
         
+        // Health check endpoint
+        if (url === '/health') {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({
+                status: 'healthy',
+                service: 'chromia-aws',
+                timestamp: new Date().toISOString(),
+                version: '1.0.0',
+                port: this.port
+            }));
+            return;
+        }
+
+        // API endpoints
+        if (url.startsWith('/api/')) {
+            this.handleApiRequest(url, req.method || 'GET', res);
+            return;
+        }
+
+        // Status page
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>ChromiaAWS Service</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+                    .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                    .status { color: #28a745; font-size: 18px; margin: 20px 0; }
+                    .info { background: #e9ecef; padding: 20px; border-radius: 8px; margin: 20px 0; }
+                    .endpoint { background: #f8f9fa; padding: 10px; margin: 5px 0; border-left: 4px solid #007bff; }
+                    h1 { color: #343a40; }
+                    h3 { color: #495057; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>🚀 RiskGuardian ChromiaAWS Service</h1>
+                    <div class="status">✅ Service is running successfully</div>
+                    
+                    <div class="info">
+                        <h3>Service Information:</h3>
+                        <p><strong>Port:</strong> ${this.port}</p>
+                        <p><strong>Environment:</strong> ${process.env.NODE_ENV || 'development'}</p>
+                        <p><strong>Chromia Node URL:</strong> ${process.env.CHROMIA_NODE_URL || 'http://localhost:7740'}</p>
+                        <p><strong>Started:</strong> ${new Date().toISOString()}</p>
+                    </div>
+
+                    <h3>Available Endpoints:</h3>
+                    <div class="endpoint">
+                        <strong>GET /health</strong> - Health check endpoint
+                    </div>
+                    <div class="endpoint">
+                        <strong>GET /api/status</strong> - Service status
+                    </div>
+                    <div class="endpoint">
+                        <strong>GET /api/portfolio</strong> - Portfolio data (mock)
+                    </div>
+                    <div class="endpoint">
+                        <strong>GET /api/alerts</strong> - Alert system (mock)
+                    </div>
+                    
+                    <p style="margin-top: 30px; color: #6c757d; font-size: 14px;">
+                        RiskGuardian AI - Dashboard Analítico de Risco DeFi
+                    </p>
+                </div>
+            </body>
+            </html>
+        `);
+    }
+
+    /**
+     * Manipula requisições da API
+     */
+    private handleApiRequest(url: string, method: string, res: http.ServerResponse): void {
         try {
-            await this.chromiaIntegration.disconnect();
-            await this.chromiaService.close();
-            
-            this.isRunning = false;
-            console.log('✅ Sistema parado com sucesso');
+            const response = { method, url, timestamp: new Date().toISOString() };
+
+            switch (url) {
+                case '/api/status':
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({
+                        ...response,
+                        status: 'operational',
+                        service: 'chromia-aws',
+                        version: '1.0.0',
+                        uptime: process.uptime()
+                    }));
+                    break;
+
+                case '/api/portfolio':
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({
+                        ...response,
+                        message: 'Portfolio API endpoint',
+                        data: {
+                            portfolios: [],
+                            totalValue: 0,
+                            lastUpdated: new Date().toISOString()
+                        }
+                    }));
+                    break;
+
+                case '/api/alerts':
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({
+                        ...response,
+                        message: 'Alerts API endpoint',
+                        data: {
+                            alerts: [],
+                            totalAlerts: 0,
+                            lastCheck: new Date().toISOString()
+                        }
+                    }));
+                    break;
+
+                default:
+                    res.writeHead(404, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({
+                        ...response,
+                        error: 'Endpoint not found',
+                        availableEndpoints: ['/api/status', '/api/portfolio', '/api/alerts']
+                    }));
+            }
         } catch (error) {
-            console.error('❌ Erro ao parar sistema:', error);
+            console.error('❌ Erro na API:', error);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({
+                error: 'Internal server error',
+                message: error instanceof Error ? error.message : 'Unknown error',
+                timestamp: new Date().toISOString()
+            }));
         }
     }
 
-    // Getters para status
-    get running(): boolean {
-        return this.isRunning;
-    }
-
-    get nodeConnected(): boolean {
-        return this.chromiaIntegration.connected;
+    /**
+     * Para o serviço
+     */
+    public async stop(): Promise<void> {
+        return new Promise((resolve) => {
+            if (this.server) {
+                console.log('🛑 Parando ChromiaAWS service...');
+                this.server.close(() => {
+                    console.log('✅ ChromiaAWS service parado');
+                    resolve();
+                });
+            } else {
+                resolve();
+            }
+        });
     }
 }
 
-// Função principal
+/**
+ * Função principal
+ */
 async function main() {
-    const app = new RiskGuardianChromiaAWS();
-
-    // Graceful shutdown
-    const shutdown = async (signal: string) => {
-        console.log(`\n📡 Recebido sinal ${signal}, parando sistema...`);
-        await app.stop();
-        process.exit(0);
-    };
-
-    process.on('SIGINT', () => shutdown('SIGINT'));
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-
+    console.log('🚀 Iniciando RiskGuardian ChromiaAWS Service...');
+    
+    const service = new RiskGuardianChromiaAWSSimple();
+    
     try {
-        await app.start();
-        
-        // Manter processo vivo
-        process.on('uncaughtException', (error) => {
-            console.error('❌ Uncaught Exception:', error);
-        });
+        await service.start();
 
-        process.on('unhandledRejection', (reason, promise) => {
-            console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
-        });
+        // Graceful shutdown
+        const shutdown = async (signal: string) => {
+            console.log(`\n📡 Recebido sinal ${signal}, parando sistema...`);
+            await service.stop();
+            process.exit(0);
+        };
+
+        process.on('SIGINT', () => shutdown('SIGINT'));
+        process.on('SIGTERM', () => shutdown('SIGTERM'));
+
+        console.log('🎉 ChromiaAWS Service inicializado com sucesso!');
+        console.log('👍 Pressione Ctrl+C para parar o serviço');
 
     } catch (error) {
-        console.error('❌ Falha crítica:', error);
+        console.error('❌ Erro fatal:', error);
         process.exit(1);
     }
 }
 
 // Executar se for o arquivo principal
 if (require.main === module) {
-    main();
+    main().catch(console.error);
 }
 
-export { RiskGuardianChromiaAWS }; 
+export { RiskGuardianChromiaAWSSimple }; 

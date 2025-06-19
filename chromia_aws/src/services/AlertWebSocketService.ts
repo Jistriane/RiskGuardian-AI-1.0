@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import { AlertSystemConfig } from '../../config/alert-system.config';
+import { AlertSystemConfig } from '../config/alert-system.config';
 import { ChromiaStorageService } from './ChromiaStorageService';
 
 export class AlertWebSocketService {

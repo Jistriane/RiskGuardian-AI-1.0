@@ -5,34 +5,24 @@
         "lib": ["ES2022"],
         "outDir": "./dist",
         "rootDir": "./src",
-        "strict": true,
+        "strict": false,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
+        "forceConsistentCasingInFileNames": false,
         "resolveJsonModule": true,
-        "declaration": true,
-        "declarationMap": true,
-        "sourceMap": true,
-        "removeComments": false,
-        "noImplicitAny": true,
-        "strictNullChecks": true,
-        "strictFunctionTypes": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
+        "declaration": false,
+        "sourceMap": false,
+        "removeComments": true,
+        "noImplicitAny": false,
+        "strictNullChecks": false,
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
         "types": ["node"],
         "baseUrl": ".",
-        "paths": {
-            "@/*": ["src/*"],
-            "@config/*": ["config/*"]
-        }
+        "allowJs": true
     },
     "include": [
-        "src/**/*",
-        "config/**/*"
+        "src/**/*"
     ],
     "exclude": [
         "node_modules",

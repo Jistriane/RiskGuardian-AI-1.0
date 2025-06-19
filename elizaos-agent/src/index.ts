@@ -68,5 +68,5 @@ app.use((_err: Error, _req: express.Request, res: express.Response, _next: expre
 
 // Start server
 server.listen(config.port, () => {
-  logger.info(`Server running on port ${config.port}`);
+  logger.info(`ElizaOS Agent running on port ${config.port}`);
 });

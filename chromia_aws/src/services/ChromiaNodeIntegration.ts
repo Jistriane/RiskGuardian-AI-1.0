@@ -6,6 +6,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { ChromiaRealService } from './ChromiaRealService';
 import { ChromiaSDK } from './ChromiaSDK';
+import { AlertSystemConfig, defaultConfig } from '../config/alert-system.config';
 
 // Types para integração
 interface ChromiaTransaction {
@@ -25,7 +26,7 @@ interface ChainlinkPriceData {
 }
 
 interface AlertPayload {
-    portfolioId: number;
+    portfolioId: string;
     alertType: string;
     severity: 'low' | 'medium' | 'high' | 'critical';
     message: string;
@@ -39,20 +40,23 @@ export class ChromiaNodeIntegration {
     private chromiaSDK: ChromiaSDK;
     private nodeUrl: string;
     private isConnected: boolean = false;
+    private config: AlertSystemConfig;
 
-    constructor(nodeUrl: string = 'http://chromia-node:7740') {
+    constructor(nodeUrl: string = 'http://chromia-node:7740', config: AlertSystemConfig = defaultConfig) {
         this.nodeUrl = nodeUrl;
+        this.config = config;
+        
         this.chromiaAPI = axios.create({
-            baseURL: `${nodeUrl}/api/v1`,
-            timeout: 30000,
+            baseURL: nodeUrl,
+            timeout: 10000,
             headers: {
                 'Content-Type': 'application/json',
                 'User-Agent': 'RiskGuardian-AWS/1.0'
             }
         });
 
-        this.chromiaService = new ChromiaRealService();
-        this.chromiaSDK = new ChromiaSDK();
+        this.chromiaService = new ChromiaRealService(config);
+        this.chromiaSDK = new ChromiaSDK(config);
         this.setupInterceptors();
     }
 
@@ -124,7 +128,7 @@ export class ChromiaNodeIntegration {
     /**
      * Sincronizar portfolio com blockchain
      */
-    async syncPortfolio(portfolioId: number): Promise<boolean> {
+    async syncPortfolio(portfolioId: string): Promise<boolean> {
         try {
             // 1. Buscar dados do portfolio no PostgreSQL
             const portfolio = await this.chromiaService.getPortfolio(portfolioId);
@@ -139,10 +143,10 @@ export class ChromiaNodeIntegration {
                         operations: [{
                             name: 'update_portfolio',
                             args: [
-                                portfolio.user_address,
+                                portfolio.ownerAddress,
                                 portfolio.name,
-                                portfolio.total_value,
-                                portfolio.risk_score
+                                portfolio.totalValue,
+                                portfolio.riskScore
                             ]
                         }]
                     };
@@ -202,7 +206,7 @@ export class ChromiaNodeIntegration {
     async processAlert(alert: AlertPayload): Promise<string | null> {
         try {
             // 1. Salvar no PostgreSQL
-            const alertId = await this.chromiaService.createAlert(
+            const alertResult = await this.chromiaService.createAlert(
                 alert.portfolioId,
                 alert.alertType,
                 alert.message,
@@ -210,6 +214,10 @@ export class ChromiaNodeIntegration {
                 alert.currentValue,
                 alert.thresholdValue
             );
+
+            if (!alertResult.success) {
+                throw new Error('Falha ao salvar alerta no PostgreSQL');
+            }
 
             // 2. Tentar registrar no blockchain
             if (this.isConnected) {
@@ -236,8 +244,8 @@ export class ChromiaNodeIntegration {
                 }
             }
 
-            console.log(`📊 Alerta ${alertId} processado (PostgreSQL apenas)`);
-            return alertId.toString();
+            console.log(`📊 Alerta processado (PostgreSQL apenas)`);
+            return alertResult.data?.[0]?.id?.toString() || 'saved';
 
         } catch (error) {
             console.error('❌ Erro ao processar alerta:', error);
@@ -248,29 +256,42 @@ export class ChromiaNodeIntegration {
     /**
      * Buscar métricas de risco
      */
-    async getRiskMetrics(portfolioId: number): Promise<any> {
+    async getRiskMetrics(portfolioId: string): Promise<any> {
         try {
-            // Tentar buscar do nó primeiro
+            // 1. Tentar buscar do nó Chromia primeiro
             if (this.isConnected) {
                 try {
-                    const response = await this.chromiaAPI.get(`/portfolios/${portfolioId}/risk`);
+                    const response = await this.chromiaAPI.get(`/risk-metrics/${portfolioId}`);
                     return response.data;
                 } catch (nodeError) {
-                    console.warn('Métricas não disponíveis no nó, usando PostgreSQL...');
+                    console.warn(`Métricas de risco de ${portfolioId} não disponíveis no nó, usando PostgreSQL...`);
                 }
             }
 
-            // Fallback: buscar do PostgreSQL
+            // 2. Fallback: buscar do PostgreSQL
             const metrics = await this.chromiaService.getRiskMetrics(portfolioId);
-            return {
-                portfolioId,
-                metrics,
-                source: 'postgresql',
-                timestamp: new Date().toISOString()
-            };
+            
+            if (metrics) {
+                return {
+                    portfolioId: metrics.portfolioId,
+                    volatility: metrics.volatility,
+                    var95: metrics.var95,
+                    var99: metrics.var99,
+                    sharpeRatio: metrics.sharpeRatio,
+                    maxDrawdown: metrics.maxDrawdown,
+                    correlationScore: metrics.correlationScore,
+                    calculatedAt: metrics.calculatedAt
+                };
+            }
+
+            return null;
 
         } catch (error) {
-            console.error(`Erro ao buscar métricas de risco para portfolio ${portfolioId}:`, error);
+            console.error('❌ Erro ao buscar métricas de risco:', {
+                portfolioId,
+                error: error instanceof Error ? error.message : 'Erro desconhecido',
+                stack: error instanceof Error ? error.stack : undefined
+            });
             return null;
         }
     }

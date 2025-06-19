@@ -7,13 +7,14 @@ import rateLimit from 'express-rate-limit';
 import routes from './routes';
 import { config } from './config/environment';
 import { logger } from './utils/logger';
-import { blockchainService } from './services/blockchain.service';
+import { multiChainBlockchainService } from './services/blockchain.service';
 import { cacheService } from './services/cache.service';
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 3001;
 
 // Rate limiting
 const limiter = rateLimit({
@@ -28,14 +29,28 @@ const limiter = rateLimit({
 });
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+}));
 app.use(cors({
-  origin: config.allowedOrigins,
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true
 }));
-app.use(morgan('combined'));
+app.use(morgan('combined', {
+  stream: {
+    write: (message: string) => logger.info(message.trim())
+  }
+}));
 app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(limiter);
 
 // Health check endpoint
@@ -50,14 +65,32 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.use(config.apiPrefix, routes);
+app.use('/api', routes);
+
+// Rota raiz
+app.get('/', (req, res) => {
+  res.json({
+    name: 'RiskGuardian Multi-Chain API',
+    version: '2.0.0',
+    status: 'running',
+    timestamp: new Date().toISOString(),
+    features: [
+      'Multi-Chain Blockchain Indexing',
+      'Chainlink CCIP Integration',
+      'Redis Caching',
+      'PostgreSQL + Chromia Storage',
+      'Real-time Risk Analysis'
+    ]
+  });
+});
 
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
     error: 'Route not found',
-    message: `Cannot ${req.method} ${req.originalUrl}`
+    path: req.originalUrl,
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -67,61 +100,103 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   
   res.status(err.status || 500).json({
     success: false,
-    error: config.nodeEnv === 'development' ? err.message : 'Internal server error',
-    ...(config.nodeEnv === 'development' && { stack: err.stack })
+    error: process.env.NODE_ENV === 'production' 
+      ? 'Internal Server Error' 
+      : err.message,
+    timestamp: new Date().toISOString(),
   });
 });
 
 // Initialize services
-async function initializeServices() {
+async function initializeServices(): Promise<void> {
   try {
-    logger.info('🔄 Initializing services...');
+    logger.info('🚀 Initializing RiskGuardian Multi-Chain Services...');
+
+    // 1. Connect to Redis
+    logger.info('📋 Connecting to Redis...');
+    await cacheService.connect();
     
-    // Connect to blockchain
-    const blockchainConnected = await blockchainService.connect();
-    if (blockchainConnected) {
-      logger.info('✅ Blockchain service connected');
-    } else {
-      logger.warn('⚠️ Blockchain service not connected');
+    // 2. Connect to multiple blockchains
+    logger.info('🔗 Connecting to multiple blockchains...');
+    const blockchainConnected = await multiChainBlockchainService.connect();
+    
+    if (!blockchainConnected) {
+      logger.warn('⚠️ Some blockchain connections failed, but continuing...');
     }
 
-    // Connect to cache
-    await cacheService.connect();
-    logger.info('✅ Cache service connected');
+    // 3. Verify service health
+    const services = {
+      cache: cacheService.isHealthy(),
+      blockchain: multiChainBlockchainService.isHealthy(),
+    };
+
+    logger.info('📊 Service Health Check:', services);
     
+    const healthyServices = Object.values(services).filter(Boolean).length;
+    const totalServices = Object.keys(services).length;
+    
+    logger.info(`✅ Services initialized: ${healthyServices}/${totalServices} healthy`);
+
   } catch (error) {
-    logger.error('Failed to initialize services:', error);
+    logger.error('❌ Failed to initialize services:', error);
+    throw error;
   }
 }
 
 // Start server
-const server = app.listen(config.port, async () => {
-  logger.info(`🚀 RiskGuardian API running on port ${config.port}`);
-  logger.info(`📊 Environment: ${config.nodeEnv}`);
-  logger.info(`🔗 Blockchain: Sepolia (${config.blockchain.chainId})`);
-  logger.info(`📄 Health check: http://localhost:${config.port}/health`);
-  
-  // Initialize services after server starts
-  await initializeServices();
+async function startServer(): Promise<void> {
+  try {
+    // Initialize services first
+    await initializeServices();
+    
+    // Start HTTP server
+    const server = app.listen(PORT, () => {
+      logger.info(`🌐 RiskGuardian Multi-Chain API running on port ${PORT}`);
+      logger.info(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+      logger.info(`🔗 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+    });
+
+    // Configure signal handlers for graceful shutdown
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    
+    // Handle unhandled errors
+    process.on('unhandledRejection', (reason, promise) => {
+      logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    });
+
+    process.on('uncaughtException', (error) => {
+      logger.error('Uncaught Exception:', error);
+      gracefulShutdown('UNCAUGHT_EXCEPTION');
+    });
+
+  } catch (error) {
+    logger.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+// Start application
+startServer().catch((error) => {
+  logger.error('❌ Startup failed:', error);
+  process.exit(1);
 });
 
 // Graceful shutdown
-const gracefulShutdown = (signal: string) => {
-  logger.info(`${signal} received, shutting down gracefully`);
+async function gracefulShutdown(signal: string): Promise<void> {
+  logger.info(`📴 Received ${signal}. Starting graceful shutdown...`);
   
-  server.close(() => {
-    logger.info('HTTP server closed');
+  try {
+    // Stop services in reverse order
+    await multiChainBlockchainService.disconnect();
+    await cacheService.disconnect();
+    
+    logger.info('✅ Graceful shutdown completed');
     process.exit(0);
-  });
-  
-  // Force shutdown after 30 seconds
-  setTimeout(() => {
-    logger.error('Forced shutdown due to timeout');
+  } catch (error) {
+    logger.error('❌ Error during shutdown:', error);
     process.exit(1);
-  }, 30000);
-};
-
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+  }
+}
 
 export default app;

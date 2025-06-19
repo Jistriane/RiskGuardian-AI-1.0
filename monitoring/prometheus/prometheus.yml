@@ -1,0 +1,142 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'riskguardian-ai'
+    environment: 'production'
+    region: 'local'
+
+rule_files:
+  - "rules/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # 🎯 RiskGuardian Backend API
+  - job_name: 'riskguardian-backend'
+    static_configs:
+      - targets: ['backend:8001']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # 🎯 RiskGuardian Frontend
+  - job_name: 'riskguardian-frontend'
+    static_configs:
+      - targets: ['frontend:3000']
+    metrics_path: '/api/metrics'
+    scrape_interval: 15s
+
+  # 🎯 ElizaOS Agent
+  - job_name: 'elizaos-agent'
+    static_configs:
+      - targets: ['elizaos-agent:3001']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # 🎯 Sistema Base - Node Exporter
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 10s
+
+  # 🎯 Containers - cAdvisor
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 15s
+
+  # 🎯 Redis Metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 15s
+
+  # 🎯 PostgreSQL Metrics
+  - job_name: 'postgresql'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 15s
+
+  # 🎯 Prometheus Self-Monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 10s
+
+  # 🎯 AlertManager
+  - job_name: 'alertmanager'
+    static_configs:
+      - targets: ['alertmanager:9093']
+    scrape_interval: 15s
+
+  # 🎯 Grafana
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # 🎯 Blackbox Exporter - Health Checks
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - http://frontend:3000
+        - http://backend:8001/health
+        - http://elizaos-agent:3001/health
+        - https://api.coingecko.com/api/v3/ping
+        - https://api.binance.com/api/v3/ping
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # 🎯 Blockchain Network Monitoring
+  - job_name: 'blockchain-sepolia'
+    static_configs:
+      - targets: ['backend:8001']
+    metrics_path: '/api/blockchain/metrics'
+    scrape_interval: 30s
+    params:
+      network: ['sepolia']
+
+  # 🎯 Market Data APIs
+  - job_name: 'market-data'
+    static_configs:
+      - targets: ['backend:8001']
+    metrics_path: '/api/market/metrics'
+    scrape_interval: 60s
+
+  # 🎯 Risk Analysis Metrics
+  - job_name: 'risk-analysis'
+    static_configs:
+      - targets: ['backend:8001']
+    metrics_path: '/api/risk/metrics'
+    scrape_interval: 30s
+
+  # 🎯 Security Monitoring
+  - job_name: 'security-metrics'
+    static_configs:
+      - targets: ['backend:8001']
+    metrics_path: '/api/security/metrics'
+    scrape_interval: 10s
+
+  # 🎯 Performance Metrics
+  - job_name: 'performance-metrics'
+    static_configs:
+      - targets: ['backend:8001']
+    metrics_path: '/api/performance/metrics'
+    scrape_interval: 10s
+
+# 📊 External Labels para identificação
+# (movido para o topo para evitar duplicação da seção global) 

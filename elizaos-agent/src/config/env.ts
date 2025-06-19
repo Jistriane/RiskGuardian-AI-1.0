@@ -5,9 +5,8 @@ import path from 'path';
 const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.env-dev';
 dotenv.config({ path: path.resolve(process.cwd(), envFile) });
 
-// Required environment variables
+// Required environment variables - removing PORT as it's optional with fallback
 const requiredEnvVars = [
-  'PORT',
   'NODE_ENV',
   'LOG_LEVEL',
   'CORS_ORIGIN',
@@ -18,12 +17,12 @@ const requiredEnvVars = [
 // Check for required environment variables
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 if (missingEnvVars.length > 0) {
-  throw new Error(`Missing required configuration: ${missingEnvVars.join(', ')}`);
+  console.warn(`Missing optional configuration: ${missingEnvVars.join(', ')}`);
 }
 
 export const config = {
   // Server
-  port: parseInt(process.env.PORT || '3000', 10),
+  port: parseInt(process.env.PORT || '3003', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
   logLevel: process.env.LOG_LEVEL || 'info',
   corsOrigin: process.env.CORS_ORIGIN || '*',

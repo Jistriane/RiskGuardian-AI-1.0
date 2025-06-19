@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   frontend:
     build:
@@ -13,7 +15,7 @@ services:
       - NEXT_PUBLIC_CHAIN_ID=31337
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - frontend_node_modules:/app/node_modules
     depends_on:
       - backend
     networks:
@@ -48,7 +50,7 @@ services:
       - ALERT_SYSTEM_ADDRESS=0x532Dedf68DA445ed37cFaf74C4e3245101190ad1
     volumes:
       - ./backend:/app
-      - /app/node_modules
+      - backend_node_modules:/app/node_modules
     depends_on:
       - redis
       - postgres
@@ -91,6 +93,9 @@ services:
       - CACHE_CHECK_PERIOD=1
       - OPENAI_MODEL=gpt-4-turbo-preview
       - ANTHROPIC_MODEL=claude-3-opus-20240229
+    volumes:
+      - ./elizaos-agent:/app
+      - elizaos_node_modules:/app/node_modules
     depends_on:
       - backend
       - chromia-node
@@ -101,23 +106,23 @@ services:
 
   postgres:
     image: postgres:15-alpine
+    container_name: riskguardian-postgres
     environment:
-      - POSTGRES_DB=chromia
-      - POSTGRES_USER=chromia
-      - POSTGRES_PASSWORD=chromia_password
+      POSTGRES_USER: ${POSTGRES_USER:-riskguardian}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-riskguardian123}
+      POSTGRES_DB: ${POSTGRES_DB:-riskguardian}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - riskguardian-network
-    restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U chromia"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-riskguardian}"]
       interval: 10s
       timeout: 5s
       retries: 5
-      
+
   chromia-node:
     build:
       context: ./chromia
@@ -135,7 +140,7 @@ services:
       - DEBUG=true
       - LOG_LEVEL=DEBUG
     volumes:
-      - ./chromia/config:/app/config
+      - ./chromia/config:/app/config:ro
       - ./chromia/src:/app/src:ro
       - chromia_data:/app/data
       - chromia_logs:/app/logs
@@ -154,7 +159,8 @@ services:
 
   redis:
     image: redis:7-alpine
-    command: redis-server /usr/local/etc/redis/redis.conf
+    container_name: riskguardian-redis
+    command: redis-server --appendonly yes
     ports:
       - "6379:6379"
     volumes:
@@ -162,25 +168,20 @@ services:
       - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
     networks:
       - riskguardian-network
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
-      retries: 3
-      start_period: 10s
+      retries: 5
 
-  # ✅ ANVIL FUNCIONANDO - SÓ HEALTH CHECK CORRIGIDO
   anvil:
     image: ghcr.io/foundry-rs/foundry:latest
-    # ✅ ENTRYPOINT PERFEITO! (funcionou 100%)
     entrypoint: ["anvil", "--host", "0.0.0.0", "--port", "8545", "--chain-id", "31337", "--accounts", "10", "--balance", "10000", "--gas-limit", "30000000", "--block-time", "2"]
     ports:
       - "8545:8545"
     networks:
       - riskguardian-network
     restart: unless-stopped
-    # ✅ HEALTH CHECK SIMPLES (sem ferramentas externas)
     healthcheck:
       test: ["CMD-SHELL", "ps aux | grep '[a]nvil' | grep -v grep || exit 1"]
       interval: 15s
@@ -206,26 +207,6 @@ services:
     profiles:
       - tools
 
-  contracts:
-    build:
-      context: ./contracts
-      dockerfile: Dockerfile
-    environment:
-      - ETHEREUM_RPC_URL=http://anvil:8545
-      - PRIVATE_KEY=${PRIVATE_KEY:-0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80}
-      - ETHERSCAN_API_KEY=${ETHERSCAN_API_KEY}
-    volumes:
-      - ./contracts:/app
-      - contracts_cache:/app/cache
-      - contracts_out:/app/out
-    depends_on:
-      anvil:
-        condition: service_healthy
-    networks:
-      - riskguardian-network
-    # profiles:
-    #   - tools
-        
 volumes:
   postgres_data:
     driver: local
@@ -237,11 +218,16 @@ volumes:
     driver: local
   pgadmin_data:
     driver: local
-  contracts_cache:
+  frontend_node_modules:
     driver: local
-  contracts_out:
+  backend_node_modules:
+    driver: local
+  elizaos_node_modules:
     driver: local
 
 networks:
   riskguardian-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

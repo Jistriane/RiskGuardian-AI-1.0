@@ -158,4 +158,70 @@ export class PortfolioController {
       });
     }
   }
+
+  async getMultiChainPortfolio(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const { address } = req.params;
+      
+      if (!address) {
+        res.status(400).json({
+          success: false,
+          error: 'Address parameter is required'
+        });
+        return;
+      }
+
+      logger.info(`🌐 Getting multi-chain portfolio for address: ${address}`);
+      
+      // Mock data for multi-chain portfolio
+      const multiChainData = {
+        address,
+        totalValue: '15000.00',
+        riskScore: 4200,
+        chains: {
+          11155111: { // Sepolia
+            balance: '2500.00',
+            riskScore: 4000,
+            portfolioValue: '2500.00',
+            assets: 3,
+            lastUpdated: new Date()
+          },
+          80001: { // Mumbai
+            balance: '3000.00',
+            riskScore: 4200,
+            portfolioValue: '3000.00',
+            assets: 2,
+            lastUpdated: new Date()
+          },
+          43113: { // Fuji
+            balance: '4500.00',
+            riskScore: 4100,
+            portfolioValue: '4500.00',
+            assets: 4,
+            lastUpdated: new Date()
+          },
+          97: { // BSC Testnet
+            balance: '5000.00',
+            riskScore: 4500,
+            portfolioValue: '5000.00',
+            assets: 5,
+            lastUpdated: new Date()
+          }
+        },
+        lastUpdated: new Date()
+      };
+
+      res.json({
+        success: true,
+        data: multiChainData
+      });
+      
+    } catch (error) {
+      logger.error('Error in getMultiChainPortfolio:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get multi-chain portfolio'
+      });
+    }
+  }
 }

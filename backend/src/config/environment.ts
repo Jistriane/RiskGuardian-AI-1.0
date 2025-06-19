@@ -4,7 +4,7 @@ dotenv.config();
 export const config = {
   // Server
   nodeEnv: process.env.NODE_ENV || 'development',
-  port: parseInt(process.env.PORT || '8001'),
+  port: parseInt(process.env.PORT || '3001'),
   apiPrefix: process.env.API_PREFIX || '/api',
   
   // Database
@@ -35,7 +35,7 @@ export const config = {
   rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
   
   // CORS
-  allowedOrigins: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:8001'],
+      allowedOrigins: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:3001'],
   
   // Logging
   logLevel: process.env.LOG_LEVEL || 'info',

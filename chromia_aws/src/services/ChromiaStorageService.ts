@@ -1,4 +1,4 @@
-import { AlertSystemConfig } from '../../config/alert-system.config';
+import { AlertSystemConfig } from '../config/alert-system.config';
 import { ChromiaRealService } from './ChromiaRealService';
 
 export interface Alert {

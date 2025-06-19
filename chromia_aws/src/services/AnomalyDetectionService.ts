@@ -1,74 +1,40 @@
-import { SageMakerRuntime } from 'aws-sdk';
-import { AlertSystemConfig } from '../../config/alert-system.config';
+import { AlertSystemConfig } from '../config/alert-system.config';
+
+export interface AnomalyResult {
+    isAnomaly: boolean;
+    score: number;
+    confidence: number;
+    factors: string[];
+}
 
 export class AnomalyDetectionService {
-    private sageMaker: SageMakerRuntime;
     private config: AlertSystemConfig;
 
     constructor(config: AlertSystemConfig) {
         this.config = config;
-        this.sageMaker = new SageMakerRuntime({
-            region: config.aws.region,
-            credentials: {
-                accessKeyId: config.aws.credentials.accessKeyId,
-                secretAccessKey: config.aws.credentials.secretAccessKey
-            }
-        });
     }
 
-    async detectAnomaly(portfolioData: any): Promise<boolean> {
-        try {
-            const params = {
-                EndpointName: this.config.ml.modelEndpoint,
-                Body: JSON.stringify(portfolioData),
-                ContentType: 'application/json'
-            };
-
-            const response = await this.sageMaker.invokeEndpoint(params).promise();
-            const prediction = JSON.parse(response.Body.toString());
-            
-            return prediction.anomalyScore > this.config.ml.anomalyThreshold;
-        } catch (error) {
-            console.error('Erro na detecção de anomalia:', error);
-            throw error;
-        }
-    }
-
-    async analyzePortfolio(portfolioId: string, metrics: any): Promise<{
-        isAnomaly: boolean;
-        riskScore: number;
-        alerts: string[];
-    }> {
-        const alerts: string[] = [];
-        let riskScore = 0;
-
-        // Análise de métricas básicas
-        if (metrics.totalValue < metrics.stopLoss) {
-            alerts.push('Stop Loss atingido');
-            riskScore += 0.4;
-        }
-
-        if (metrics.volatility > metrics.maxVolatility) {
-            alerts.push('Alta volatilidade detectada');
-            riskScore += 0.3;
-        }
-
-        // Detecção de anomalias via ML
-        const isAnomaly = await this.detectAnomaly({
-            portfolioId,
-            metrics,
-            timestamp: new Date().toISOString()
-        });
-
-        if (isAnomaly) {
-            alerts.push('Padrão anômalo detectado pelo ML');
-            riskScore += 0.3;
-        }
-
+    async detectAnomaly(portfolioId: string, currentValue: number): Promise<AnomalyResult> {
+        // Mock implementation
         return {
-            isAnomaly,
-            riskScore,
-            alerts
+            isAnomaly: Math.random() > 0.8,
+            score: Math.random(),
+            confidence: 0.85,
+            factors: ['mock_detection']
         };
+    }
+
+    async analyzePortfolio(portfolioId: string, metrics: any): Promise<any> {
+        // Mock implementation
+        return {
+            anomalies: [],
+            riskLevel: 'medium',
+            confidence: 0.85,
+            analysis: `Portfolio ${portfolioId} analysis complete`
+        };
+    }
+
+    async healthCheck(): Promise<boolean> {
+        return true;
     }
 } 

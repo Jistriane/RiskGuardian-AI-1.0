@@ -1,0 +1,210 @@
+groups:
+  # 🚨 Alertas de Sistema
+  - name: system
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage is above 80%"
+          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}"
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory usage is above 85%"
+          description: "Memory usage is {{ $value }}% on {{ $labels.instance }}"
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"}) * 100 < 15
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disk space is low"
+          description: "Disk space is {{ $value }}% on {{ $labels.instance }}"
+
+  # 🚨 Alertas de Aplicação
+  - name: application
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} on {{ $labels.instance }} has been down for more than 1 minute"
+
+      - alert: HighResponseTime
+        expr: http_request_duration_seconds{quantile="0.95"} > 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response time on {{ $labels.job }}"
+          description: "95th percentile response time is {{ $value }}s on {{ $labels.instance }}"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 5
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate on {{ $labels.job }}"
+          description: "Error rate is {{ $value }}% on {{ $labels.instance }}"
+
+  # 🚨 Alertas de Blockchain
+  - name: blockchain
+    rules:
+      - alert: BlockchainConnectionFailed
+        expr: blockchain_connection_status == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Blockchain connection failed"
+          description: "Connection to {{ $labels.network }} blockchain has failed"
+
+      - alert: HighGasPrices
+        expr: blockchain_gas_price_gwei > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High gas prices detected"
+          description: "Gas price is {{ $value }} Gwei on {{ $labels.network }}"
+
+      - alert: ContractInteractionFailed
+        expr: increase(blockchain_contract_errors_total[5m]) > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Contract interaction failures"
+          description: "{{ $value }} contract interactions failed in the last 5 minutes"
+
+  # 🚨 Alertas de Market Data
+  - name: market_data
+    rules:
+      - alert: MarketDataStale
+        expr: time() - market_data_last_update > 600
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Market data is stale"
+          description: "Market data hasn't been updated for more than 10 minutes"
+
+      - alert: MarketAPIDown
+        expr: market_api_status == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Market API is down"
+          description: "{{ $labels.api }} market API is not responding"
+
+      - alert: ExtremeVolatility
+        expr: market_volatility_24h > 0.3
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Extreme market volatility detected"
+          description: "24h volatility is {{ $value | humanizePercentage }} for {{ $labels.symbol }}"
+
+  # 🚨 Alertas de Segurança
+  - name: security
+    rules:
+      - alert: HighAuthFailures
+        expr: increase(auth_failures_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High authentication failures"
+          description: "{{ $value }} authentication failures in the last 5 minutes"
+
+      - alert: RateLimitExceeded
+        expr: increase(rate_limit_exceeded_total[1m]) > 0
+        for: 0s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rate limit exceeded"
+          description: "Rate limit exceeded from {{ $labels.ip }}"
+
+      - alert: SuspiciousActivity
+        expr: increase(security_suspicious_requests_total[5m]) > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Suspicious activity detected"
+          description: "{{ $value }} suspicious requests detected in the last 5 minutes"
+
+  # 🚨 Alertas de Performance
+  - name: performance
+    rules:
+      - alert: HighDatabaseConnections
+        expr: postgres_stat_activity_count > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High database connections"
+          description: "Database has {{ $value }} active connections"
+
+      - alert: SlowDatabaseQueries
+        expr: postgres_stat_activity_max_tx_duration > 30
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow database queries detected"
+          description: "Longest running query is {{ $value }}s"
+
+      - alert: HighCacheEvictionRate
+        expr: rate(redis_evicted_keys_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High cache eviction rate"
+          description: "Redis is evicting {{ $value }} keys per second"
+
+  # 🚨 Alertas de Container
+  - name: containers
+    rules:
+      - alert: ContainerHighMemory
+        expr: (container_memory_usage_bytes / container_spec_memory_limit_bytes) * 100 > 90
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container memory usage is high"
+          description: "Container {{ $labels.name }} memory usage is {{ $value }}%"
+
+      - alert: ContainerHighCPU
+        expr: (rate(container_cpu_usage_seconds_total[5m]) * 100) > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container CPU usage is high"
+          description: "Container {{ $labels.name }} CPU usage is {{ $value }}%"
+
+      - alert: ContainerRestarted
+        expr: increase(container_start_time_seconds[1h]) > 5
+        for: 0s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container restarted multiple times"
+          description: "Container {{ $labels.name }} has restarted {{ $value }} times in the last hour" 

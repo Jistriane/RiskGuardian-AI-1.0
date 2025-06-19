@@ -1,4 +1,4 @@
-import { AlertSystemConfig } from '../../config/alert-system.config';
+import { AlertSystemConfig } from '../config/alert-system.config';
 import { AnomalyDetectionService } from './AnomalyDetectionService';
 import { AlertWebSocketService } from './AlertWebSocketService';
 import { ChromiaStorageService } from './ChromiaStorageService';

@@ -1,4 +1,4 @@
-FROM node:20.11.1-alpine3.19-slim@sha256:c0a3badbd8a0a788de0c1cf4876d0b5da429516739c26c9845be0db3f3f2c2a4
+FROM node:20-alpine
 
 # Adicionar informações de segurança
 LABEL maintainer="RiskGuardian Team"

@@ -1,0 +1,14 @@
+{
+  "network": "unknown",
+  "chainId": 31337,
+  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "timestamp": "2025-06-18T10:41:44.124Z",
+  "contracts": {
+    "RiskGuardianMaster": "0x30175D5BB0c97F4af00707950707D4b0Da4E7DdF",
+    "StopLossHedge": "0x0D175144FaF2a7045820b1242353aaC7240cD748",
+    "RebalanceHedge": "0xcdddD0599117455BF24884082725aE2EaE58e401",
+    "VolatilityHedge": "0xdC3a51B096403aD9Fd080afdAA907643029423A6"
+  },
+  "automationConfigured": true,
+  "monitoringEnabled": true
+}
