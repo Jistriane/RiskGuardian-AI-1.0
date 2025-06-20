@@ -1,41 +1,39 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    experimental: {
-        turbo: {
-            rules: {
-                '*.svg': {
-                    loaders: ['@svgr/webpack'],
-                    as: '*.js',
-                },
-            },
-        },
+    output: 'export',
+    trailingSlash: true,
+    basePath: process.env.GITHUB_PAGES === 'true' ? '/RiskGuardian-AI-1.0' : '',
+    assetPrefix: process.env.GITHUB_PAGES === 'true' ? '/RiskGuardian-AI-1.0/' : '',
+    images: {
+        unoptimized: true,
     },
-    webpack: (config, { dev }) => {
-        config.resolve.fallback = {
-            fs: false,
-            net: false,
-            tls: false,
-            crypto: false,
-        };
-
-        // Otimização para Web3
-        config.externals.push('pino-pretty', 'lokijs', 'encoding');
-
-        // Permitir eval em desenvolvimento para Web3
-        if (dev) {
-            config.devtool = 'eval-source-map';
+    // Disable static optimization issues for GitHub Pages
+    experimental: {
+        esmExternals: false,
+    },
+    webpack: (config, { isServer }) => {
+        // Fixes npm packages that depend on `fs` module
+        if (!isServer) {
+            config.resolve.fallback = {
+                fs: false,
+                net: false,
+                tls: false,
+            }
         }
 
-        return config;
+        // Disable minification for GitHub Pages compatibility
+        if (process.env.GITHUB_PAGES === 'true') {
+            config.optimization.minimize = false
+        }
+
+        return config
     },
-    images: {
-        domains: [
-            'localhost',
-            'assets.coingecko.com',
-            'raw.githubusercontent.com',
-            'coin-images.coingecko.com',
-        ],
-        unoptimized: false,
+    // Disable type checking during build for faster deployment
+    typescript: {
+        ignoreBuildErrors: process.env.SKIP_TYPE_CHECK === 'true',
+    },
+    eslint: {
+        ignoreDuringBuilds: process.env.SKIP_TYPE_CHECK === 'true',
     },
     env: {
         CUSTOM_KEY: 'riskguardian-frontend',
