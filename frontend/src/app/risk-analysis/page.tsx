@@ -1,360 +1,350 @@
 'use client';
 
-import { useState } from 'react';
-import { WalletButton } from '@/components/wallet/wallet-button';
-import { useRealTimeData } from '@/hooks/useRealTimeData';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Shield, AlertTriangle, TrendingUp, Activity, BarChart3, RefreshCw } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
-
-function getRiskColor(score: number): string {
-  if (score < 30) return 'text-green-600';
-  if (score < 60) return 'text-yellow-600';
-  return 'text-red-600';
-}
-
-function getRiskLevel(score: number, t: any): string {
-  if (score < 30) return t('lowRisk');
-  if (score < 60) return t('mediumRisk');
-  return t('highRisk');
-}
-
-function getRiskBgColor(score: number): string {
-  if (score < 30) return 'from-green-900/50 to-emerald-900/50 border-green-800/50';
-  if (score < 60) return 'from-yellow-900/50 to-orange-900/50 border-yellow-800/50';
-  return 'from-red-900/50 to-pink-900/50 border-red-800/50';
-}
+import { useRealTimeData } from '@/hooks/useRealTimeData';
+import { formatCurrency, formatPercentage } from '@/lib/utils';
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  AlertTriangle, 
+  Shield, 
+  RefreshCw,
+  Clock,
+  BarChart3,
+  Activity
+} from 'lucide-react';
 
 export default function RiskAnalysisPage() {
-  const { portfolio, riskMetrics, isConnected, address, refreshData } = useRealTimeData();
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [selectedTimeframe, setSelectedTimeframe] = useState('24h');
   const { t } = useTranslation();
+  const { data, loading, error, lastUpdate, refresh, isRealTime } = useRealTimeData(5000); // Atualiza a cada 5 segundos
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    if (refreshData) {
-      await refreshData();
-    }
-    setTimeout(() => setIsRefreshing(false), 1000);
+  if (loading && !data) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span className="ml-3 text-lg">{t('loading')}</span>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+          <p className="text-red-500 text-lg">{error}</p>
+          <Button onClick={refresh} variant="outline">
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Tentar Novamente
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!data) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-muted-foreground">Nenhum dado disponível</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const riskMetrics = data.riskMetrics;
+  const portfolio = data.portfolio;
+
+  // Calcular nível de risco baseado na volatilidade
+  const getRiskLevel = (volatility: number) => {
+    if (volatility < 20) return { level: 'Baixo', color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-200' };
+    if (volatility < 50) return { level: 'Médio', color: 'text-yellow-600', bgColor: 'bg-yellow-50', borderColor: 'border-yellow-200' };
+    return { level: 'Alto', color: 'text-red-600', bgColor: 'bg-red-50', borderColor: 'border-red-200' };
   };
 
-  if (!riskMetrics) {
-    return (
-      <div className="min-h-screen bg-background text-foreground">
-        <header className="sticky top-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur">
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent">
-              🛡️ RiskGuardian AI
-            </h1>
-            <div className="w-64">
-              <WalletButton />
-            </div>
-          </div>
-        </header>
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-500 mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Carregando análise de risco...</p>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  if (!isConnected) {
-    return (
-      <div className="min-h-screen bg-background text-foreground">
-        <header className="sticky top-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur">
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent">
-              🛡️ RiskGuardian AI
-            </h1>
-            <div className="w-64">
-              <WalletButton />
-            </div>
-          </div>
-        </header>
-
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-            <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mb-6">
-              <Shield className="h-12 w-12 text-gray-400" />
-            </div>
-            <h2 className="text-3xl font-bold mb-4">{t('riskAnalysisTitle')} {t('disconnected')}</h2>
-            <p className="text-muted-foreground mb-8 max-w-md">
-              {t('connectToViewPortfolio')}
-            </p>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  const riskFactors = [
-    {
-      name: t('volatility'),
-      score: riskMetrics?.volatility || 45,
-      description: 'Oscilação dos preços dos ativos',
-      icon: '📈'
-    },
-    {
-      name: t('liquidity'),
-      score: riskMetrics?.liquidity || 75,
-      description: 'Facilidade de conversão em dinheiro',
-      icon: '💧'
-    },
-    {
-      name: t('concentration'),
-      score: 100 - (riskMetrics?.diversification || 0),
-      description: 'Distribuição entre diferentes ativos',
-      icon: '🎯'
-    },
-    {
-      name: t('smartContract'),
-      score: riskMetrics?.smartContractRisk || 25,
-      description: 'Risco de falhas em contratos',
-      icon: '📋'
-    }
-  ];
+  const riskLevel = getRiskLevel(riskMetrics.volatility);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <DashboardLayout>
+      <div className="space-y-6">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t('riskAnalysisTitle')}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            {t('riskAnalysisSubtitle')}
-          </p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">Análise de Risco</h1>
+            <div className="flex items-center gap-2 mt-2">
+              {isRealTime && (
+                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
+                  Tempo Real
+                </Badge>
+              )}
+              {lastUpdate && (
+                <Badge variant="outline">
+                  <Clock className="w-3 h-3 mr-1" />
+                  {lastUpdate.toLocaleTimeString()}
+                </Badge>
+              )}
+            </div>
+          </div>
+          <Button onClick={refresh} variant="outline" disabled={loading}>
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            {t('refresh')}
+          </Button>
         </div>
 
-        {/* Risk Score Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">{t('riskScore')} Geral</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-600">3.2</div>
-              <p className="text-sm text-green-600">{t('lowRisk')}</p>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
-                <div className="bg-green-500 h-2 rounded-full" style={{width: '32%'}}></div>
+        {/* Risk Level Overview */}
+        <Card className={`p-6 ${riskLevel.bgColor} ${riskLevel.borderColor}`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${riskLevel.bgColor}`}>
+                {riskLevel.level === 'Baixo' ? (
+                  <Shield className={`h-6 w-6 ${riskLevel.color}`} />
+                ) : riskLevel.level === 'Médio' ? (
+                  <AlertTriangle className={`h-6 w-6 ${riskLevel.color}`} />
+                ) : (
+                  <AlertTriangle className={`h-6 w-6 ${riskLevel.color}`} />
+                )}
               </div>
-            </CardContent>
+              <div>
+                <h2 className="text-xl font-semibold">Nível de Risco</h2>
+                <p className={`text-2xl font-bold ${riskLevel.color}`}>
+                  {riskLevel.level}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Baseado na volatilidade atual de {formatPercentage(riskMetrics.volatility)}
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-muted-foreground">Valor do Portfolio</p>
+              <p className="text-2xl font-bold">{formatCurrency(portfolio.totalValue)}</p>
+            </div>
+          </div>
+        </Card>
+
+        {/* Risk Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Volatilidade
+                </p>
+                <p className="text-2xl font-bold">
+                  {formatPercentage(riskMetrics.volatility)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Anualizada
+                </p>
+              </div>
+              <Activity className="h-8 w-8 text-muted-foreground" />
+            </div>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">VaR 95%</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">-{riskMetrics?.var95 || 2.1}%</div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{t('twentyFourHours')}</p>
-              <div className="text-xs text-gray-500 mt-1">
-                Max perda esperada
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  VaR (95%)
+                </p>
+                <p className="text-2xl font-bold text-red-600">
+                  {formatCurrency(riskMetrics.var95)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Máxima perda esperada
+                </p>
               </div>
-            </CardContent>
+              <TrendingDown className="h-8 w-8 text-red-600" />
+            </div>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">{t('volatility')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-yellow-600">{riskMetrics?.volatility || 18.5}%</div>
-              <p className="text-sm text-yellow-600">Moderada</p>
-              <div className="text-xs text-gray-500 mt-1">
-                Últimos 30 dias
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Sharpe Ratio
+                </p>
+                <p className={`text-2xl font-bold ${
+                  riskMetrics.sharpeRatio > 1 ? 'text-green-600' : 'text-yellow-600'
+                }`}>
+                  {riskMetrics.sharpeRatio.toFixed(2)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Retorno/Risco
+                </p>
               </div>
-            </CardContent>
+              <BarChart3 className="h-8 w-8 text-muted-foreground" />
+            </div>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Sharpe Ratio</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-600">{riskMetrics?.sharpeRatio || 1.45}</div>
-              <p className="text-sm text-blue-600">Bom</p>
-              <div className="text-xs text-gray-500 mt-1">
-                Retorno/Risco
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Beta
+                </p>
+                <p className="text-2xl font-bold">
+                  {riskMetrics.beta.toFixed(2)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Correlação com mercado
+                </p>
               </div>
-            </CardContent>
+              <TrendingUp className="h-8 w-8 text-muted-foreground" />
+            </div>
           </Card>
         </div>
 
         {/* Risk Breakdown */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('riskDistribution')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  { asset: 'ETH', risk: t('mediumRisk'), score: 4.2, allocation: '40%', color: 'bg-yellow-500' },
-                  { asset: 'BTC', risk: t('lowRisk'), score: 2.8, allocation: '30%', color: 'bg-green-500' },
-                  { asset: 'LINK', risk: t('highRisk'), score: 6.1, allocation: '15%', color: 'bg-red-500' },
-                  { asset: 'USDC', risk: 'Muito Baixo', score: 1.0, allocation: '10%', color: 'bg-blue-500' },
-                  { asset: 'UNI', risk: t('highRisk'), score: 7.2, allocation: '5%', color: 'bg-red-500' }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Exposição por Ativo</h3>
+            <div className="space-y-4">
+              {portfolio.assets.map((asset) => {
+                const allocation = (asset.value / portfolio.totalValue) * 100;
+                const risk = allocation > 50 ? 'Alto' : allocation > 25 ? 'Médio' : 'Baixo';
+                const riskColor = risk === 'Alto' ? 'text-red-600' : 
+                                 risk === 'Médio' ? 'text-yellow-600' : 'text-green-600';
+                
+                return (
+                  <div key={asset.symbol} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${item.color}`}></div>
+                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-semibold text-primary">
+                          {asset.symbol.charAt(0)}
+                        </span>
+                      </div>
                       <div>
-                        <div className="font-medium">{item.asset}</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">{item.allocation} do {t('portfolio')}</div>
+                        <p className="font-medium">{asset.symbol}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {formatCurrency(asset.value)}
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-semibold">{item.score}/10</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">{item.risk}</div>
+                      <p className="font-semibold">{formatPercentage(allocation)}</p>
+                      <p className={`text-sm ${riskColor}`}>
+                        Risco {risk}
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
+                );
+              })}
+            </div>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('assetCorrelation')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-5 gap-2 text-sm">
-                  <div></div>
-                  <div className="text-center font-medium">ETH</div>
-                  <div className="text-center font-medium">BTC</div>
-                  <div className="text-center font-medium">LINK</div>
-                  <div className="text-center font-medium">UNI</div>
-                </div>
-                {[
-                  { asset: 'ETH', values: [1.0, 0.75, 0.82, 0.68] },
-                  { asset: 'BTC', values: [0.75, 1.0, 0.65, 0.58] },
-                  { asset: 'LINK', values: [0.82, 0.65, 1.0, 0.72] },
-                  { asset: 'UNI', values: [0.68, 0.58, 0.72, 1.0] }
-                ].map((row, i) => (
-                  <div key={i} className="grid grid-cols-5 gap-2 text-sm">
-                    <div className="font-medium">{row.asset}</div>
-                    {row.values.map((val, j) => (
-                      <div key={j} className={`text-center p-2 rounded ${val > 0.7 ? 'bg-red-100 text-red-800' : val > 0.5 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
-                        {val.toFixed(2)}
-                      </div>
-                    ))}
-                  </div>
-                ))}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Métricas de Performance</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                <span className="font-medium">Max Drawdown</span>
+                <span className="text-red-600 font-semibold">
+                  {formatPercentage(riskMetrics.maxDrawdown)}
+                </span>
               </div>
-            </CardContent>
+              
+              <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                <span className="font-medium">Mudança 24h</span>
+                <span className={`font-semibold ${
+                  portfolio.totalChange24h >= 0 ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {portfolio.totalChange24h >= 0 ? '+' : ''}{formatCurrency(portfolio.totalChange24h)}
+                </span>
+              </div>
+              
+              <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                <span className="font-medium">Performance %</span>
+                <span className={`font-semibold ${
+                  portfolio.totalChange24h >= 0 ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {formatPercentage((portfolio.totalChange24h / portfolio.totalValue) * 100)}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                <span className="font-medium">Diversificação</span>
+                <span className="font-semibold">
+                  {portfolio.assets.length} ativos
+                </span>
+              </div>
+            </div>
           </Card>
         </div>
-
-        {/* Risk Factors Analysis */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>{t('riskFactors')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {riskFactors.map((factor, index) => (
-                <div key={index} className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">{factor.icon}</span>
-                    <div>
-                      <h3 className="font-semibold">{factor.name}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{factor.description}</p>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-2xl font-bold">{factor.score}/100</span>
-                      <span className={`text-sm font-medium ${getRiskColor(factor.score)}`}>
-                        {getRiskLevel(factor.score, t)}
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div 
-                        className={`h-2 rounded-full ${factor.score < 30 ? 'bg-green-500' : factor.score < 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                        style={{width: `${factor.score}%`}}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Risk Recommendations */}
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('recommendations')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                {
-                  type: 'warning',
-                  title: 'Alta Concentração em ETH',
-                  description: 'Considere diversificar reduzindo a exposição em ETH de 40% para 25-30%',
-                  action: 'Rebalancear portfólio'
-                },
-                {
-                  type: 'info',
-                  title: 'Correlação entre LINK e ETH',
-                  description: 'Assets altamente correlacionados (0.82) podem aumentar o risco em quedas de mercado',
-                  action: 'Adicionar ativos descorrelacionados'
-                },
-                {
-                  type: 'success',
-                  title: 'Boa Exposição em Stablecoins',
-                  description: 'USDC oferece boa proteção contra volatilidade do mercado',
-                  action: 'Manter alocação atual'
-                }
-              ].map((rec, index) => (
-                <div key={index} className={`p-4 rounded-lg border-l-4 ${
-                  rec.type === 'warning' ? 'bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20' :
-                  rec.type === 'info' ? 'bg-blue-50 border-blue-400 dark:bg-blue-900/20' :
-                  'bg-green-50 border-green-400 dark:bg-green-900/20'
-                }`}>
-                  <div className="flex items-start gap-3">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      rec.type === 'warning' ? 'bg-yellow-100 text-yellow-600' :
-                      rec.type === 'info' ? 'bg-blue-100 text-blue-600' :
-                      'bg-green-100 text-green-600'
-                    }`}>
-                      {rec.type === 'warning' ? '⚠️' : rec.type === 'info' ? 'ℹ️' : '✅'}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold">{rec.title}</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{rec.description}</p>
-                      <p className="text-sm font-medium mt-2 text-blue-600 dark:text-blue-400">{rec.action}</p>
-                    </div>
-                  </div>
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Recomendações de Risco</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {riskMetrics.volatility > 50 && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle className="h-5 w-5 text-red-600" />
+                  <span className="font-medium text-red-800">Alta Volatilidade</span>
                 </div>
-              ))}
-            </div>
-          </CardContent>
+                <p className="text-sm text-red-700">
+                  Considere diversificar mais seu portfolio para reduzir a volatilidade.
+                </p>
+              </div>
+            )}
+            
+            {riskMetrics.sharpeRatio < 1 && (
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                  <span className="font-medium text-yellow-800">Baixo Sharpe Ratio</span>
+                </div>
+                <p className="text-sm text-yellow-700">
+                  O retorno ajustado ao risco pode ser melhorado.
+                </p>
+              </div>
+            )}
+            
+            {portfolio.assets.length < 3 && (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Shield className="h-5 w-5 text-blue-600" />
+                  <span className="font-medium text-blue-800">Diversificação</span>
+                </div>
+                <p className="text-sm text-blue-700">
+                  Adicione mais ativos para melhor diversificação de risco.
+                </p>
+              </div>
+            )}
+            
+            {riskMetrics.volatility < 30 && riskMetrics.sharpeRatio > 1.5 && (
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Shield className="h-5 w-5 text-green-600" />
+                  <span className="font-medium text-green-800">Boa Performance</span>
+                </div>
+                <p className="text-sm text-green-700">
+                  Seu portfolio está bem balanceado em termos de risco-retorno.
+                </p>
+              </div>
+            )}
+          </div>
         </Card>
 
-        {/* Refresh Button */}
-        <div className="flex justify-center">
-          <Button 
-            onClick={handleRefresh} 
-            disabled={isRefreshing}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            {isRefreshing ? t('loading') : t('refresh')}
-          </Button>
-        </div>
+        {/* Real-time Data Indicator */}
+        {isRealTime && (
+          <Card className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+              <p className="text-sm text-green-800">
+                Análise de risco em tempo real - Atualizando a cada 5 segundos
+              </p>
+              <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
+                AO VIVO
+              </Badge>
+            </div>
+          </Card>
+        )}
       </div>
-    </div>
+    </DashboardLayout>
   );
 } 

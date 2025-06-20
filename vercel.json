@@ -1,0 +1,29 @@
+{
+    "version": 2,
+    "name": "riskguardian-ai",
+    "builds": [{
+        "src": "frontend/package.json",
+        "use": "@vercel/next",
+        "config": {
+            "projectSettings": {
+                "framework": "nextjs"
+            }
+        }
+    }],
+    "routes": [{
+        "src": "/(.*)",
+        "dest": "frontend/$1"
+    }],
+    "buildCommand": "cd frontend && npm run build",
+    "devCommand": "cd frontend && npm run dev",
+    "installCommand": "cd frontend && npm install",
+    "outputDirectory": "frontend/.next",
+    "framework": "nextjs",
+    "regions": ["gru1"],
+    "env": {
+        "NODE_ENV": "production"
+    },
+    "github": {
+        "silent": true
+    }
+}

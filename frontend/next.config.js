@@ -1,11 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: 'export',
     trailingSlash: true,
     basePath: process.env.GITHUB_PAGES === 'true' ? '/RiskGuardian-AI-1.0' : '',
     assetPrefix: process.env.GITHUB_PAGES === 'true' ? '/RiskGuardian-AI-1.0/' : '',
     images: {
-        unoptimized: true,
+        unoptimized: false,
     },
     experimental: {
         esmExternals: false,
@@ -46,10 +45,10 @@ const nextConfig = {
         return config
     },
     typescript: {
-        ignoreBuildErrors: true,
+        ignoreBuildErrors: process.env.NODE_ENV === 'production',
     },
     eslint: {
-        ignoreDuringBuilds: true,
+        ignoreDuringBuilds: process.env.NODE_ENV === 'production',
     },
     env: {
         CUSTOM_KEY: 'my-value',
@@ -67,13 +66,8 @@ const nextConfig = {
                     value: 'nosniff',
                 },
                 {
-                    key: 'Referrer-Policy',
-                    value: 'origin-when-cross-origin',
-                },
-                {
-                    key: 'Content-Security-Policy',
-                    value: process.env.NODE_ENV === 'development' ?
-                        "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; script-src 'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval' data: blob: https:; style-src 'self' 'unsafe-inline' https: data:; font-src 'self' https: data:; img-src 'self' data: blob: https:; connect-src 'self' https: wss: ws: data: blob:; worker-src 'self' blob:; child-src 'self' blob:; object-src 'none'; media-src 'self' data: blob:;" : "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https: wss:; object-src 'none';"
+                    key: 'X-XSS-Protection',
+                    value: '1; mode=block',
                 },
             ],
         }];
@@ -85,6 +79,13 @@ const nextConfig = {
             destination: '/dashboard',
             permanent: false,
         }];
+    },
+    // Configurações para APIs e funcionalidades dinâmicas
+    async rewrites() {
+        return [{
+            source: '/api/:path*',
+            destination: '/api/:path*',
+        }, ]
     },
 };
 

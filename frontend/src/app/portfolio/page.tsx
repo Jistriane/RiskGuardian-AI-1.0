@@ -1,231 +1,262 @@
 'use client';
 
 import { useState } from 'react';
-import { WalletButton } from '@/components/wallet/wallet-button';
-import { useRealTimeData } from '@/hooks/useRealTimeData';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, TrendingDown, Wallet, PlusCircle, MinusCircle, RefreshCw } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
-
-function formatCurrency(value: string | number): string {
-  const num = typeof value === 'string' ? parseFloat(value) : value;
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(num);
-}
+import { useRealTimeData } from '@/hooks/useRealTimeData';
+import { formatCurrency, formatPercentage } from '@/lib/utils';
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  BarChart3, 
+  PieChart, 
+  RefreshCw,
+  Clock,
+  DollarSign,
+  Percent
+} from 'lucide-react';
 
 export default function PortfolioPage() {
-  const { portfolio, riskMetrics, isConnected, address, refreshData } = useRealTimeData();
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const { t } = useTranslation();
+  const { data, loading, error, lastUpdate, refresh, isRealTime } = useRealTimeData(3000); // Atualiza a cada 3 segundos
+  const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    if (refreshData) {
-      await refreshData();
-    }
-    setTimeout(() => setIsRefreshing(false), 1000);
-  };
-
-  // Loading state durante a inicialização
-  if (!portfolio) {
+  if (loading && !data) {
     return (
-      <div className="min-h-screen bg-background text-foreground">
-        <header className="sticky top-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur">
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent">
-              🛡️ RiskGuardian AI
-            </h1>
-            <div className="w-64">
-              <WalletButton />
-            </div>
-          </div>
-        </header>
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-500 mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Carregando portfolio...</p>
-            </div>
-          </div>
-        </main>
-      </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span className="ml-3 text-lg">{t('loading')}</span>
+        </div>
+      </DashboardLayout>
     );
   }
 
-  if (!isConnected) {
+  if (error) {
     return (
-      <div className="min-h-screen bg-background text-foreground">
-        <header className="sticky top-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur">
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent">
-              🛡️ RiskGuardian AI
-            </h1>
-            <div className="w-64">
-              <WalletButton />
-            </div>
-          </div>
-        </header>
-
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-            <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mb-6">
-              <Wallet className="h-12 w-12 text-gray-400" />
-            </div>
-            <h2 className="text-3xl font-bold mb-4">Conecte sua Carteira</h2>
-            <p className="text-muted-foreground mb-8 max-w-md">
-              Para visualizar e gerenciar seu portfólio DeFi, conecte sua carteira usando o botão acima.
-            </p>
-          </div>
-        </main>
-      </div>
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+          <p className="text-red-500 text-lg">{error}</p>
+          <Button onClick={refresh} variant="outline">
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Tentar Novamente
+          </Button>
+        </div>
+      </DashboardLayout>
     );
   }
 
-  const totalValue = portfolio?.totalValue || 0;
-  const hasAssets = portfolio?.assets?.length > 0;
+  if (!data) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-muted-foreground">Nenhum dado disponível</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const portfolio = data.portfolio;
+  const prices = data.prices;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <DashboardLayout>
+      <div className="space-y-6">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t('portfolioTitle')}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            {t('portfolioSubtitle')}
-          </p>
-        </div>
-
-        {/* Portfolio Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('totalValue')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{formatCurrency(totalValue)}</div>
-              <p className="text-green-600 text-sm">+2.34% {t('change24h')}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('performance')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-600">+12.5%</div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">{t('thirtyDays')}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('assets')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{portfolio?.assets?.length || 0}</div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Diferentes criptomoedas</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Asset Allocation */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('allocation')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  { name: 'ETH', value: '$18,092.76', percentage: '40%', color: 'bg-blue-500' },
-                  { name: 'BTC', value: '$13,569.57', percentage: '30%', color: 'bg-orange-500' },
-                  { name: 'LINK', value: '$6,784.78', percentage: '15%', color: 'bg-purple-500' },
-                  { name: 'USDC', value: '$4,523.19', percentage: '10%', color: 'bg-green-500' },
-                  { name: 'Others', value: '$2,261.59', percentage: '5%', color: 'bg-gray-500' }
-                ].map((asset, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${asset.color}`}></div>
-                      <span className="font-medium">{asset.name}</span>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-semibold">{asset.value}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">{asset.percentage}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('transactions')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  { type: 'Buy', asset: 'ETH', amount: '0.5', value: '$1,170.95', time: '2h ago' },
-                  { type: 'Sell', asset: 'BTC', amount: '0.02', value: '$870.42', time: '1d ago' },
-                  { type: 'Buy', asset: 'LINK', amount: '50', value: '$727.50', time: '2d ago' },
-                  { type: 'Swap', asset: 'USDC → ETH', amount: '500', value: '$500.00', time: '3d ago' }
-                ].map((tx, index) => (
-                  <div key={index} className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
-                    <div>
-                      <div className="font-medium">{tx.type} {tx.asset}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">{tx.time}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-semibold">{tx.value}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">{tx.amount}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Detailed Holdings */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Holdings Detalhados</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th className="text-left py-3 px-4">{t('assets')}</th>
-                    <th className="text-right py-3 px-4">{t('balance')}</th>
-                    <th className="text-right py-3 px-4">{t('value')}</th>
-                    <th className="text-right py-3 px-4">{t('change24h')}</th>
-                    <th className="text-right py-3 px-4">{t('allocation')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(portfolio?.assets || []).map((holding, index) => (
-                    <tr key={index} className="border-b border-gray-100 dark:border-gray-800">
-                      <td className="py-3 px-4 font-medium">{holding.symbol}</td>
-                      <td className="py-3 px-4 text-right">{holding.amount}</td>
-                      <td className="py-3 px-4 text-right font-semibold">{formatCurrency(holding.value)}</td>
-                      <td className={`py-3 px-4 text-right ${holding.change24h >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {holding.change24h >= 0 ? '+' : ''}{holding.change24h.toFixed(2)}%
-                      </td>
-                      <td className="py-3 px-4 text-right">{holding.allocation.toFixed(1)}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">{t('portfolio')}</h1>
+            <div className="flex items-center gap-2 mt-2">
+              {isRealTime && (
+                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
+                  Tempo Real
+                </Badge>
+              )}
+              {lastUpdate && (
+                <Badge variant="outline">
+                  <Clock className="w-3 h-3 mr-1" />
+                  {lastUpdate.toLocaleTimeString()}
+                </Badge>
+              )}
             </div>
-          </CardContent>
+          </div>
+          <Button onClick={refresh} variant="outline" disabled={loading}>
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            {t('refresh')}
+          </Button>
+        </div>
+
+        {/* Portfolio Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  {t('totalValue')}
+                </p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(portfolio.totalValue)}
+                </p>
+              </div>
+              <DollarSign className="h-8 w-8 text-muted-foreground" />
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Mudança 24h
+                </p>
+                <div className="flex items-center gap-1">
+                  <p className={`text-2xl font-bold ${
+                    portfolio.totalChange24h >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {formatCurrency(portfolio.totalChange24h)}
+                  </p>
+                  {portfolio.totalChange24h >= 0 ? (
+                    <TrendingUp className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <TrendingDown className="h-4 w-4 text-red-600" />
+                  )}
+                </div>
+              </div>
+              <Percent className="h-8 w-8 text-muted-foreground" />
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Total de {t('assets')}
+                </p>
+                <p className="text-2xl font-bold">
+                  {portfolio.assets.length}
+                </p>
+              </div>
+              <PieChart className="h-8 w-8 text-muted-foreground" />
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  {t('performance')}
+                </p>
+                <p className={`text-2xl font-bold ${
+                  portfolio.totalChange24h >= 0 ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {formatPercentage((portfolio.totalChange24h / portfolio.totalValue) * 100)}
+                </p>
+              </div>
+              <BarChart3 className="h-8 w-8 text-muted-foreground" />
+            </div>
+          </Card>
+        </div>
+
+        {/* Assets Table */}
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">{t('assets')}</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-3 px-4 font-medium">Ativo</th>
+                  <th className="text-right py-3 px-4 font-medium">{t('balance')}</th>
+                  <th className="text-right py-3 px-4 font-medium">Preço</th>
+                  <th className="text-right py-3 px-4 font-medium">{t('value')}</th>
+                  <th className="text-right py-3 px-4 font-medium">Mudança 24h</th>
+                  <th className="text-right py-3 px-4 font-medium">Alocação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {portfolio.assets.map((asset) => {
+                  const assetPrice = prices[asset.symbol]?.price || 0;
+                  const allocation = (asset.value / portfolio.totalValue) * 100;
+                  
+                  return (
+                    <tr 
+                      key={asset.symbol}
+                      className={`border-b hover:bg-muted/50 transition-colors cursor-pointer ${
+                        selectedAsset === asset.symbol ? 'bg-muted' : ''
+                      }`}
+                      onClick={() => setSelectedAsset(selectedAsset === asset.symbol ? null : asset.symbol)}
+                    >
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-semibold text-primary">
+                              {asset.symbol.charAt(0)}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-medium">{asset.symbol}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {asset.symbol === 'BTC' ? 'Bitcoin' : 
+                               asset.symbol === 'ETH' ? 'Ethereum' : 
+                               asset.symbol === 'USDC' ? 'USD Coin' : asset.symbol}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="text-right py-3 px-4 font-mono">
+                        {asset.balance.toFixed(asset.symbol === 'USDC' ? 2 : 6)}
+                      </td>
+                      <td className="text-right py-3 px-4 font-mono">
+                        {formatCurrency(assetPrice)}
+                      </td>
+                      <td className="text-right py-3 px-4 font-mono font-semibold">
+                        {formatCurrency(asset.value)}
+                      </td>
+                      <td className="text-right py-3 px-4">
+                        <span className={`font-medium ${
+                          asset.change24h >= 0 ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {asset.change24h >= 0 ? '+' : ''}{formatCurrency(asset.change24h)}
+                        </span>
+                      </td>
+                      <td className="text-right py-3 px-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-primary transition-all duration-300"
+                              style={{ width: `${Math.min(allocation, 100)}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-medium w-12 text-right">
+                            {formatPercentage(allocation)}
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </Card>
+
+        {/* Real-time Data Indicator */}
+        {isRealTime && (
+          <Card className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+              <p className="text-sm text-green-800">
+                Dados em tempo real ativos - Atualizando a cada 3 segundos
+              </p>
+              <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
+                AO VIVO
+              </Badge>
+            </div>
+          </Card>
+        )}
       </div>
-    </div>
+    </DashboardLayout>
   );
 } 

@@ -17,18 +17,10 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: 'RiskGuardian AI - DeFi Risk Management',
-  description: 'Plataforma avançada de gerenciamento de risco para DeFi com IA, automação e análise em tempo real',
-  keywords: [
-    'DeFi',
-    'Risk Management',
-    'Blockchain',
-    'AI',
-    'Cryptocurrency',
-    'Portfolio',
-    'Automation',
-    'Web3',
-  ],
+  metadataBase: new URL('https://riskguardian-ai.vercel.app'),
+  title: 'RiskGuardian AI - Proteção Inteligente de Portfolio DeFi',
+  description: 'Sistema avançado de monitoramento e proteção de riscos para portfolios DeFi com IA e automação blockchain',
+  keywords: 'DeFi, blockchain, proteção de risco, portfolio, IA, automação, criptomoedas',
   authors: [{ name: 'RiskGuardian Team' }],
   creator: 'RiskGuardian AI',
   publisher: 'RiskGuardian AI',
@@ -46,9 +38,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    url: 'https://riskguardian.ai',
-    title: 'RiskGuardian AI - DeFi Risk Management',
-    description: 'Plataforma avançada de gerenciamento de risco para DeFi com IA',
+    url: 'https://riskguardian-ai.vercel.app',
+    title: 'RiskGuardian AI - Proteção Inteligente de Portfolio DeFi',
+    description: 'Sistema avançado de monitoramento e proteção de riscos para portfolios DeFi com IA e automação blockchain',
     siteName: 'RiskGuardian AI',
     images: [
       {
@@ -61,8 +53,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'RiskGuardian AI - DeFi Risk Management',
-    description: 'Plataforma avançada de gerenciamento de risco para DeFi com IA',
+    title: 'RiskGuardian AI - Proteção Inteligente de Portfolio DeFi',
+    description: 'Sistema avançado de monitoramento e proteção de riscos para portfolios DeFi com IA e automação blockchain',
     images: ['/og-image.png'],
   },
   icons: {
@@ -71,11 +63,11 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   manifest: '/site.webmanifest',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -94,26 +86,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#00d395" />
         <meta name="color-scheme" content="dark light" />
         
-        {/* Script SPA para GitHub Pages */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Single Page Apps for GitHub Pages
-              (function(l) {
-                if (l.search[1] === '/' ) {
-                  var decoded = l.search.slice(1).split('&').map(function(s) { 
-                    return s.replace(/~and~/g, '&')
-                  }).join('?');
-                  window.history.replaceState(null, null,
-                      l.pathname.slice(0, -1) + decoded + l.hash
-                  );
-                }
-              }(window.location))
-            `,
-          }}
-        />
-        
-        {/* Scripts de terceiros críticos */}
+        {/* Script de tema */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
