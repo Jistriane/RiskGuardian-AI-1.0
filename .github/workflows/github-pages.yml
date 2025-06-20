@@ -26,19 +26,48 @@ jobs:
       with:
         node-version: '18'
         
+    - name: 🔍 Debug - Check frontend structure
+      run: |
+        echo "=== Repository structure ==="
+        ls -la
+        echo "=== Frontend directory ==="
+        ls -la frontend/
+        echo "=== Package.json content ==="
+        cat frontend/package.json
+        
     - name: 📦 Install dependencies
       run: |
         cd frontend
-        npm install --legacy-peer-deps --no-audit --no-fund
+        echo "=== Installing dependencies ==="
+        npm install --legacy-peer-deps --no-audit --no-fund --verbose
+        echo "=== Dependencies installed ==="
+        ls -la node_modules/ | head -10
+        
+    - name: 🔍 Debug - Check Next.js config
+      run: |
+        echo "=== Next.js config ==="
+        cat frontend/next.config.js
+        echo "=== Environment variables ==="
+        printenv | grep -E "(GITHUB|NODE|SKIP)"
         
     - name: 🏗️ Build Next.js
       run: |
         cd frontend
-        npm run build
+        echo "=== Starting Next.js build ==="
+        npm run build --verbose
+        echo "=== Build completed ==="
+        ls -la out/ | head -20
       env:
         GITHUB_PAGES: true
         SKIP_TYPE_CHECK: true
         NODE_OPTIONS: '--max_old_space_size=4096'
+        
+    - name: 🔍 Debug - Check build output
+      run: |
+        echo "=== Build output structure ==="
+        find frontend/out -type f | head -20
+        echo "=== Build output size ==="
+        du -sh frontend/out
         
     - name: 📋 Setup Pages
       uses: actions/configure-pages@v4
