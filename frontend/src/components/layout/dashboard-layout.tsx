@@ -20,7 +20,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const menuItems = [
     { name: 'Dashboard', href: '/dashboard', icon: '📊' },
     { name: 'Trading', href: '/trading', icon: '📈' },
-    { name: 'Portfolio', href: '/portfolio', icon: '��' },
+    { name: 'Portfolio', href: '/portfolio', icon: '💼' },
+    { name: t.navigation.lending, href: '/lending', icon: '💰' },
     { name: t.navigation.riskAnalysis, href: '/risk-analysis', icon: '⚠️' },
     { name: t.navigation.automation, href: '/automation', icon: '🤖' },
     { name: t.navigation.insurance, href: '/insurance', icon: '🛡️' },

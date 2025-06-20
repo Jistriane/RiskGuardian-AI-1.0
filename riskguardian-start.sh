@@ -871,9 +871,9 @@ start_local() {
     show_status_local
     
     print_section "🎉 Sistema RiskGuardian AI Iniciado Localmente!"
-    print_success "🚀 Frontend: http://localhost:3000"
+    print_success "🚀 Frontend: http://localhost:3001"
     print_success "🔧 Backend: http://localhost:8001"
-    print_success "🤖 ElizaOS: http://localhost:3001"
+    print_success "🤖 ElizaOS: http://localhost:3003"
     print_success "⚡ Chromia: http://localhost:3002"
     print_info ""
     print_info "📋 Comandos úteis:"
@@ -933,19 +933,37 @@ start_backend_local() {
 }
 
 start_frontend_local() {
-    print_info "Iniciando Frontend (porta 3000)..."
+    print_info "Iniciando Frontend (porta 3001)..."
+    # Verificar se a porta está livre
+    if lsof -i :3001 > /dev/null 2>&1; then
+        print_warning "Porta 3001 ocupada - tentando liberar..."
+        local pid=$(lsof -ti:3001)
+        kill -9 "$pid" 2>/dev/null || true
+        sleep 2
+    fi
+    
+    cd frontend
     # Limpar cache do Next.js
     sudo rm -rf .next 2>/dev/null || rm -rf .next 2>/dev/null || true
-    npm run dev > logs/frontend-local.log 2>&1 &
+    npm run dev > ../logs/frontend-local.log 2>&1 &
     FRONTEND_PID=$!
     echo $FRONTEND_PID >> "$PID_FILE"
+    cd ..
     print_success "Frontend iniciado (PID: $FRONTEND_PID)"
 }
 
 start_elizaos_local() {
-    print_info "Iniciando ElizaOS Agent (porta 3001)..."
+    print_info "Iniciando ElizaOS Agent (porta 3000)..."
+    # Verificar se a porta está livre
+    if lsof -i :3000 > /dev/null 2>&1; then
+        print_warning "Porta 3000 ocupada - tentando liberar..."
+        local pid=$(lsof -ti:3000)
+        kill -9 "$pid" 2>/dev/null || true
+        sleep 2
+    fi
+    
     cd elizaos-agent
-    npm run dev > ../logs/elizaos-local.log 2>&1 &
+    PORT=3000 npm run dev > ../logs/elizaos-local.log 2>&1 &
     ELIZAOS_PID=$!
     echo $ELIZAOS_PID >> "$PID_FILE"
     cd ..

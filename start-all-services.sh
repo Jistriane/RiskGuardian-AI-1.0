@@ -222,7 +222,7 @@ start_elizaos() {
     cd elizaos-agent
     
     print_info "Iniciando ElizaOS Agent na porta 3000..."
-    npm run dev > "${LOG_DIR}/elizaos.log" 2>&1 &
+    PORT=3000 npm run dev > "${LOG_DIR}/elizaos.log" 2>&1 &
     local ELIZAOS_PID=$!
     echo $ELIZAOS_PID >> "$PID_FILE"
     

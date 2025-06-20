@@ -9,14 +9,42 @@ import AutomationStatus from '@/components/dashboard/automation-status';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRealTimeData } from '@/hooks/useRealTimeData';
 import { WalletButton } from '@/components/wallet/wallet-button';
-import { Activity, TrendingUp, Shield, Zap, BarChart3, Wallet } from 'lucide-react';
+import { Activity, TrendingUp, Shield, Zap, Wallet } from 'lucide-react';
 import { WalletDebug } from '@/components/wallet/wallet-debug';
 import { WalletTest } from '@/components/wallet/wallet-test';
 import { useI18n } from '@/contexts/i18n-context';
 
 export default function DashboardPage() {
-  const { portfolio, riskMetrics, isConnected, marketData } = useRealTimeData();
+  const { data: realTimeData, isConnected } = useRealTimeData();
   const { t } = useI18n();
+
+  // Dados simulados do portfolio
+  const portfolio = {
+    totalValue: '25750.42',
+    assets: [
+      { symbol: 'ETH', amount: '5.5', value: '12925.48', price: realTimeData?.prices?.ETH || 2350.45 },
+      { symbol: 'USDC', amount: '8500', value: '8500.00', price: realTimeData?.prices?.USDC || 1.00 },
+      { symbol: 'LINK', amount: '300', value: '4296.00', price: realTimeData?.prices?.LINK || 14.32 },
+      { symbol: 'AAVE', amount: '32.5', value: '2907.12', price: realTimeData?.prices?.AAVE || 89.45 }
+    ]
+  };
+
+  // Dados simulados de métricas de risco
+  const riskMetrics = {
+    portfolioRisk: 35,
+    liquidityRisk: 25,
+    smartContractRisk: 15,
+    correlationRisk: 40,
+    volatilityScore: 42
+  };
+
+  // Dados de mercado do hook ou simulados
+  const marketData = realTimeData ? {
+    ETH: {
+      price: realTimeData.prices.ETH,
+      change24h: (Math.random() - 0.5) * 10 // Variação simulada
+    }
+  } : null;
 
   const formatCurrency = (value: string | number) => {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
@@ -26,8 +54,10 @@ export default function DashboardPage() {
     }).format(numValue);
   };
 
-  // Calcular score de risco baseado nas métricas
-  const riskScore = Math.round((riskMetrics.portfolioRisk + riskMetrics.liquidityRisk + riskMetrics.smartContractRisk) / 3);
+  // Calcular score de risco baseado nas métricas - com verificação de segurança
+  const riskScore = riskMetrics && riskMetrics.portfolioRisk !== undefined 
+    ? Math.round((riskMetrics.portfolioRisk + riskMetrics.liquidityRisk + riskMetrics.smartContractRisk) / 3)
+    : 0;
 
   return (
     <DashboardLayout>
@@ -116,7 +146,7 @@ export default function DashboardPage() {
             <CardContent>
               <div className="text-2xl font-bold text-white">3</div>
               <p className="text-xs text-purple-200">
-                2 {t.dashboard.hedge}, 1 {t.dashboard.rebalancing}
+                2 {t.dashboard.hedge}, 1 {t.dashboard.rebalanceamento}
               </p>
             </CardContent>
           </Card>
@@ -171,26 +201,38 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center justify-between p-4 bg-green-900/20 rounded-lg border border-green-800/30">
                 <div>
-                  <p className="text-sm font-medium text-green-400">{t.dashboard.blockchain}</p>
-                  <p className="text-xs text-gray-400">{t.common.online}</p>
+                  <p className="text-sm font-medium text-green-400">
+                    {t.dashboard.blockchain}
+                  </p>
+                  <p className="text-xs text-green-300">
+                    {t.common.online}
+                  </p>
                 </div>
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <div className="h-2 w-2 bg-green-500 rounded-full"></div>
               </div>
               
-              <div className="flex items-center justify-between p-4 bg-blue-900/20 rounded-lg border border-blue-800/30">
+              <div className="flex items-center justify-between p-4 bg-green-900/20 rounded-lg border border-green-800/30">
                 <div>
-                  <p className="text-sm font-medium text-blue-400">{t.dashboard.priceOracle}</p>
-                  <p className="text-xs text-gray-400">{t.common.online}</p>
+                  <p className="text-sm font-medium text-green-400">
+                    {t.dashboard.priceOracle}
+                  </p>
+                  <p className="text-xs text-green-300">
+                    {t.common.online}
+                  </p>
                 </div>
-                <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                <div className="h-2 w-2 bg-green-500 rounded-full"></div>
               </div>
-              
-              <div className="flex items-center justify-between p-4 bg-purple-900/20 rounded-lg border border-purple-800/30">
+
+              <div className="flex items-center justify-between p-4 bg-green-900/20 rounded-lg border border-green-800/30">
                 <div>
-                  <p className="text-sm font-medium text-purple-400">{t.dashboard.aiAnalytics}</p>
-                  <p className="text-xs text-gray-400">{t.common.online}</p>
+                  <p className="text-sm font-medium text-green-400">
+                    {t.dashboard.aiAnalytics}
+                  </p>
+                  <p className="text-xs text-green-300">
+                    {t.common.online}
+                  </p>
                 </div>
-                <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+                <div className="h-2 w-2 bg-green-500 rounded-full"></div>
               </div>
             </div>
           </CardContent>
