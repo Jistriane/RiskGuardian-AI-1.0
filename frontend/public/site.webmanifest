@@ -1,0 +1,17 @@
+{
+    "name": "RiskGuardian AI",
+    "short_name": "RiskGuardian",
+    "description": "Sistema de gestão de risco inteligente para DeFi e criptomoedas",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#3b82f6",
+    "orientation": "portrait",
+    "icons": [{
+        "src": "/favicon.ico",
+        "sizes": "any",
+        "type": "image/x-icon"
+    }],
+    "categories": ["finance", "business", "productivity"],
+    "lang": "pt-BR"
+}

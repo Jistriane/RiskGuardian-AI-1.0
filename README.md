@@ -1,6 +1,98 @@
 # 🚀 RiskGuardian AI - Frontend
 
-> Plataforma inteligente de análise e gerenciamento de risco DeFi com IA integrada
+🛡️ **Plataforma completa de gestão de riscos para DeFi com IA integrada**
+
+## 🚀 **Início Rápido (Modo Local - Recomendado)**
+
+```bash
+# Clone o repositório
+git clone https://github.com/your-repo/riskguardian-ai.git
+cd riskguardian-ai
+
+# Inicie todo o sistema com UM comando
+./riskguardian-start.sh start-local
+```
+
+**✅ Pronto!** Todos os serviços estarão rodando:
+- 🚀 **Frontend**: http://localhost:3000
+- 🔧 **Backend**: http://localhost:8001  
+- 🤖 **ElizaOS Agent**: http://localhost:3001
+- ⚡ **Chromia AWS**: http://localhost:3002
+
+## 📋 **Comandos Disponíveis**
+
+```bash
+# Inicialização
+./riskguardian-start.sh start-local         # Inicia tudo (recomendado)
+# Docker removido - use apenas modo local
+
+# Monitoramento
+./riskguardian-start.sh status-local        # Status dos serviços
+./riskguardian-start.sh logs-local          # Ver logs
+
+# Manutenção
+./riskguardian-start.sh stop-local          # Para tudo
+./riskguardian-start.sh restart-local       # Reinicia tudo
+
+# Ajuda
+./riskguardian-start.sh help               # Todos os comandos
+```
+
+## 🛠️ **Tecnologias Principais**
+
+- **Frontend**: Next.js 15 + React 19 + TypeScript
+- **Backend**: Node.js + Express + TypeScript
+- **IA Agent**: ElizaOS + WebSocket
+- **Alertas**: Chromia AWS
+- **Blockchain**: Ethereum + Chainlink
+- **Database**: SQLite (local) / PostgreSQL (produção)
+
+## 📦 **Modo de Desenvolvimento**
+
+O sistema roda **nativamente** no modo local:
+
+✅ **Vantagens do Modo Local:**
+- ⚡ Mais rápido para desenvolver
+- 🔧 Fácil debug e desenvolvimento
+- 📦 Menos recursos do sistema
+- 🚀 Inicialização instantânea
+- 🎯 Foco em desenvolvimento ágil
+
+## 🏗️ **Arquitetura**
+
+```
+┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+│   Frontend      │  │   Backend API   │  │  ElizaOS Agent  │
+│   Port: 3000    │◄─┤   Port: 8001    │◄─┤   Port: 3001    │
+└─────────────────┘  └─────────────────┘  └─────────────────┘
+                              │
+                              ▼
+                     ┌─────────────────┐
+                     │  Chromia AWS    │
+                     │   Port: 3002    │
+                     └─────────────────┘
+```
+
+## 🔧 **Desenvolvimento**
+
+```bash
+# Instalar dependências
+./riskguardian-start.sh install
+
+# Executar testes
+./riskguardian-start.sh test
+
+# Build do projeto
+./riskguardian-start.sh build
+```
+
+## 📄 **Licença**
+
+MIT License - veja [LICENSE](LICENSE) para detalhes.
+
+---
+
+⭐ **Star este projeto se te ajudou!**
 
 ## ✨ Visão Geral
 
@@ -323,10 +415,10 @@ npm run build
 npm run start
 ```
 
-### Docker
+### Build Local
 ```bash
-docker build -t riskguardian-frontend .
-docker run -p 3000:3000 riskguardian-frontend
+npm run build
+npm start
 ```
 
 ### Vercel (Recomendado)

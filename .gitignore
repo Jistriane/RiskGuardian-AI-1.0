@@ -508,3 +508,13 @@ artifacts/
 .cache/
 .temp/
 *.pem
+
+# Docker removido completamente do projeto
+# (não mais suportado)
+
+# Cache e builds locais
+.next/
+node_modules/
+dist/
+build/
+*.log

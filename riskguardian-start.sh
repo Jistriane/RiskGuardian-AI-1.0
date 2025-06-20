@@ -28,9 +28,9 @@ LOG_FILE="${PROJECT_ROOT}/logs/riskguardian-system.log"
 PID_FILE="${PROJECT_ROOT}/logs/system.pid"
 
 # URLs e portas dos serviços
-FRONTEND_URL="http://localhost:3000"
+FRONTEND_URL="http://localhost:3001"
 BACKEND_URL="http://localhost:8001"
-ELIZAOS_URL="http://localhost:3001"
+ELIZAOS_URL="http://localhost:3000"
 CHROMIA_URL="http://localhost:3002"
 POSTGRES_URL="http://localhost:5432"
 REDIS_URL="http://localhost:6379"
@@ -164,14 +164,19 @@ check_environment() {
 install_dependencies() {
     print_section "Instalando Dependências"
     
-    # Root
-    print_info "Instalando dependências principais..."
-    npm install --legacy-peer-deps 2>/dev/null || npm install --force
+    # Verificar se há package.json na raiz (estrutura antiga)
+    if [[ -f "package.json" ]]; then
+        print_info "Instalando dependências principais..."
+        npm install --legacy-peer-deps 2>/dev/null || npm install --force
+    else
+        print_info "Estrutura modular detectada - instalando módulos individuais..."
+    fi
     
     # Frontend
     if [[ -d "frontend" ]]; then
         print_info "Instalando dependências do Frontend..."
         cd frontend && npm install && cd ..
+        print_success "Frontend - dependências instaladas"
     else
         print_warning "Diretório frontend não encontrado"
     fi
@@ -180,6 +185,7 @@ install_dependencies() {
     if [[ -d "backend" ]]; then
         print_info "Instalando dependências do Backend..."
         cd backend && npm install && cd ..
+        print_success "Backend - dependências instaladas"
     else
         print_warning "Diretório backend não encontrado"
     fi
@@ -188,6 +194,7 @@ install_dependencies() {
     if [[ -d "elizaos-agent" ]]; then
         print_info "Instalando dependências do ElizaOS Agent..."
         cd elizaos-agent && npm install && cd ..
+        print_success "ElizaOS Agent - dependências instaladas"
     else
         print_warning "Diretório elizaos-agent não encontrado"
     fi
@@ -196,6 +203,7 @@ install_dependencies() {
     if [[ -d "chromia_aws" ]]; then
         print_info "Instalando dependências do Chromia AWS..."
         cd chromia_aws && npm install --legacy-peer-deps 2>/dev/null || (print_warning "Usando --force para resolver conflitos..." && npm install --force) && cd ..
+        print_success "Chromia AWS - dependências instaladas"
     else
         print_warning "Diretório chromia_aws não encontrado"
     fi
@@ -389,6 +397,15 @@ start_frontend() {
         print_error "package.json não encontrado no frontend"
         cd ..
         return 1
+    fi
+    
+    # Usar o script de inicialização que criamos
+    if [[ -f "start-frontend.sh" ]]; then
+        print_info "Usando script de inicialização do frontend..."
+        chmod +x start-frontend.sh
+        ./start-frontend.sh
+        cd ..
+        return 0
     fi
     
     print_info "Iniciando aplicação frontend..."
@@ -704,7 +721,8 @@ show_help() {
     echo "📋 COMANDOS DISPONÍVEIS:"
     echo ""
     echo "🚀 INICIALIZAÇÃO:"
-    echo "  start               - Inicia todo o sistema (recomendado)"
+    echo "  start               - Inicia todo o sistema com Docker (completo)"
+    echo "  start-local         - Inicia todo o sistema SEM Docker (recomendado)"
     echo "  quick-start         - Início rápido sem verificações"
     echo "  install             - Instala todas as dependências"
     echo "  setup               - Configuração inicial completa"
@@ -723,8 +741,10 @@ show_help() {
     echo "  register-automation - Registra automação Chainlink"
     echo ""
     echo "📊 MONITORAMENTO:"
-    echo "  status              - Mostra status dos serviços"
+    echo "  status              - Mostra status dos serviços (Docker)"
+    echo "  status-local        - Mostra status dos serviços locais"
     echo "  logs                - Mostra logs do sistema"
+    echo "  logs-local          - Mostra logs dos serviços locais"
     echo "  monitor             - Monitor em tempo real"
     echo ""
     echo "🧪 TESTES:"
@@ -732,8 +752,10 @@ show_help() {
     echo "  test-integration    - Executa testes de integração"
     echo ""
     echo "🧹 MANUTENÇÃO:"
-    echo "  stop                - Para todos os serviços"
+    echo "  stop                - Para todos os serviços (Docker)"
+    echo "  stop-local          - Para todos os serviços locais"
     echo "  restart             - Reinicia todo o sistema"
+    echo "  restart-local       - Reinicia sistema local"
     echo "  clean               - Limpeza completa"
     echo "  reset-db            - Reseta banco de dados"
     echo "  build               - Compila todos os serviços"
@@ -805,6 +827,208 @@ start_all() {
     echo ""
 }
 
+# =======================================================================================
+# FUNÇÃO DE INICIALIZAÇÃO LOCAL (SEM DOCKER)
+# =======================================================================================
+
+start_local() {
+    print_header
+    log_message "Iniciando sistema RiskGuardian AI - MODO LOCAL (SEM DOCKER)"
+    
+    print_section "🚀 Inicialização Local Completa"
+    
+    # Verificações iniciais
+    create_log_directory
+    check_dependencies
+    
+    # Parar qualquer serviço existente
+    print_info "Parando serviços existentes..."
+    stop_all_local
+    
+    # Configurar ambiente local
+    configure_local_environment
+    
+    # Instalar dependências se necessário
+    print_info "Verificando dependências..."
+    install_dependencies
+    
+    # Iniciar todos os serviços localmente
+    print_section "🔧 Iniciando Serviços Locais"
+    
+    start_backend_local
+    sleep 3
+    start_frontend_local
+    sleep 3
+    start_elizaos_local
+    sleep 3
+    start_chromia_local
+    
+    # Aguardar inicialização
+    print_info "Aguardando serviços inicializarem..."
+    sleep 10
+    
+    # Verificar status final
+    show_status_local
+    
+    print_section "🎉 Sistema RiskGuardian AI Iniciado Localmente!"
+    print_success "🚀 Frontend: http://localhost:3000"
+    print_success "🔧 Backend: http://localhost:8001"
+    print_success "🤖 ElizaOS: http://localhost:3001"
+    print_success "⚡ Chromia: http://localhost:3002"
+    print_info ""
+    print_info "📋 Comandos úteis:"
+    print_info "  ./riskguardian-start.sh status-local  - Status dos serviços locais"
+    print_info "  ./riskguardian-start.sh stop-local    - Parar todos os serviços locais"
+    print_info "  ./riskguardian-start.sh logs-local    - Ver logs dos serviços"
+    
+    log_message "Sistema local iniciado com sucesso"
+    echo ""
+}
+
+# =======================================================================================
+# FUNÇÕES DE APOIO PARA MODO LOCAL
+# =======================================================================================
+
+configure_local_environment() {
+    print_info "Configurando ambiente local..."
+    
+    # Configurar backend para SQLite local
+    if [[ -f "backend/.env" ]]; then
+        print_info "Configurando backend para modo local..."
+        cd backend
+        cp .env .env.backup-$(date +%Y%m%d-%H%M%S) 2>/dev/null || true
+        sed -i 's|DATABASE_URL="postgresql://.*"|DATABASE_URL="file:./dev.db"|' .env
+        sed -i 's/REDIS_ENABLED=true/REDIS_ENABLED=false/' .env
+        sed -i 's/NODE_ENV=testnet/NODE_ENV=development/' .env
+        cd ..
+    fi
+    
+    print_success "Ambiente local configurado!"
+}
+
+stop_all_local() {
+    print_info "Parando processos Node.js existentes..."
+    
+    # Parar containers Docker se existirem
+    docker-compose down -v 2>/dev/null || true
+    
+    # Parar processos npm/node relacionados ao projeto
+    pkill -f "npm run dev" 2>/dev/null || true
+    pkill -f "next dev" 2>/dev/null || true
+    pkill -f "ts-node" 2>/dev/null || true
+    pkill -f "nodemon" 2>/dev/null || true
+    
+    sleep 2
+    print_success "Processos parados!"
+}
+
+start_backend_local() {
+    print_info "Iniciando Backend (porta 8001)..."
+    cd backend
+    npm run dev > ../logs/backend-local.log 2>&1 &
+    BACKEND_PID=$!
+    echo $BACKEND_PID >> "$PID_FILE"
+    cd ..
+    print_success "Backend iniciado (PID: $BACKEND_PID)"
+}
+
+start_frontend_local() {
+    print_info "Iniciando Frontend (porta 3000)..."
+    # Limpar cache do Next.js
+    sudo rm -rf .next 2>/dev/null || rm -rf .next 2>/dev/null || true
+    npm run dev > logs/frontend-local.log 2>&1 &
+    FRONTEND_PID=$!
+    echo $FRONTEND_PID >> "$PID_FILE"
+    print_success "Frontend iniciado (PID: $FRONTEND_PID)"
+}
+
+start_elizaos_local() {
+    print_info "Iniciando ElizaOS Agent (porta 3001)..."
+    cd elizaos-agent
+    npm run dev > ../logs/elizaos-local.log 2>&1 &
+    ELIZAOS_PID=$!
+    echo $ELIZAOS_PID >> "$PID_FILE"
+    cd ..
+    print_success "ElizaOS Agent iniciado (PID: $ELIZAOS_PID)"
+}
+
+start_chromia_local() {
+    print_info "Iniciando Chromia AWS (porta 3002)..."
+    cd chromia_aws
+    npm run dev > ../logs/chromia-local.log 2>&1 &
+    CHROMIA_PID=$!
+    echo $CHROMIA_PID >> "$PID_FILE"
+    cd ..
+    print_success "Chromia AWS iniciado (PID: $CHROMIA_PID)"
+}
+
+show_status_local() {
+    print_section "Status dos Serviços Locais"
+    
+    print_info "🚀 Aplicações Locais:"
+    
+    # Verificar Frontend
+    if curl -s "$FRONTEND_URL" > /dev/null 2>&1; then
+        echo -e "  ${GREEN}✅ Frontend${NC} - $FRONTEND_URL"
+    else
+        echo -e "  ${RED}❌ Frontend${NC} - $FRONTEND_URL"
+    fi
+    
+    # Verificar Backend
+    if curl -s "$BACKEND_URL" > /dev/null 2>&1; then
+        echo -e "  ${GREEN}✅ Backend API${NC} - $BACKEND_URL"
+    else
+        echo -e "  ${RED}❌ Backend API${NC} - $BACKEND_URL"
+    fi
+    
+    # Verificar ElizaOS
+    if curl -s "$ELIZAOS_URL" > /dev/null 2>&1; then
+        echo -e "  ${GREEN}✅ ElizaOS Agent${NC} - $ELIZAOS_URL"
+    else
+        echo -e "  ${RED}❌ ElizaOS Agent${NC} - $ELIZAOS_URL"
+    fi
+    
+    # Verificar Chromia
+    if curl -s "$CHROMIA_URL" > /dev/null 2>&1; then
+        echo -e "  ${GREEN}✅ Chromia AWS${NC} - $CHROMIA_URL"
+    else
+        echo -e "  ${RED}❌ Chromia AWS${NC} - $CHROMIA_URL"
+    fi
+    
+    echo ""
+}
+
+show_logs_local() {
+    print_section "Logs dos Serviços Locais"
+    
+    echo "📋 Últimas 20 linhas de cada serviço:"
+    echo ""
+    
+    if [[ -f "logs/backend-local.log" ]]; then
+        echo "🔧 Backend:"
+        tail -n 10 logs/backend-local.log
+        echo ""
+    fi
+    
+    if [[ -f "logs/frontend-local.log" ]]; then
+        echo "🚀 Frontend:"
+        tail -n 10 logs/frontend-local.log
+        echo ""
+    fi
+    
+    if [[ -f "logs/elizaos-local.log" ]]; then
+        echo "🤖 ElizaOS:"
+        tail -n 10 logs/elizaos-local.log
+        echo ""
+    fi
+    
+    if [[ -f "logs/chromia-local.log" ]]; then
+        echo "⚡ Chromia:"
+        tail -n 10 logs/chromia-local.log
+        echo ""
+    fi
+}
+
 quick_start() {
     print_header
     print_info "🚀 Início Rápido - Pulando verificações..."
@@ -842,6 +1066,9 @@ restart_all() {
 case "${1:-help}" in
     "start")
         start_all
+        ;;
+    "start-local")
+        start_local
         ;;
     "quick-start")
         quick_start
@@ -893,8 +1120,14 @@ case "${1:-help}" in
     "status")
         show_status
         ;;
+    "status-local")
+        show_status_local
+        ;;
     "logs")
         show_logs
+        ;;
+    "logs-local")
+        show_logs_local
         ;;
     "monitor")
         monitor_realtime
@@ -908,8 +1141,16 @@ case "${1:-help}" in
     "stop")
         stop_all
         ;;
+    "stop-local")
+        stop_all_local
+        ;;
     "restart")
         restart_all
+        ;;
+    "restart-local")
+        stop_all_local
+        sleep 2
+        start_local
         ;;
     "clean")
         clean_all
