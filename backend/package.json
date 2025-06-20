@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "nodemon src/index.ts",
         "start": "node server-fixed.js",
-        "build": "echo 'Using JavaScript server for production'",
+        "build": "npm install --production",
         "type-check": "tsc --noEmit",
         "test": "jest",
         "test:watch": "jest --watch",
@@ -14,7 +14,7 @@
         "test:unit": "jest --testPathPattern=unit",
         "test:integration": "jest --testPathPattern=integration",
         "clean": "rm -rf dist",
-        "prebuild": "echo 'Skipping clean for JS build'"
+        "prebuild": "echo 'Installing dependencies for production'"
     },
     "dependencies": {
         "@metamask/eth-sig-util": "^7.0.0",
