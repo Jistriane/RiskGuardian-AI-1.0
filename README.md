@@ -1,104 +1,123 @@
-# 🚀 RiskGuardian AI - Frontend
+# 🛡️ RiskGuardian AI - Sistema Completo de Gestão de Riscos DeFi
 
-🛡️ **Plataforma completa de gestão de riscos para DeFi com IA integrada**
+**Plataforma completa de gestão de riscos para DeFi com IA integrada, automação Chainlink e análise em tempo real**
 
-## 🚀 **Início Rápido (Modo Local - Recomendado)**
+## 🚀 Início Rápido
 
+### 🔧 Primeira Configuração
+
+**Para novos usuários:**
 ```bash
 # Clone o repositório
 git clone https://github.com/your-repo/riskguardian-ai.git
 cd riskguardian-ai
 
-# Inicie todo o sistema com UM comando
-./riskguardian-start.sh start-local
+# Configuração inicial automática
+./setup-riskguardian.sh
+```
+
+### ⚡ Inicialização Rápida
+
+**Sistema completo em desenvolvimento:**
+```bash
+# Inicia todos os serviços (Frontend + Backend + Blockchain + ElizaOS + Chromia)
+./start-riskguardian.sh dev
+
+# Verificar status dos serviços
+./status-riskguardian.sh
+
+# Parar todos os serviços
+./stop-riskguardian.sh
 ```
 
 **✅ Pronto!** Todos os serviços estarão rodando:
-- 🚀 **Frontend**: http://localhost:3000
-- 🔧 **Backend**: http://localhost:8001  
-- 🤖 **ElizaOS Agent**: http://localhost:3001
-- ⚡ **Chromia AWS**: http://localhost:3002
+- 🎨 **Frontend**: http://localhost:3000
+- 🔧 **Backend**: http://localhost:3001
+- ⛓️ **Blockchain**: http://localhost:8545
+- 🤖 **ElizaOS Agent**: http://localhost:3002
+- 🔗 **Chromia Services**: http://localhost:3003
 
-## 📋 **Comandos Disponíveis**
+## 📋 Scripts de Sistema
+
+### 🚀 Scripts Disponíveis
+
+| Script | Descrição | Uso |
+|--------|-----------|-----|
+| `setup-riskguardian.sh` | Configuração inicial do sistema | `./setup-riskguardian.sh` |
+| `start-riskguardian.sh` | Inicialização completa com múltiplos modos | `./start-riskguardian.sh [mode]` |
+| `stop-riskguardian.sh` | Parada segura de todos os serviços | `./stop-riskguardian.sh` |
+| `status-riskguardian.sh` | Monitor de status detalhado | `./status-riskguardian.sh` |
+
+### 🎯 Modos de Operação
 
 ```bash
-# Inicialização
-./riskguardian-start.sh start-local         # Inicia tudo (recomendado)
-# Docker removido - use apenas modo local
+# Desenvolvimento completo (padrão)
+./start-riskguardian.sh dev
 
-# Monitoramento
-./riskguardian-start.sh status-local        # Status dos serviços
-./riskguardian-start.sh logs-local          # Ver logs
+# Modo produção (sem blockchain local)
+./start-riskguardian.sh prod
 
-# Manutenção
-./riskguardian-start.sh stop-local          # Para tudo
-./riskguardian-start.sh restart-local       # Reinicia tudo
+# Apenas blockchain local
+./start-riskguardian.sh blockchain
 
-# Ajuda
-./riskguardian-start.sh help               # Todos os comandos
+# Apenas instalação de dependências
+./start-riskguardian.sh test
 ```
 
-## 🛠️ **Tecnologias Principais**
+**📚 Documentação completa:** `cat SCRIPTS_SISTEMA.md`
 
-- **Frontend**: Next.js 15 + React 19 + TypeScript
-- **Backend**: Node.js + Express + TypeScript
-- **IA Agent**: ElizaOS + WebSocket
-- **Alertas**: Chromia AWS
-- **Blockchain**: Ethereum + Chainlink
-- **Database**: SQLite (local) / PostgreSQL (produção)
+## 🛠️ Tecnologias Principais
 
-## 📦 **Modo de Desenvolvimento**
+### Frontend
+- **Next.js 15** + React 19 + TypeScript
+- **Tailwind CSS** + Shadcn/ui
+- **Wagmi v2** + RainbowKit (Web3)
+- **TradingView Charts**
 
-O sistema roda **nativamente** no modo local:
+### Backend
+- **Node.js** + Express + TypeScript
+- **Prisma ORM** + PostgreSQL/SQLite
+- **JWT Authentication**
+- **Rate Limiting & Security**
 
-✅ **Vantagens do Modo Local:**
-- ⚡ Mais rápido para desenvolver
-- 🔧 Fácil debug e desenvolvimento
-- 📦 Menos recursos do sistema
-- 🚀 Inicialização instantânea
-- 🎯 Foco em desenvolvimento ágil
+### Blockchain & DeFi
+- **Ethereum** + Chainlink + Avalanche
+- **Multi-chain Support**
+- **Smart Contracts** (Solidity)
+- **Risk Management Protocols**
 
-## 🏗️ **Arquitetura**
+### IA & Automação
+- **ElizaOS Agent** (IA conversacional)
+- **Chromia Services** (Alertas em tempo real)
+- **Anomaly Detection**
+- **WebSocket Real-time**
+
+## 🏗️ Arquitetura do Sistema
 
 ```
 ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
 │   Frontend      │  │   Backend API   │  │  ElizaOS Agent  │
-│   Port: 3000    │◄─┤   Port: 8001    │◄─┤   Port: 3001    │
+│   Next.js       │◄─┤   Node.js/TS    │◄─┤   IA Engine     │
+│   Port: 3000    │  │   Port: 3001    │  │   Port: 3002    │
 └─────────────────┘  └─────────────────┘  └─────────────────┘
-                              │
-                              ▼
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 ▼
                      ┌─────────────────┐
                      │  Chromia AWS    │
-                     │   Port: 3002    │
+                     │  Alert System   │
+                     │   Port: 3003    │
+                     └─────────────────┘
+                                 │
+                                 ▼
+                     ┌─────────────────┐
+                     │   Blockchain    │
+                     │ Anvil/Hardhat   │
+                     │   Port: 8545    │
                      └─────────────────┘
 ```
 
-## 🔧 **Desenvolvimento**
-
-```bash
-# Instalar dependências
-./riskguardian-start.sh install
-
-# Executar testes
-./riskguardian-start.sh test
-
-# Build do projeto
-./riskguardian-start.sh build
-```
-
-## 📄 **Licença**
-
-MIT License - veja [LICENSE](LICENSE) para detalhes.
-
----
-
-⭐ **Star este projeto se te ajudou!**
-
-## ✨ Visão Geral
-
-Dashboard moderno e responsivo construído com Next.js 14, integração Web3 nativa e análise de risco em tempo real. Interface intuitiva para monitoramento de portfólios DeFi, alertas inteligentes e automação Chainlink.
-
-## 🎯 Funcionalidades Principais
+## ✨ Funcionalidades Principais
 
 ### 🔗 Web3 & Blockchain
 - **Conexão Multi-Carteira**: RainbowKit + Wagmi v2
@@ -124,387 +143,175 @@ Dashboard moderno e responsivo construído com Next.js 14, integração Web3 nat
 - **LINK Balance**: Controle de saldos
 - **Performance Tracking**: Métricas de performance
 
-## 🛠️ Stack Tecnológica
-
-### Core Framework
-- **Next.js 14**: App Router, SSR/SSG otimizado
-- **TypeScript**: Tipagem forte para DeFi
-- **React 18**: Suspense & Concurrent Features
-
-### Blockchain & Web3
-- **Wagmi v2 + Viem**: Conexão wallet moderna
-- **RainbowKit**: UI para conexão de carteiras
-- **Multi-chain Support**: 5 redes principais
-
-### Styling & UI
-- **Tailwind CSS**: Utility-first, ideal para dashboards
-- **Shadcn/ui**: Componentes modernos e customizáveis
-- **Framer Motion**: Animações fluidas
-- **Lucide React**: Ícones consistentes
-
-### Visualização de Dados
-- **TradingView Charting**: Gráficos profissionais
-- **Recharts**: Gráficos React nativos
-- **Real-time Updates**: Dados atualizados em tempo real
-
-### Estado & Performance
-- **Zustand**: Gerenciamento de estado leve
-- **TanStack Query**: Cache e sincronização de dados
-- **Socket.io Client**: Dados em tempo real
-- **React.memo**: Otimizações de performance
-
-## 🚀 Quick Start
+## 🔧 Desenvolvimento Manual
 
 ### Pré-requisitos
 ```bash
 Node.js 18+
 npm 9+
 Git
+curl (opcional)
 ```
 
-### Instalação
+### Instalação Manual
 ```bash
-# Clonar repositório
-git clone <repo-url>
-cd riskguardian-ai
-
-# Instalar dependências
+# Frontend
+cd frontend
 npm install
+npm run dev
 
-# Configurar variáveis de ambiente
-cp env.example .env.local
-nano .env.local
+# Backend (novo terminal)
+cd backend
+npm install
+npm run dev
 
-# Executar em desenvolvimento
+# ElizaOS Agent (novo terminal)
+cd elizaos-agent
+npm install
+npm run dev
+
+# Chromia Services (novo terminal)
+cd chromia_aws
+npm install
 npm run dev
 ```
 
-### Configuração Obrigatória
-
-**1. WalletConnect Project ID**
+### Blockchain Local
 ```bash
-# Acesse: https://cloud.walletconnect.com
-# Crie um projeto e copie o ID
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
-```
+# Usando Anvil (Foundry)
+anvil --port 8545
 
-**2. Backend Services**
-```bash
-# Certifique-se que estão rodando:
-NEXT_PUBLIC_BACKEND_API_URL=http://localhost:8001
-NEXT_PUBLIC_ELIZAOS_API_URL=http://localhost:3003
-NEXT_PUBLIC_CHROMIA_API_URL=http://localhost:3002
-```
-
-## 📱 Screenshots
-
-### Dashboard Principal
-![Dashboard](docs/screenshots/dashboard.png)
-
-### Conexão Web3
-![Wallet](docs/screenshots/wallet-connection.png)
-
-### Análise de Risco
-![Risk Analysis](docs/screenshots/risk-analysis.png)
-
-### AI Insights
-![AI Insights](docs/screenshots/ai-insights.png)
-
-## 🌐 URLs de Desenvolvimento
-
-| Serviço | URL | Status |
-|---------|-----|--------|
-| **Frontend** | http://localhost:3000 | 🟢 Ativo |
-| **Backend API** | http://localhost:8001 | 🟢 Ativo |
-| **ElizaOS Agent** | http://localhost:3003 | 🟢 Ativo |
-| **Chromia Alerts** | http://localhost:3002 | 🟢 Ativo |
-
-## 🔧 Scripts Disponíveis
-
-```bash
-# Desenvolvimento
-npm run dev                 # Servidor de desenvolvimento
-npm run build               # Build de produção
-npm run start               # Servidor de produção
-
-# Qualidade de Código
-npm run lint                # ESLint
-npm run type-check          # TypeScript
-npm run test                # Testes unitários
-npm run test:e2e            # Testes end-to-end
-
-# Utilidades
-npm run clean               # Limpar build
-npm run preview             # Preview de produção
+# Ou usando Hardhat
+npx hardhat node --port 8545
 ```
 
 ## 📦 Estrutura do Projeto
 
 ```
-src/
-├── app/                    # App Router (Next.js 14)
-│   ├── globals.css        # Estilos globais
-│   ├── layout.tsx         # Layout principal
-│   └── page.tsx           # Página inicial
-├── components/
-│   ├── ui/                # Componentes base (Shadcn/ui)
-│   │   ├── button.tsx
-│   │   ├── card.tsx
-│   │   └── ...
-│   ├── dashboard/         # Componentes do dashboard
-│   │   ├── portfolio-overview.tsx
-│   │   ├── risk-metrics.tsx
-│   │   └── ...
-│   ├── wallet/            # Componentes Web3
-│   │   └── wallet-button.tsx
-│   └── layout/            # Layouts
-│       └── dashboard-layout.tsx
-├── hooks/                 # Custom hooks
-├── lib/                   # Utilitários
-│   └── utils.ts
-├── services/              # APIs e WebSocket
-├── stores/                # Estado global (Zustand)
-├── types/                 # Tipos TypeScript
-└── config/                # Configurações
-    └── wagmi.ts
+riskguardian-ai/
+├── 🎨 frontend/          # Next.js App
+├── 🔧 backend/           # API Node.js
+├── 🤖 elizaos-agent/     # IA Agent
+├── 🔗 chromia_aws/       # Alert System
+├── 📄 contracts/         # Smart Contracts
+├── 🚀 scripts/           # Deployment Scripts
+├── 📚 docs/              # Documentation
+├── 🛠️ *.sh              # System Scripts
+└── 📋 *.md               # Documentation
 ```
 
-## 🔗 Integrações Backend
+## 🌐 URLs de Produção
 
-### Backend Principal (Port 8001)
-```typescript
-// Autenticação Web3
-POST /api/auth/nonce
-POST /api/auth/login
-POST /api/auth/logout
+### Serviços Online
+- **Frontend**: https://riskguardian-7ewwn3tg2-jistrianes-projects.vercel.app
+- **Backend**: https://riskguardian-backend.onrender.com
 
-// Portfolio Management
-GET  /api/portfolio
-POST /api/portfolio/analyze
+### Desenvolvimento Local
+- **Frontend**: http://localhost:3000
+- **Backend**: http://localhost:3001
+- **ElizaOS**: http://localhost:3002
+- **Chromia**: http://localhost:3003
+- **Blockchain**: http://localhost:8545
 
-// Insurance
-GET  /api/insurance
-POST /api/insurance/create
+## 🔒 Configuração de Segurança
 
-// Monitoring
-GET  /api/monitoring/contracts
-GET  /api/monitoring/protocols
-```
+### Variáveis de Ambiente
 
-### ElizaOS Agent (Port 3003)
-```typescript
-// AI Analysis
-WebSocket: ws://localhost:3003
-Events: 'analysis', 'recommendation', 'insight'
-
-// REST API
-POST /api/analyze
-GET  /api/insights
-```
-
-### Chromia AWS (Port 3002)
-```typescript
-// Real-time Alerts
-Socket.IO: ws://localhost:3002
-Events: 'alert', 'anomaly', 'notification'
-
-// REST API
-GET  /api/alerts
-POST /api/alerts/subscribe
-```
-
-## 🔒 Redes Blockchain
-
-### Testnets (Desenvolvimento)
-- **Ethereum Sepolia**: Testes principais
-- **Polygon Mumbai**: Baixo custo
-- **Arbitrum Sepolia**: Layer 2
-- **Base Sepolia**: Coinbase L2
-- **Optimism Sepolia**: Optimistic rollup
-
-### Mainnets (Produção)
-- **Ethereum**: Rede principal
-- **Polygon**: Baixo custo, alta velocidade
-- **Arbitrum**: Escalabilidade L2
-- **Base**: Coinbase Layer 2
-- **Optimism**: Rollups otimistas
-
-## 🎨 Design System
-
-### Cores Principais
-```css
-/* Light Mode */
---primary: 221.2 83.2% 53.3%       /* Blue */
---secondary: 210 40% 96%            /* Gray */
---success: 142 76% 36%              /* Green */
---warning: 38 92% 50%               /* Yellow */
---destructive: 0 84.2% 60.2%        /* Red */
-
-/* Dark Mode */
---primary: 217.2 91.2% 59.8%        /* Light Blue */
---background: 222.2 84% 4.9%        /* Dark */
-```
-
-### Tipografia
-- **Font Sans**: Inter (Google Fonts)
-- **Font Mono**: JetBrains Mono
-- **Responsive**: Escalas automáticas
-
-### Breakpoints
-```css
-sm: 640px
-md: 768px
-lg: 1024px
-xl: 1280px
-2xl: 1536px
-```
-
-## 📊 Performance
-
-### Métricas Target
-- **First Contentful Paint**: < 1.5s
-- **Largest Contentful Paint**: < 2.5s
-- **Cumulative Layout Shift**: < 0.1
-- **First Input Delay**: < 100ms
-
-### Otimizações
-- **Image Optimization**: Next.js Image
-- **Font Optimization**: Google Fonts
-- **Code Splitting**: Automático
-- **Bundle Analysis**: Webpack Bundle Analyzer
-
-## 🔐 Segurança
-
-### Frontend Security
-- **CSP Headers**: Content Security Policy
-- **XSS Protection**: Sanitização automática
-- **Input Validation**: Zod schemas
-- **Rate Limiting**: API protection
-
-### Web3 Security
-- **Signature Verification**: Message signing
-- **Nonce Protection**: Replay attack prevention
-- **Chain Validation**: Network verification
-- **Address Validation**: Checksum verification
-
-## 🧪 Testes
-
-### Unit Tests (Vitest)
+**Frontend (.env.local):**
 ```bash
-npm run test
-npm run test:watch
-npm run test:coverage
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
+NEXT_PUBLIC_BACKEND_API_URL=http://localhost:3001
+NEXT_PUBLIC_ELIZAOS_API_URL=http://localhost:3002
+NEXT_PUBLIC_CHROMIA_API_URL=http://localhost:3003
 ```
 
-### E2E Tests (Playwright)
+**Backend (.env-dev):**
 ```bash
-npm run test:e2e
-npm run test:e2e:ui
+NODE_ENV=development
+JWT_SECRET=your-secret-key
+DATABASE_URL=sqlite:./dev.db
+REDIS_URL=redis://localhost:6379
+FRONTEND_URL=http://localhost:3000
 ```
 
-### Coverage Target
-- **Unit Tests**: > 80%
-- **Integration**: > 70%
-- **E2E Critical Paths**: 100%
+## 🧪 Testes e Qualidade
 
-## 🚀 Deploy
-
-### Build de Produção
 ```bash
-npm run build
-npm run start
-```
+# Executar todos os testes
+cd backend && npm test
 
-### Build Local
-```bash
-npm run build
-npm start
-```
+# Testes de integração
+./scripts/test-integration.sh
 
-### Vercel (Recomendado)
-```bash
-vercel --prod
-```
-
-## 🐛 Troubleshooting
-
-### Problemas Comuns
-
-**Dependências não instaladas:**
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-**Erros de TypeScript:**
-```bash
+# Verificar qualidade do código
+npm run lint
 npm run type-check
 ```
 
-**Build falha:**
+## 📈 Monitoramento
+
+### Logs do Sistema
 ```bash
-npm run clean
-npm run build
+# Ver logs em tempo real
+tail -f riskguardian-startup.log
+
+# Status completo do sistema
+./status-riskguardian.sh
+
+# Logs de serviços específicos
+cd frontend && npm run dev 2>&1 | tee frontend.log
+cd backend && npm run dev 2>&1 | tee backend.log
 ```
 
-**WebSocket não conecta:**
-- Verifique se backends estão rodando
-- Confirme as portas nos .env
-- Teste conectividade: `curl localhost:8001/health`
+### Health Checks
+```bash
+# Frontend
+curl http://localhost:3000
 
-## 📈 Roadmap
+# Backend
+curl http://localhost:3001/health
 
-### Q1 2024
-- ✅ Estrutura base Next.js 14
-- ✅ Integração Web3 completa
-- ✅ Dashboard responsivo
-- 🔄 Componentes do dashboard
+# ElizaOS
+curl http://localhost:3002/health
 
-### Q2 2024
-- 📊 Gráficos TradingView
-- 🤖 Análise AI completa
-- 🔔 Sistema de alertas
-- 📱 Otimização mobile
-
-### Q3 2024
-- 🧪 Testes completos
-- 🚀 Deploy produção
-- 📈 Analytics avançado
-- 🔒 Audit de segurança
+# Chromia
+curl http://localhost:3003/health
+```
 
 ## 🤝 Contribuição
 
-### Desenvolvimento
-1. Fork o repositório
-2. Crie branch feature: `git checkout -b feature/amazing-feature`
-3. Commit mudanças: `git commit -m 'Add amazing feature'`
-4. Push branch: `git push origin feature/amazing-feature`
-5. Abra Pull Request
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
 
-### Código de Conduta
-- Siga ESLint rules
-- Mantenha cobertura de testes
-- Documente componentes novos
-- Use Conventional Commits
+## 📞 Suporte
+
+Para problemas e dúvidas:
+
+1. **Verificar logs**: `cat riskguardian-startup.log`
+2. **Verificar status**: `./status-riskguardian.sh`
+3. **Reiniciar sistema**: `./stop-riskguardian.sh && ./start-riskguardian.sh`
+4. **Documentação**: `cat SCRIPTS_SISTEMA.md`
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICENSE) para detalhes.
+MIT License - veja [LICENSE](LICENSE) para detalhes.
 
-## 💡 Suporte
+## 🎯 Roadmap
 
-### Documentação
-- [Next.js 14](https://nextjs.org/docs)
-- [Wagmi v2](https://wagmi.sh)
-- [RainbowKit](https://rainbowkit.com)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Shadcn/ui](https://ui.shadcn.com)
-
-### Comunidade
-- Discord: [RiskGuardian Community](https://discord.gg/riskguardian)
-- Twitter: [@RiskGuardianAI](https://twitter.com/riskguardianai)
-- GitHub Issues: [Issues](https://github.com/riskguardian/issues)
+- [x] Sistema de scripts automatizados
+- [x] Deploy de produção (Vercel + Render)
+- [x] Integração Web3 completa
+- [x] IA Agent (ElizaOS)
+- [x] Sistema de alertas (Chromia)
+- [ ] Mobile App (React Native)
+- [ ] Advanced Analytics
+- [ ] Multi-language Support
 
 ---
 
-**Construído com ❤️ pela equipe RiskGuardian AI**
+⭐ **Star este projeto se te ajudou!**
+
+*RiskGuardian AI - Protegendo seus investimentos DeFi com inteligência artificial* 🛡️

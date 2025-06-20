@@ -30,7 +30,7 @@ export default function PortfolioPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           <span className="ml-3 text-lg">{t('loading')}</span>
-        </div>
+            </div>
       </DashboardLayout>
     );
   }
@@ -44,7 +44,7 @@ export default function PortfolioPage() {
             <RefreshCw className="w-4 h-4 mr-2" />
             Tentar Novamente
           </Button>
-        </div>
+          </div>
       </DashboardLayout>
     );
   }
@@ -54,7 +54,7 @@ export default function PortfolioPage() {
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <p className="text-muted-foreground">Nenhum dado disponível</p>
-        </div>
+            </div>
       </DashboardLayout>
     );
   }
@@ -145,7 +145,7 @@ export default function PortfolioPage() {
 
           <Card className="p-6">
             <div className="flex items-center justify-between">
-              <div>
+                    <div>
                 <p className="text-sm font-medium text-muted-foreground">
                   {t('performance')}
                 </p>
@@ -163,9 +163,9 @@ export default function PortfolioPage() {
         {/* Assets Table */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">{t('assets')}</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
                 <tr className="border-b">
                   <th className="text-left py-3 px-4 font-medium">Ativo</th>
                   <th className="text-right py-3 px-4 font-medium">{t('balance')}</th>
@@ -173,9 +173,9 @@ export default function PortfolioPage() {
                   <th className="text-right py-3 px-4 font-medium">{t('value')}</th>
                   <th className="text-right py-3 px-4 font-medium">Mudança 24h</th>
                   <th className="text-right py-3 px-4 font-medium">Alocação</th>
-                </tr>
-              </thead>
-              <tbody>
+                  </tr>
+                </thead>
+                <tbody>
                 {portfolio.assets.map((asset) => {
                   const assetPrice = prices[asset.symbol]?.price || 0;
                   const allocation = (asset.value / portfolio.totalValue) * 100;
@@ -237,9 +237,9 @@ export default function PortfolioPage() {
                     </tr>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
+                </tbody>
+              </table>
+            </div>
         </Card>
 
         {/* Real-time Data Indicator */}

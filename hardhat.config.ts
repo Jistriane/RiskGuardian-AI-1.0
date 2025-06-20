@@ -9,18 +9,11 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-// Verifica se as variáveis de ambiente necessárias estão definidas
-if (!process.env.PRIVATE_KEY) {
-  throw new Error("PRIVATE_KEY não definida no arquivo .env");
-}
-
-if (!process.env.ETHERSCAN_API_KEY) {
-  throw new Error("ETHERSCAN_API_KEY não definida no arquivo .env");
-}
-
-if (!process.env.SNOWTRACE_API_KEY) {
-  throw new Error("SNOWTRACE_API_KEY não definida no arquivo .env");
-}
+// Valores padrão para desenvolvimento local
+const PRIVATE_KEY = process.env.PRIVATE_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "YourEtherscanAPIKey";
+const SNOWTRACE_API_KEY = process.env.SNOWTRACE_API_KEY || "YourSnowtraceAPIKey";
+const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY || "YourAlchemyAPIKey";
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -37,26 +30,34 @@ const config: HardhatUserConfig = {
     ]
   },
   networks: {
+    localhost: {
+      url: "http://127.0.0.1:8545",
+      accounts: [PRIVATE_KEY],
+      chainId: 31337
+    },
+    hardhat: {
+      chainId: 31337
+    },
     mainnet: {
-      url: `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
-      accounts: [process.env.PRIVATE_KEY || ""],
+      url: `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+      accounts: [PRIVATE_KEY],
       chainId: 1
     },
     sepolia: {
-      url: `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
-      accounts: [process.env.PRIVATE_KEY || ""],
+      url: `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+      accounts: [PRIVATE_KEY],
       chainId: 11155111
     },
     fuji: {
       url: "https://api.avax-test.network/ext/bc/C/rpc",
-      accounts: [process.env.PRIVATE_KEY || ""],
+      accounts: [PRIVATE_KEY],
       chainId: 43113
     }
   },
   etherscan: {
     apiKey: {
-      sepolia: process.env.ETHERSCAN_API_KEY || "",
-      avalancheFujiTestnet: process.env.SNOWTRACE_API_KEY || ""
+      sepolia: ETHERSCAN_API_KEY,
+      avalancheFujiTestnet: SNOWTRACE_API_KEY
     }
   },
   paths: {

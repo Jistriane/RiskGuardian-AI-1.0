@@ -167,7 +167,7 @@ src/
 ### Blockchain
 - **Sepolia Testnet** - Desenvolvimento
 - **Arbitrum Sepolia** - Testes L2
-- **Chainlink Automation** - Execução automática
+- **Automação de Hedge (Chainlink + Avalanche)** - Execução automática
 - **Multiple DEXs** - Dados de mercado
 
 ### Dados em Tempo Real

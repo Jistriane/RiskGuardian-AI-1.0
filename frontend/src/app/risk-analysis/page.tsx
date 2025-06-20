@@ -28,7 +28,7 @@ export default function RiskAnalysisPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           <span className="ml-3 text-lg">{t('loading')}</span>
-        </div>
+            </div>
       </DashboardLayout>
     );
   }
@@ -42,7 +42,7 @@ export default function RiskAnalysisPage() {
             <RefreshCw className="w-4 h-4 mr-2" />
             Tentar Novamente
           </Button>
-        </div>
+          </div>
       </DashboardLayout>
     );
   }
@@ -52,7 +52,7 @@ export default function RiskAnalysisPage() {
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <p className="text-muted-foreground">Nenhum dado disponível</p>
-        </div>
+            </div>
       </DashboardLayout>
     );
   }
@@ -204,7 +204,7 @@ export default function RiskAnalysisPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">Exposição por Ativo</h3>
-            <div className="space-y-4">
+              <div className="space-y-4">
               {portfolio.assets.map((asset) => {
                 const allocation = (asset.value / portfolio.totalValue) * 100;
                 const risk = allocation > 50 ? 'Alto' : allocation > 25 ? 'Médio' : 'Baixo';
@@ -235,18 +235,18 @@ export default function RiskAnalysisPage() {
                   </div>
                 );
               })}
-            </div>
+              </div>
           </Card>
 
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">Métricas de Performance</h3>
-            <div className="space-y-4">
+              <div className="space-y-4">
               <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
                 <span className="font-medium">Max Drawdown</span>
                 <span className="text-red-600 font-semibold">
                   {formatPercentage(riskMetrics.maxDrawdown)}
                 </span>
-              </div>
+                </div>
               
               <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
                 <span className="font-medium">Mudança 24h</span>
@@ -255,7 +255,7 @@ export default function RiskAnalysisPage() {
                 }`}>
                   {portfolio.totalChange24h >= 0 ? '+' : ''}{formatCurrency(portfolio.totalChange24h)}
                 </span>
-              </div>
+                      </div>
               
               <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
                 <span className="font-medium">Performance %</span>
@@ -264,7 +264,7 @@ export default function RiskAnalysisPage() {
                 }`}>
                   {formatPercentage((portfolio.totalChange24h / portfolio.totalValue) * 100)}
                 </span>
-              </div>
+                  </div>
 
               <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
                 <span className="font-medium">Diversificação</span>
@@ -285,11 +285,11 @@ export default function RiskAnalysisPage() {
                 <div className="flex items-center gap-2 mb-2">
                   <AlertTriangle className="h-5 w-5 text-red-600" />
                   <span className="font-medium text-red-800">Alta Volatilidade</span>
-                </div>
+                    </div>
                 <p className="text-sm text-red-700">
                   Considere diversificar mais seu portfolio para reduzir a volatilidade.
                 </p>
-              </div>
+                    </div>
             )}
             
             {riskMetrics.sharpeRatio < 1 && (
@@ -297,7 +297,7 @@ export default function RiskAnalysisPage() {
                 <div className="flex items-center gap-2 mb-2">
                   <AlertTriangle className="h-5 w-5 text-yellow-600" />
                   <span className="font-medium text-yellow-800">Baixo Sharpe Ratio</span>
-                </div>
+                  </div>
                 <p className="text-sm text-yellow-700">
                   O retorno ajustado ao risco pode ser melhorado.
                 </p>
@@ -313,7 +313,7 @@ export default function RiskAnalysisPage() {
                 <p className="text-sm text-blue-700">
                   Adicione mais ativos para melhor diversificação de risco.
                 </p>
-              </div>
+                    </div>
             )}
             
             {riskMetrics.volatility < 30 && riskMetrics.sharpeRatio > 1.5 && (
@@ -321,7 +321,7 @@ export default function RiskAnalysisPage() {
                 <div className="flex items-center gap-2 mb-2">
                   <Shield className="h-5 w-5 text-green-600" />
                   <span className="font-medium text-green-800">Boa Performance</span>
-                </div>
+                  </div>
                 <p className="text-sm text-green-700">
                   Seu portfolio está bem balanceado em termos de risco-retorno.
                 </p>

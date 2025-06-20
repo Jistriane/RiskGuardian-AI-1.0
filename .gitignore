@@ -2,7 +2,7 @@
 # 🚀 RiskGuardian AI - Complete .gitignore
 # =============================================================================
 # Comprehensive ignore rules for the entire project
-# Frontend + Backend + Smart Contracts + ElizaOS + Docker
+# Frontend + Backend + Smart Contracts + ElizaOS
 # =============================================================================
 
 # =============================================================================
@@ -197,22 +197,6 @@ elizaos-agent/checkpoints/
 *.onnx
 training-data/
 datasets/
-
-# =============================================================================
-# 🐳 DOCKER
-# =============================================================================
-# Override files
-docker-compose.override.yml
-docker-compose.local.yml
-
-# Docker build cache
-.dockerignore.bak
-
-# Volume data (if stored locally)
-postgres_data/
-chromia_data/
-redis_data/
-pgadmin_data/
 
 # =============================================================================
 # 🗄️ DATABASES

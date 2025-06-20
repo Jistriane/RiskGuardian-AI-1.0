@@ -80,8 +80,8 @@ export function useRealTimeData(refreshInterval = 5000) {
     fetchData();
   }, [fetchData]);
 
-  return {
-    data,
+  return { 
+    data, 
     loading,
     error,
     lastUpdate,

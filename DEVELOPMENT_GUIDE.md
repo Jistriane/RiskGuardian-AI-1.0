@@ -1,654 +1,615 @@
-# 💻 RiskGuardian AI - Development Guide
+# 🛠️ DEVELOPMENT GUIDE - RiskGuardian AI
 
-**Complete guide for daily development workflow with the Docker-based environment.**
+**Guia completo para workflow de desenvolvimento diário com ambiente nativo.**
 
 ---
 
-## 🚀 **Quick Start for New Developers**
+## 📋 Pré-requisitos
 
-### **Prerequisites**
-- [Docker Desktop](https://docs.docker.com/get-docker/) (latest version)
-- [Git](https://git-scm.com/downloads)
-- Code editor (VS Code recommended)
-- Terminal/Command line access
+### **Ferramentas Obrigatórias**
+- [Node.js 18+](https://nodejs.org/) (LTS recomendado)
+- [npm 9+](https://www.npmjs.com/) (incluído com Node.js)
+- [Git](https://git-scm.com/) (controle de versão)
 
-### **Initial Setup (5 minutes)**
+### **Ferramentas Opcionais**
+- [curl](https://curl.se/) (para health checks)
+- [VSCode](https://code.visualstudio.com/) (editor recomendado)
+
+---
+
+## 🚀 Setup Inicial Rápido
+
+### **Configuração Automática (Recomendado)**
 ```bash
-# 1. Clone the repository
-git clone https://github.com/uederson-ferreira/riskguardian-ai.git
+# Clone e configure automaticamente
+git clone <repository-url>
 cd riskguardian-ai
 
-# 2. Run automated setup
-./scripts/setup.sh
+# Setup automático completo
+./setup-riskguardian.sh
 
-# 3. Access applications
-# Frontend:  http://localhost:3000
-# Backend:   http://localhost:8000  
-# ElizaOS:   http://localhost:3001/health
+# Iniciar desenvolvimento
+./start-riskguardian.sh dev
 ```
 
-**That's it!** You now have a complete development environment running.
+### **Verificar se tudo está funcionando**
+```bash
+# Verificar status de todos os serviços
+./status-riskguardian.sh
+```
+
+**✅ Sucesso!** Você deve ver todos os serviços rodando:
+- Frontend: http://localhost:3000
+- Backend: http://localhost:3001  
+- ElizaOS: http://localhost:3002
+- Chromia: http://localhost:3003
+- Blockchain: http://localhost:8545
 
 ---
 
-## 🛠️ **Daily Development Workflow**
+## 🎯 Comandos Principais
 
-### **Starting Your Development Session**
+### **Gerenciamento de Sistema**
+
 ```bash
-# Start all services
-./scripts/start-dev.sh
+# Iniciar sistema completo
+./start-riskguardian.sh dev
 
-# Or use docker-compose directly
-docker-compose up -d
+# Verificar status
+./status-riskguardian.sh
 
-# Check if everything is running
-docker-compose ps
+# Parar tudo
+./stop-riskguardian.sh
 ```
 
-### **Stopping Your Development Session**
+### **Modos de Inicialização**
+
 ```bash
-# Stop all services
-./scripts/stop.sh
+# Desenvolvimento completo (padrão)
+./start-riskguardian.sh dev
 
-# Or use docker-compose directly  
-docker-compose down
+# Modo produção (sem blockchain local)
+./start-riskguardian.sh prod
 
-# Stop and remove volumes (reset all data)
-docker-compose down -v
-```
+# Apenas blockchain local
+./start-riskguardian.sh blockchain
 
-### **Viewing Logs**
-```bash
-# View all logs
-docker-compose logs -f
-
-# View specific service logs
-docker-compose logs -f frontend
-docker-compose logs -f backend
-docker-compose logs -f elizaos-agent
-docker-compose logs -f anvil
-
-# View logs from last 50 lines
-docker-compose logs --tail 50 backend
+# Apenas instalar dependências
+./start-riskguardian.sh test
 ```
 
 ---
 
-## 📁 **Working with Each Service**
+## 🎨 Desenvolvimento Frontend
 
-### **🌐 Frontend Development (Next.js)**
+### **Comandos Frontend**
 
-**📍 Location**: `frontend/src/`
-
-**Key Commands**:
 ```bash
-# Enter frontend container
-docker-compose exec frontend sh
+# Entrar no diretório
+cd frontend
 
-# Install new dependencies
-docker-compose exec frontend npm install package-name
+# Desenvolvimento com hot reload
+npm run dev
 
-# Run frontend tests
-docker-compose exec frontend npm test
+# Instalar nova dependência
+npm install package-name
 
-# Build for production
-docker-compose exec frontend npm run build
+# Executar testes
+npm test
+
+# Build para produção
+npm run build
+
+# Type checking
+npm run type-check
+
+# Lint
+npm run lint
 ```
 
-**Development Workflow**:
-1. Edit files in `frontend/src/pages/` or `frontend/src/components/`
-2. Changes auto-reload thanks to Docker volume mounts
-3. View changes at http://localhost:3000
-4. Browser will automatically refresh on file changes
-
-**Common Tasks**:
-```bash
-# Add a new React component
-mkdir frontend/src/components/RiskDashboard
-touch frontend/src/components/RiskDashboard/index.js
-
-# Add new page
-touch frontend/src/pages/portfolio.js
-
-# Add styling
-touch frontend/src/styles/dashboard.css
+### **Estrutura Frontend**
+```
+frontend/
+├── src/
+│   ├── app/                 # App Router (Next.js)
+│   ├── components/          # Componentes React
+│   ├── hooks/              # Custom Hooks
+│   ├── services/           # API Services
+│   ├── stores/             # Estado (Zustand)
+│   └── types/              # Tipos TypeScript
+├── public/                 # Assets estáticos
+└── package.json            # Dependências
 ```
 
-### **🔧 Backend Development (Node.js)**
+### **Hot Reload**
+1. Faça mudanças nos arquivos
+2. Salve (Ctrl+S)
+3. Veja as mudanças automaticamente no navegador
 
-**📍 Location**: `backend/src/`
+---
 
-**Key Commands**:
+## 🔧 Desenvolvimento Backend
+
+### **Comandos Backend**
+
 ```bash
-# Enter backend container
-docker-compose exec backend sh
+# Entrar no diretório
+cd backend
 
-# Install new dependencies
-docker-compose exec backend npm install package-name
+# Desenvolvimento com nodemon
+npm run dev
 
-# Run backend tests
-docker-compose exec backend npm test
+# Instalar nova dependência
+npm install package-name
 
-# Check API health
-curl http://localhost:8000/health
+# Executar testes
+npm test
+
+# Build TypeScript
+npm run build
+
+# Executar em produção
+npm start
 ```
 
-**Development Workflow**:
-1. Edit files in `backend/src/`
-2. Nodemon automatically restarts on changes
-3. API available at http://localhost:8000
-4. Test endpoints with curl or Postman
-
-**Common API Endpoints to Implement**:
-```bash
-# Health check (already exists)
-GET  http://localhost:8000/health
-
-# Risk analysis endpoints (to implement)
-POST http://localhost:8000/api/analyze/portfolio
-GET  http://localhost:8000/api/risks/summary
-POST http://localhost:8000/api/defi/protocols
-
-# User management (to implement) 
-POST http://localhost:8000/api/auth/login
-GET  http://localhost:8000/api/user/profile
+### **Estrutura Backend**
+```
+backend/
+├── src/
+│   ├── controllers/        # Controladores de rota
+│   ├── services/          # Lógica de negócio
+│   ├── middleware/        # Express middleware
+│   ├── routes/            # Rotas da API
+│   ├── utils/             # Utilitários
+│   └── types/             # Tipos TypeScript
+├── simple-server.js       # Servidor de produção
+└── package.json           # Dependências
 ```
 
-**Example API Development**:
+### **Endpoints da API**
+```bash
+# Health check
+GET http://localhost:3001/health
+
+# Autenticação
+POST http://localhost:3001/api/auth/login
+POST http://localhost:3001/api/auth/logout
+
+# Portfolio
+GET http://localhost:3001/api/portfolio
+GET http://localhost:3001/api/portfolio/real-time
+
+# Monitoramento
+GET http://localhost:3001/api/market/monitor
+```
+
+---
+
+## 🤖 Desenvolvimento ElizaOS (IA)
+
+### **Comandos ElizaOS**
+
+```bash
+# Entrar no diretório
+cd elizaos-agent
+
+# Desenvolvimento
+npm run dev
+
+# Instalar dependências
+npm install
+
+# Build
+npm run build
+```
+
+### **Características**
+- **IA Agent**: Análise inteligente de riscos
+- **WebSocket**: Comunicação em tempo real
+- **Multi-provider**: OpenAI, Anthropic, outros
+- **Real-time**: Processamento instantâneo
+
+### **Testando IA**
+```bash
+# Health check
+curl http://localhost:3002/health
+
+# WebSocket (use uma ferramenta como wscat)
+wscat -c ws://localhost:3002
+```
+
+---
+
+## 🔗 Desenvolvimento Chromia (Alertas)
+
+### **Comandos Chromia**
+
+```bash
+# Entrar no diretório
+cd chromia_aws
+
+# Desenvolvimento
+npm run dev
+
+# Build
+npm run build
+```
+
+### **Características**
+- **Alert System**: Sistema de alertas em tempo real
+- **Socket.IO**: Comunicação bidirecional
+- **Anomaly Detection**: Detecção de anomalias
+- **AWS Integration**: Integração com serviços AWS
+
+### **Testando Alertas**
+```bash
+# Health check
+curl http://localhost:3003/health
+
+# Socket.IO (use ferramenta apropriada)
+# Eventos: 'alert', 'anomaly', 'notification'
+```
+
+---
+
+## ⛓️ Desenvolvimento Blockchain
+
+### **Iniciar Blockchain Local**
+
+```bash
+# Apenas blockchain (em terminal separado)
+./start-riskguardian.sh blockchain
+
+# Ou manualmente
+anvil --port 8545 --host 0.0.0.0
+# ou
+npx hardhat node --port 8545
+```
+
+### **Desenvolvimento de Contratos**
+
+```bash
+# Entrar no diretório
+cd contracts
+
+# Compilar contratos
+npx hardhat compile
+
+# Executar testes
+npx hardhat test
+
+# Deploy local
+npx hardhat run scripts/deploy.ts --network localhost
+
+# Verificar no Anvil
+curl -X POST http://localhost:8545 \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+```
+
+### **Configuração de Rede**
 ```javascript
-// backend/src/routes/risks.js
-const express = require('express');
-const router = express.Router();
-
-router.post('/analyze', async (req, res) => {
-  // Risk analysis logic here
-  res.json({ 
-    riskScore: 0.75,
-    analysis: "Portfolio analysis complete",
-    recommendations: []
-  });
-});
-
-module.exports = router;
-```
-
-### **🤖 ElizaOS Agent Development (AI)**
-
-**📍 Location**: `elizaos-agent/src/`
-
-**Key Commands**:
-```bash
-# Enter AI agent container
-docker-compose exec elizaos-agent sh
-
-# Check agent health
-curl http://localhost:3001/health
-
-# Test AI agent
-curl -X POST http://localhost:3001/analyze \
-  -H "Content-Type: application/json" \
-  -d '{"portfolio": ["ETH", "BTC"]}'
-```
-
-**Development Workflow**:
-1. Edit AI agents in `elizaos-agent/src/agents/`
-2. Configure AI providers in environment variables
-3. Test AI responses through API endpoints
-4. Monitor AI usage and costs through logs
-
-**AI Provider Configuration**:
-```bash
-# Primary: OpenAI
-OPENAI_API_KEY=sk-your-openai-key
-
-# Backup: Anthropic
-ANTHROPIC_API_KEY=sk-ant-your-anthropic-key
-
-# Multi-model: OpenRouter
-OPENROUTER_API_KEY=sk-or-your-openrouter-key
-```
-
-### **⛓️ Smart Contracts Development (Solidity)**
-
-**📍 Location**: `contracts/src/`
-
-**Key Commands**:
-```bash
-# Enter contracts container
-docker-compose --profile tools up -d contracts
-docker-compose exec contracts sh
-
-# Compile contracts
-docker-compose exec contracts forge build
-
-# Run contract tests
-docker-compose exec contracts forge test
-
-# Deploy to local Anvil
-docker-compose exec contracts forge script script/Deploy.s.sol \
-  --rpc-url http://anvil:8545 \
-  --broadcast
-```
-
-**Blockchain Interaction**:
-```bash
-# Check Anvil status
-curl -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"method":"eth_blockNumber","params":[],"id":1,"jsonrpc":"2.0"}' \
-  http://localhost:8545
-
-# Get available accounts
-curl -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"method":"eth_accounts","params":[],"id":1,"jsonrpc":"2.0"}' \
-  http://localhost:8545
-
-# Check account balance
-curl -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"method":"eth_getBalance","params":["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266","latest"],"id":1,"jsonrpc":"2.0"}' \
-  http://localhost:8545
-```
-
-### **🗄️ Database Development**
-
-**PostgreSQL Commands**:
-```bash
-# Enter PostgreSQL container
-docker-compose exec postgres psql -U chromia -d chromia
-
-# Common SQL operations
-# \dt                 # List tables
-# \d table_name       # Describe table
-# SELECT * FROM users; # Query data
-```
-
-**Redis Commands**:
-```bash
-# Enter Redis container
-docker-compose exec redis redis-cli
-
-# Common Redis operations  
-# KEYS *              # List all keys
-# GET key_name        # Get value
-# SET key value       # Set value
-# FLUSHALL            # Clear all data
-```
-
-**Database Admin Interface**:
-```bash
-# Start PgAdmin (web interface)
-docker-compose --profile tools up -d pgadmin
-
-# Access: http://localhost:5050
-# Login: admin@riskguardian.ai / admin123
+// hardhat.config.ts
+networks: {
+  localhost: {
+    url: "http://localhost:8545",
+    chainId: 31337
+  }
+}
 ```
 
 ---
 
-## 🧪 **Testing & Debugging**
+## 🗄️ Banco de Dados
 
-### **Health Checks**
+### **SQLite (Desenvolvimento)**
 ```bash
-# Quick connectivity test
-./scripts/test-connectivity.sh
+# Arquivo local
+backend/dev.db
 
-# Individual service tests
-curl http://localhost:3000    # Frontend
-curl http://localhost:8000    # Backend  
-curl http://localhost:3001/health    # ElizaOS
-curl http://localhost:7740/health    # Chromia
-curl http://localhost:8545    # Anvil
+# Visualizar (se sqlite3 instalado)
+sqlite3 backend/dev.db
+.tables
+.schema
 ```
 
-### **Debugging Containers**
+### **Prisma (ORM)**
 ```bash
-# Check container status
-docker-compose ps
+# No diretório backend
+cd backend
 
-# Enter any container for debugging
-docker-compose exec [service-name] sh
+# Gerar cliente
+npx prisma generate
 
-# Check container resource usage
-docker stats
+# Migrate
+npx prisma migrate dev
 
-# Inspect container details
-docker inspect riskguardian-ai-[service-name]-1
+# Studio (interface visual)
+npx prisma studio
 ```
 
-### **Common Debugging Commands**
-```bash
-# Container not starting?
-docker-compose logs [service-name]
+---
 
-# Port conflicts?
+## 📊 Monitoramento e Logs
+
+### **Status Global**
+```bash
+# Status completo do sistema
+./status-riskguardian.sh
+
+# Informações mostradas:
+# - Versões do sistema
+# - Status de cada serviço
+# - Health checks
+# - Uso de recursos
+# - PIDs ativos
+```
+
+### **Logs em Tempo Real**
+```bash
+# Log principal do sistema
+tail -f riskguardian-startup.log
+
+# Logs por serviço (em terminais separados)
+cd frontend && npm run dev 2>&1 | tee frontend.log
+cd backend && npm run dev 2>&1 | tee backend.log
+cd elizaos-agent && npm run dev 2>&1 | tee elizaos.log
+cd chromia_aws && npm run dev 2>&1 | tee chromia.log
+```
+
+### **Debug Detalhado**
+```bash
+# Logs com debug
+DEBUG=* npm run dev          # Frontend
+DEBUG=app:* npm run dev      # Backend
+
+# Sistema com logs verbosos
+DEBUG=1 ./start-riskguardian.sh dev
+```
+
+---
+
+## 📦 Gerenciamento de Dependências
+
+### **Adicionar Dependências**
+
+```bash
+# Frontend
+cd frontend
+npm install package-name
+npm install --save-dev dev-package
+
+# Backend
+cd backend
+npm install package-name
+npm install --save-dev dev-package
+
+# Reinstalar tudo
+./start-riskguardian.sh test
+```
+
+### **Atualizar Dependências**
+```bash
+# Verificar atualizações
+npm outdated
+
+# Atualizar específico
+npm update package-name
+
+# Atualizar tudo
+npm update
+
+# Audit de segurança
+npm audit
+npm audit fix
+```
+
+---
+
+## 🧪 Testes
+
+### **Executar Testes**
+```bash
+# Backend - testes unitários
+cd backend
+npm test
+npm run test:watch
+npm run test:coverage
+
+# Frontend - testes de componente
+cd frontend
+npm test
+npm run test:e2e
+
+# Integração completa
+./scripts/test-integration.sh
+```
+
+### **Cobertura de Testes**
+```bash
+# Gerar relatório
+cd backend && npm run test:coverage
+
+# Ver relatório
+open coverage/lcov-report/index.html
+```
+
+---
+
+## 🔍 Troubleshooting
+
+### **Problemas Comuns**
+
+**Porta já em uso:**
+```bash
+# Identificar processo
 lsof -i :3000
-lsof -i :8000
-lsof -i :8545
+lsof -i :3001
 
-# Network issues?
-docker network ls
-docker network inspect riskguardian-ai_riskguardian-network
+# Parar tudo
+./stop-riskguardian.sh
 
-# Volume issues?
-docker volume ls
-docker volume inspect riskguardian-ai_postgres_data
-```
-
-### **Performance Monitoring**
-```bash
-# Real-time container stats
-docker stats
-
-# Disk usage
-docker system df
-
-# Clean up unused resources
-docker system prune
-
-# Remove unused volumes
-docker volume prune
-```
-
----
-
-## 🔧 **Environment Configuration**
-
-### **API Keys Setup**
-```bash
-# Copy template
-cp .env.example .env
-
-# Required for AI features
-OPENAI_API_KEY=sk-your-openai-key-here
-
-# Required for authentication
-JWT_SECRET=your-super-secure-jwt-secret-min-32-characters
-
-# Optional for enhanced features
-ANTHROPIC_API_KEY=sk-ant-your-anthropic-key
-CHAINLINK_API_KEY=your-chainlink-api-key
-ETHERSCAN_API_KEY=your-etherscan-api-key
-```
-
-### **Development vs Production**
-```bash
-# Development (default)
-NODE_ENV=development
-LOG_LEVEL=debug
-
-# Production
-NODE_ENV=production  
-LOG_LEVEL=info
-```
-
----
-
-## 📊 **Monitoring & Logs**
-
-### **Real-time Monitoring**
-```bash
-# Watch all services
-watch docker-compose ps
-
-# Monitor logs live
-docker-compose logs -f --tail 100
-
-# Monitor specific service
-docker-compose logs -f backend
-
-# Monitor errors only
-docker-compose logs -f | grep ERROR
-```
-
-### **Log Management**
-```bash
-# View recent logs
-docker-compose logs --since 1h
-
-# View specific time range
-docker-compose logs --since 2023-01-01T00:00:00Z
-
-# Save logs to file
-docker-compose logs > development.log
-
-# Clear logs (restart containers)
-docker-compose restart
-```
-
----
-
-## 🚀 **Advanced Development Tasks**
-
-### **Adding New Dependencies**
-```bash
-# Frontend dependencies
-docker-compose exec frontend npm install package-name
-# Then rebuild: docker-compose build frontend
-
-# Backend dependencies  
-docker-compose exec backend npm install package-name
-# Then rebuild: docker-compose build backend
-
-# ElizaOS dependencies
-docker-compose exec elizaos-agent npm install package-name
-# Then rebuild: docker-compose build elizaos-agent
-```
-
-### **Database Migrations**
-```bash
-# PostgreSQL migrations (manual)
-docker-compose exec postgres psql -U chromia -d chromia -f /path/to/migration.sql
-
-# Backup database
-docker-compose exec postgres pg_dump -U chromia chromia > backup.sql
-
-# Restore database
-docker-compose exec postgres psql -U chromia -d chromia < backup.sql
-```
-
-### **Smart Contract Deployment**
-```bash
-# Deploy to local Anvil
-docker-compose run --rm contracts forge script script/Deploy.s.sol \
-  --rpc-url http://anvil:8545 \
-  --broadcast \
-  --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-
-# Verify deployment
-docker-compose run --rm contracts forge script script/Verify.s.sol \
-  --rpc-url http://anvil:8545
-```
-
-### **Production Deployment**
-```bash
-# Build production images
-docker-compose -f docker-compose.yml build
-
-# Deploy to production
-./scripts/deploy.sh
-
-# Start with production profile
-docker-compose --profile production up -d
-```
-
----
-
-## 🔥 **Hot Tips for Productivity**
-
-### **IDE Integration**
-```bash
-# VS Code with Docker extension
-# - Install "Docker" extension
-# - Install "Remote-Containers" extension  
-# - Right-click on container → "Attach Visual Studio Code"
-```
-
-### **Useful Aliases**
-```bash
-# Add to your ~/.bashrc or ~/.zshrc
-alias dcu="docker-compose up -d"
-alias dcd="docker-compose down"  
-alias dcl="docker-compose logs -f"
-alias dcp="docker-compose ps"
-alias dcr="docker-compose restart"
-
-# RiskGuardian specific
-alias rg-start="./scripts/start-dev.sh"
-alias rg-stop="./scripts/stop.sh"
-alias rg-logs="docker-compose logs -f"
-alias rg-test="./scripts/test-connectivity.sh"
-```
-
-### **Development Shortcuts**
-```bash
-# Quick restart of specific service
-docker-compose restart backend
-
-# Quick rebuild and restart
-docker-compose up -d --build frontend
-
-# Clear everything and start fresh
-docker-compose down -v && ./scripts/setup.sh
-
-# Tail logs of multiple services
-docker-compose logs -f backend elizaos-agent
-```
-
----
-
-## 🚨 **Common Issues & Solutions**
-
-### **Port Already in Use**
-```bash
-# Find process using port
-lsof -i :3000
-
-# Kill process
+# Matar processo específico
 kill -9 <PID>
-
-# Or stop all Docker containers
-docker stop $(docker ps -q)
 ```
 
-### **Container Build Failures**
+**Dependências corrompidas:**
 ```bash
-# Clear Docker cache and rebuild
-docker system prune -a
-docker-compose build --no-cache [service-name]
+# Limpar cache
+npm cache clean --force
+
+# Reinstalar
+rm -rf node_modules package-lock.json
+npm install
+
+# Ou usar o script
+./start-riskguardian.sh test
 ```
 
-### **Volume Permission Issues**
+**Serviços não iniciam:**
 ```bash
-# Fix volume permissions (Linux/Mac)
-sudo chown -R $USER:$USER ./frontend/node_modules
-sudo chown -R $USER:$USER ./backend/node_modules
+# Verificar logs
+./status-riskguardian.sh
+cat riskguardian-startup.log
+
+# Verificar pré-requisitos
+node --version  # >= 18
+npm --version   # >= 9
 ```
 
-### **Anvil Not Accessible**
+**Blockchain não conecta:**
 ```bash
-# Check if Anvil is running
-docker-compose logs anvil
-
-# Test Anvil connectivity
-curl -X POST \
+# Verificar se Anvil está rodando
+curl -X POST http://localhost:8545 \
   -H "Content-Type: application/json" \
-  -d '{"method":"eth_blockNumber","params":[],"id":1,"jsonrpc":"2.0"}' \
-  http://localhost:8545
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
 
-# Restart Anvil if needed
-docker-compose restart anvil
-```
-
-### **Out of Memory Issues**
-```bash
-# Check Docker resource limits
-docker system df
-
-# Clean up unused containers/images
-docker system prune
-
-# Increase Docker memory (Docker Desktop)
-# Settings → Resources → Advanced → Memory
+# Reiniciar blockchain
+./start-riskguardian.sh blockchain
 ```
 
 ---
 
-## 📚 **Useful Resources**
+## 🎯 Workflow de Desenvolvimento
 
-### **Documentation Links**
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Express.js Guide](https://expressjs.com/en/guide/routing.html)
-- [Foundry Book](https://book.getfoundry.sh/)
-- [Docker Compose Reference](https://docs.docker.com/compose/compose-file/)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+### **Fluxo Diário Recomendado**
 
-### **API Testing Tools**
-- [Postman](https://www.postman.com/) - API testing and development
-- [Insomnia](https://insomnia.rest/) - REST and GraphQL client
-- [curl](https://curl.se/) - Command line HTTP client
-
-### **Blockchain Tools**
-- [Remix IDE](https://remix.ethereum.org/) - Online Solidity IDE
-- [Etherscan](https://etherscan.io/) - Ethereum blockchain explorer
-- [OpenZeppelin](https://openzeppelin.com/contracts/) - Secure smart contract library
-
----
-
-## 🎯 **Development Best Practices**
-
-### **Code Organization**
-- Keep components small and focused
-- Use consistent naming conventions
-- Comment complex business logic
-- Write tests for critical functions
-
-### **Git Workflow**
 ```bash
-# Create feature branch
-git checkout -b feature/portfolio-analysis
+# 1. Iniciar dia
+./status-riskguardian.sh        # Verificar estado
+./start-riskguardian.sh dev     # Iniciar tudo
 
-# Make your changes
+# 2. Desenvolvimento
+# Trabalhar nos arquivos necessários
+# Hot reload automático
+
+# 3. Testes
+npm test                        # Testar mudanças
+
+# 4. Commit
+git add .
+git commit -m "feat: nova funcionalidade"
+
+# 5. Finalizar
+./stop-riskguardian.sh         # Parar serviços
+```
+
+### **Desenvolvimento em Equipe**
+
+```bash
+# Sincronizar
+git pull origin main
+
+# Instalar novas dependências
+./start-riskguardian.sh test
+
+# Iniciar desenvolvimento
+./start-riskguardian.sh dev
+
+# Criar branch para feature
+git checkout -b feature/nova-funcionalidade
+
+# Desenvolver e testar
 # ...
 
-# Test your changes
-./scripts/test-connectivity.sh
-
-# Commit with descriptive message
-git add .
-git commit -m "feat: add portfolio risk analysis endpoint"
-
-# Push and create pull request
-git push origin feature/portfolio-analysis
+# Push da branch
+git push origin feature/nova-funcionalidade
 ```
 
-### **Security Practices**
-- Never commit API keys or secrets
-- Use environment variables for configuration
-- Validate all user inputs
-- Implement proper error handling
+---
 
-### **Performance Optimization**
-- Use Redis for caching API responses
-- Optimize database queries
-- Implement pagination for large datasets
-- Monitor container resource usage
+## 📈 Performance e Otimização
+
+### **Monitoramento de Recursos**
+```bash
+# CPU e RAM por serviço
+top -p $(ps aux | grep node | awk '{print $2}' | tr '\n' ',')
+
+# Uso de disco
+df -h
+
+# Processos Node.js ativos
+ps aux | grep node
+
+# Monitoramento contínuo
+watch ./status-riskguardian.sh
+```
+
+### **Otimizações de Desenvolvimento**
+- ✅ **Hot Reload**: Mudanças instantâneas
+- ✅ **Cache Inteligente**: Build incremental
+- ✅ **Process Management**: PIDs organizados
+- ✅ **Port Management**: Limpeza automática
 
 ---
 
-## 🚀 **Ready to Develop!**
+## 🔗 URLs Úteis
 
-You now have everything you need to start developing on RiskGuardian AI. The environment is:
+### **Desenvolvimento Local**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001
+- ElizaOS Agent: http://localhost:3002
+- Chromia Services: http://localhost:3003
+- Blockchain RPC: http://localhost:8545
 
-- ✅ **Fully Dockerized** - Consistent across all machines
-- ✅ **Hot Reload Enabled** - Instant feedback on changes
-- ✅ **Properly Networked** - All services can communicate
-- ✅ **Health Monitored** - Easy debugging and troubleshooting
-- ✅ **Production Ready** - Deploy with confidence
+### **Health Checks**
+- Backend: http://localhost:3001/health
+- ElizaOS: http://localhost:3002/health
+- Chromia: http://localhost:3003/health
 
-**Happy coding! 🎉**
+### **Produção**
+- Frontend: https://riskguardian-7ewwn3tg2-jistrianes-projects.vercel.app
+- Backend: https://riskguardian-backend.onrender.com
 
 ---
 
-**Need help?** Open an issue on GitHub or check the troubleshooting section above.
+## 📚 Recursos Adicionais
+
+### **Documentação**
+```bash
+# Guias do projeto
+cat README.md                  # Visão geral
+cat SCRIPTS_SISTEMA.md        # Scripts detalhados
+cat DEVELOPMENT_SETUP.md      # Setup completo
+
+# Logs do sistema
+tail -f riskguardian-startup.log
+```
+
+### **Comandos Úteis**
+```bash
+# Backup de configurações
+tar -czf backup-$(date +%Y%m%d).tar.gz *.sh *.md
+
+# Limpar logs
+> riskguardian-startup.log
+
+# Verificar versões
+node --version && npm --version && git --version
+```
+
+---
+
+**✨ Agora você está pronto para desenvolver com o RiskGuardian AI!** 
+
+*Para mais detalhes, consulte `SCRIPTS_SISTEMA.md` para documentação completa dos scripts.*

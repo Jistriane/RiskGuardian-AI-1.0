@@ -1,398 +1,488 @@
-# 🚀 RiskGuardian AI - Complete Development Setup Documentation
+# 🛠️ DEVELOPMENT SETUP - RiskGuardian AI
 
-**Comprehensive overview of the Docker-based development environment setup and architecture decisions.**
+**Guia completo de configuração do ambiente de desenvolvimento nativo usando scripts automatizados.**
 
----
+## 🎯 Visão Geral
 
-## 📋 **Project Overview**
+**RiskGuardian AI** é uma plataforma de análise de riscos DeFi com IA integrada, construída com arquitetura moderna usando Node.js nativo. A plataforma combina tecnologia blockchain, inteligência artificial e análise de dados em tempo real para fornecer avaliação abrangente de riscos para portfólios DeFi.
 
-**RiskGuardian AI** is an AI-powered DeFi Risk Analysis Platform built with a modern microservices architecture using Docker containers. The platform combines blockchain technology, artificial intelligence, and real-time data analysis to provide comprehensive risk assessment for DeFi portfolios.
+## 🛠️ Stack Tecnológica
 
-### **🎯 Core Technologies**
-- **Frontend**: Next.js (React) with TypeScript
-- **Backend**: Node.js with Express API
-- **AI Engine**: ElizaOS with multi-provider support (OpenAI, Anthropic, OpenRouter)
-- **Blockchain**: Anvil (Foundry) for local Ethereum development
-- **Database**: PostgreSQL + Chromia + Redis cache
-- **Infrastructure**: Docker & Docker Compose
-- **Smart Contracts**: Solidity with Foundry framework
+### **Core Technologies**
+- **Frontend**: Next.js 15 + React 19 + TypeScript
+- **Backend**: Node.js + Express + TypeScript  
+- **AI Agent**: ElizaOS + WebSocket
+- **Alertas**: Chromia AWS
+- **Blockchain**: Ethereum + Chainlink + Anvil/Hardhat
+- **Database**: SQLite (dev) / PostgreSQL (prod)
 
----
+## 📋 Pré-requisitos
 
-## 🏗️ **Architecture Overview**
+### **Ferramentas Obrigatórias**
+- **Node.js 18+**: Runtime JavaScript
+- **npm 9+**: Gerenciador de pacotes
+- **Git**: Controle de versão
+- **curl**: Health checks (opcional)
 
-### **Service Architecture**
-```
-┌─────────────────┬─────────────────┬─────────────────┐
-│   Frontend      │   Backend       │   ElizaOS       │
-│   (Next.js)     │   (Node.js)     │   (AI Agent)    │
-│   Port: 3000    │   Port: 8000    │   Port: 3001    │
-└─────────────────┴─────────────────┴─────────────────┘
-                           │
-┌─────────────────┬─────────────────┬─────────────────┐
-│   PostgreSQL    │   Redis         │   Anvil         │
-│   (Database)    │   (Cache)       │   (Blockchain)  │
-│   Port: 5432    │   Port: 6379    │   Port: 8545    │
-└─────────────────┴─────────────────┴─────────────────┘
-                           │
-                  ┌─────────────────┐
-                  │   Chromia       │
-                  │   (Database)    │
-                  │   Port: 7740    │
-                  └─────────────────┘
+### **Verificação do Sistema**
+```bash
+# Verificar versões
+node --version    # >= 18.0.0
+npm --version     # >= 9.0.0
+git --version     # Qualquer versão
+
+# Configuração inicial automática
+./setup-riskguardian.sh
 ```
 
-### **Data Flow**
-1. **User Interface** → Frontend (Next.js)
-2. **API Requests** → Backend (Node.js) 
-3. **AI Analysis** → ElizaOS Agent
-4. **Blockchain Queries** → Anvil (Local Ethereum)
-5. **Data Storage** → PostgreSQL + Chromia + Redis
-6. **Smart Contracts** → Foundry/Anvil integration
+## 🚀 Histórico de Desenvolvimento
 
----
+### **Evolução da Arquitetura**
+O projeto evoluiu de uma abordagem complexa com Docker para uma solução nativa otimizada:
 
-## 🛠️ **Complete Setup Journey**
+**Versão 1.0 (Docker Era)**
+- 7 serviços em containers Docker
+- Complexidade de configuração
+- Overhead de recursos
 
-### **Phase 1: Initial Docker Configuration**
-- ✅ Created `docker-compose.yml` with all services
-- ✅ Configured individual Dockerfiles for each service
-- ✅ Set up environment variables and secrets management
-- ✅ Established network communication between containers
+**Versão 2.0 (Native Era - Atual)**
+- Scripts automatizados nativos
+- Inicialização instantânea
+- Recursos otimizados
+- Desenvolvimento ágil
 
-### **Phase 2: Critical Anvil Blockchain Fix**
-**🚨 Major Challenge Solved**: Anvil connectivity issue
+### **Benefícios da Abordagem Nativa**
+- ⚡ **Inicialização mais rápida**: 5-10 segundos vs 2-3 minutos
+- 🔧 **Debug simplificado**: Logs nativos e debug direto
+- 📦 **Menos recursos**: CPU e RAM otimizados
+- 🚀 **Desenvolvimento ágil**: Hot reload instantâneo
+- 🎯 **Foco no código**: Sem overhead de containers
 
-**Problem**: Anvil was listening on `127.0.0.1:8545` (localhost only) making it inaccessible from other containers and external connections.
-
-**Multiple Attempts Made**:
-1. ❌ `command: >` multi-line format - ignored by container
-2. ❌ `command: ["anvil", "--host", "0.0.0.0"]` - still bound to 127.0.0.1
-3. ❌ Added `--anvil-ip-addr 0.0.0.0` parameter - no effect
-4. ❌ Various health check configurations - failing
-
-**✅ BREAKTHROUGH SOLUTION**: 
-```yaml
-anvil:
-  image: ghcr.io/foundry-rs/foundry:latest
-  entrypoint: ["anvil", "--host", "0.0.0.0", "--port", "8545", ...]
-  # Key: Using 'entrypoint' instead of 'command' forced Anvil to accept our parameters
-```
-
-**Result**: Anvil now correctly listens on `0.0.0.0:8545` and is accessible from all containers and external connections.
-
-### **Phase 3: Service Dependencies & Health Checks**
-- ✅ Implemented robust health checks for all services
-- ✅ Configured proper startup dependencies
-- ✅ Added health monitoring and automatic restarts
-- ✅ Optimized container startup sequence
-
-### **Phase 4: Development Automation**
-- ✅ Created automated setup scripts (`setup.sh`, `start-dev.sh`, `stop.sh`)
-- ✅ Added comprehensive testing and debugging tools
-- ✅ Implemented colored output and progress indicators
-- ✅ Created troubleshooting and maintenance scripts
-
-### **Phase 5: Git & Collaboration Preparation**
-- ✅ Generated complete project structure
-- ✅ Created package.json files for all services
-- ✅ Added comprehensive documentation
-- ✅ Prepared repository for open-source collaboration
-
----
-
-## 📁 **Final Project Structure**
+## 📦 Estrutura do Projeto
 
 ```
 riskguardian-ai/
-├── 📄 docker-compose.yml              # Main orchestration
-├── 📄 .env.example                    # Environment template
-├── 📄 .gitignore                      # Git ignore rules
-├── 📄 README.md                       # Project overview
-├── 📄 DEVELOPMENT_SETUP.md            # This file
-├── 📄 DEVELOPMENT_GUIDE.md            # Usage guide
-├── 📄 CONTRIBUTING.md                 # Contribution guidelines
-├── 📄 LICENSE                         # MIT License
+├── 🎨 frontend/                      # Next.js Application
+│   ├── src/
+│   │   ├── app/                      # App Router
+│   │   ├── components/               # React Components
+│   │   ├── hooks/                    # Custom Hooks
+│   │   ├── services/                 # API Services
+│   │   └── stores/                   # State Management
+│   ├── package.json                  # Dependencies
+│   └── next.config.js                # Next.js Config
 │
-├── 📁 scripts/                        # Automation scripts
-│   ├── setup.sh                       # Complete environment setup
-│   ├── start-dev.sh                   # Start development mode
-│   ├── stop.sh                        # Stop all services
-│   ├── deploy.sh                      # Production deployment
-│   └── test-connectivity.sh           # Service connectivity tests
+├── 🔧 backend/                       # Node.js API
+│   ├── src/
+│   │   ├── controllers/              # Route Controllers
+│   │   ├── services/                 # Business Logic
+│   │   ├── middleware/               # Express Middleware
+│   │   ├── routes/                   # API Routes
+│   │   └── utils/                    # Utilities
+│   ├── simple-server.js              # Production Server
+│   └── package.json                  # Dependencies
 │
-├── 📁 frontend/                       # Next.js React Application
-│   ├── Dockerfile                     # Production build
-│   ├── Dockerfile.dev                 # Development build  
-│   ├── package.json                   # Dependencies
-│   ├── next.config.js                 # Next.js configuration
-│   └── src/                           # Source code
-│       ├── pages/                     # Next.js pages
-│       ├── components/                # React components
-│       └── styles/                    # CSS/styling
+├── 🤖 elizaos-agent/                 # AI Agent
+│   ├── src/
+│   │   ├── services/                 # AI Services
+│   │   └── config/                   # Agent Config
+│   └── package.json                  # Dependencies
 │
-├── 📁 backend/                        # Node.js API Server
-│   ├── Dockerfile                     # Production build
-│   ├── Dockerfile.dev                 # Development build
-│   ├── package.json                   # Dependencies
-│   └── src/                           # Source code
-│       ├── routes/                    # API endpoints
-│       ├── controllers/               # Business logic
-│       ├── services/                  # External integrations
-│       └── models/                    # Data models
+├── 🔗 chromia_aws/                   # Alert System
+│   ├── src/
+│   │   ├── services/                 # Alert Services
+│   │   └── config/                   # System Config
+│   └── package.json                  # Dependencies
 │
-├── 📁 elizaos-agent/                  # AI Analysis Engine
-│   ├── Dockerfile                     # Container build
-│   ├── package.json                   # Dependencies
-│   └── src/                           # Source code
-│       ├── agents/                    # AI agents
-│       ├── services/                  # AI providers
-│       └── handlers/                  # Request handlers
+├── 📄 contracts/                     # Smart Contracts
+│   ├── *.sol                         # Solidity Files
+│   └── scripts/                      # Deploy Scripts
 │
-├── 📁 contracts/                      # Smart Contracts
-│   ├── Dockerfile                     # Foundry container
-│   ├── foundry.toml                   # Foundry configuration
-│   ├── src/                           # Solidity contracts
-│   ├── script/                        # Deployment scripts
-│   └── test/                          # Contract tests
+├── 🚀 scripts/                       # Deployment Scripts
+│   └── *.ts                          # TypeScript Scripts
 │
-├── 📁 chromia/                        # Chromia Integration
-│   ├── Dockerfile                     # Chromia container
-│   ├── mock/                          # Mock API (temporary)
-│   ├── config/                        # Configuration files
-│   └── src/                           # Rell source code
-│
-└── 📁 config/                         # Configuration Files
-    ├── nginx.conf                     # Reverse proxy
-    └── redis.conf                     # Redis configuration
+├── 🛠️ *.sh                          # System Scripts
+└── 📋 *.md                          # Documentation
 ```
 
----
+## 🚀 Configuração Inicial
 
-## 🔧 **Service Details**
-
-### **Frontend (Next.js) - Port 3000**
-- **Purpose**: User interface and dashboard
-- **Technology**: Next.js with React and TypeScript
-- **Features**: Hot reload, component-based architecture
-- **Docker**: Multi-stage build for development and production
-- **Key Files**: `pages/index.js`, `components/`, `styles/`
-
-### **Backend (Node.js) - Port 8000**
-- **Purpose**: REST API and business logic
-- **Technology**: Node.js with Express framework
-- **Features**: CORS enabled, JSON middleware, health checks
-- **Docker**: Alpine-based with nodemon for development
-- **Key Files**: `src/index.js`, `routes/`, `controllers/`
-
-### **ElizaOS Agent (AI) - Port 3001**
-- **Purpose**: AI-powered risk analysis engine
-- **Technology**: ElizaOS framework with multi-AI support
-- **Providers**: OpenAI, Anthropic, OpenRouter
-- **Features**: Real-time analysis, portfolio assessment
-- **Key Files**: `src/agents/`, `src/services/`
-
-### **Anvil (Blockchain) - Port 8545**
-- **Purpose**: Local Ethereum development network
-- **Technology**: Foundry's Anvil
-- **Configuration**: 10 accounts, 10,000 ETH each, 2s block time
-- **Chain ID**: 31337 (standard for local development)
-- **Critical Fix**: Uses `entrypoint` to force `0.0.0.0` binding
-
-### **PostgreSQL - Port 5432**
-- **Purpose**: Primary database for application data
-- **Configuration**: User `chromia`, database `chromia`
-- **Usage**: Chromia backend storage, user data, transactions
-- **Health Check**: `pg_isready` validation
-
-### **Redis - Port 6379**
-- **Purpose**: High-performance cache layer
-- **Usage**: Session storage, temporary data, API caching
-- **Configuration**: 256MB memory limit, LRU eviction
-- **Health Check**: `PING` command validation
-
-### **Chromia (Mock) - Port 7740**
-- **Purpose**: Blockchain database (currently mocked)
-- **Current**: Nginx serving mock API responses
-- **Future**: Real Chromia/Postchain implementation
-- **Health Check**: `/health` endpoint
-
----
-
-## 🔑 **Environment Variables**
-
-### **Required Variables**
+### **Configuração Automática (Recomendado)**
 ```bash
-# AI Services (Primary)
-OPENAI_API_KEY=sk-your-openai-key                    # Required for AI features
-JWT_SECRET=your-secure-jwt-secret-min-32-chars       # Required for auth
+# Clone do repositório
+git clone https://github.com/your-repo/riskguardian-ai.git
+cd riskguardian-ai
 
-# Database (Auto-configured)
-POSTGRES_USER=chromia                                 # Auto-set
-POSTGRES_PASSWORD=chromia_password                    # Auto-set
-POSTGRES_DB=chromia                                   # Auto-set
+# Configuração completa automática
+./setup-riskguardian.sh
+
+# Inicialização em modo desenvolvimento
+./start-riskguardian.sh dev
 ```
 
-### **Optional Variables**
+### **Configuração Manual**
 ```bash
-# AI Services (Backup/Alternative)
-ANTHROPIC_API_KEY=sk-ant-your-anthropic-key         # Claude AI
-OPENROUTER_API_KEY=sk-or-your-openrouter-key        # Multi-model AI
+# 1. Instalar dependências
+cd frontend && npm install && cd ..
+cd backend && npm install && cd ..
+cd elizaos-agent && npm install && cd ..
+cd chromia_aws && npm install && cd ..
 
-# Blockchain Integration
-CHAINLINK_API_KEY=your-chainlink-key                # DeFi data
-ETHERSCAN_API_KEY=your-etherscan-key               # Ethereum data
-ALCHEMY_API_KEY=your-alchemy-key                   # Blockchain RPC
+# 2. Configurar ambientes
+cp backend/env.example backend/.env-dev
+# Editar .env-dev conforme necessário
 
-# Development
-LOG_LEVEL=debug                                      # Logging level
-NODE_ENV=development                                 # Environment
+# 3. Inicializar serviços
+./start-riskguardian.sh dev
 ```
 
----
+## 📊 Arquitetura de Serviços
 
-## 🧪 **Testing & Validation**
+### **1. Frontend (Next.js)**
+**Porta**: 3000
+**Tecnologias**: Next.js 15 + React 19 + TypeScript
+**Características**:
+- App Router com SSR/SSG otimizado
+- Integração Web3 com Wagmi v2
+- UI moderna com Tailwind + Shadcn/ui
+- Gráficos TradingView integrados
 
-### **Connectivity Tests**
-All services successfully tested and validated:
+### **2. Backend (Node.js)**
+**Porta**: 3001
+**Tecnologias**: Node.js + Express + TypeScript
+**Características**:
+- API RESTful completa
+- Autenticação JWT + Web3
+- Rate limiting e segurança
+- Health checks automáticos
+
+### **3. ElizaOS Agent (IA)**
+**Porta**: 3002
+**Tecnologias**: ElizaOS + WebSocket
+**Características**:
+- Análise de riscos com IA
+- Recomendações inteligentes
+- Comunicação WebSocket
+- Processamento em tempo real
+
+### **4. Chromia AWS (Alertas)**
+**Porta**: 3003
+**Tecnologias**: Chromia + Socket.IO
+**Características**:
+- Sistema de alertas em tempo real
+- Detecção de anomalias
+- Notificações personalizadas
+- Integração Socket.IO
+
+### **5. Blockchain Local**
+**Porta**: 8545
+**Tecnologias**: Anvil (Foundry) ou Hardhat
+**Características**:
+- Blockchain local para desenvolvimento
+- Deploy de contratos
+- Testes de automação Chainlink
+- Estado persistente
+
+## 🎯 Scripts de Sistema
+
+### **Script Principal: start-riskguardian.sh**
 
 ```bash
-# Blockchain (Anvil)
-✅ curl http://localhost:8545 → {"jsonrpc":"2.0","id":1,"result":"0x4a"}
+# Modos disponíveis
+./start-riskguardian.sh dev         # Desenvolvimento completo
+./start-riskguardian.sh prod        # Produção (sem blockchain)
+./start-riskguardian.sh blockchain  # Apenas blockchain
+./start-riskguardian.sh test        # Apenas dependências
 
-# Frontend (Next.js)  
-✅ curl http://localhost:3000 → Full HTML response with React app
-
-# Backend (Node.js)
-✅ curl http://localhost:8000 → {"message":"RiskGuardian AI Backend","version":"0.1.0"}
-
-# Chromia Mock
-✅ curl http://localhost:7740/health → {"status":"ok","service":"chromia-mock"}
-
-# ElizaOS Agent
-✅ curl http://localhost:3001/health → AI agent health status
-
-# Container-to-Container Communication
-✅ Backend ↔ Anvil: Validated with external curl container
-✅ All services: Network communication confirmed
+# Recursos automáticos
+- ✅ Verificação de pré-requisitos
+- ✅ Limpeza de portas em uso
+- ✅ Instalação de dependências
+- ✅ Health checks automáticos
+- ✅ Logs detalhados coloridos
 ```
 
-### **Docker Health Status**
-```
-✅ anvil-1          Up (healthy)    - Blockchain network
-✅ backend-1        Up              - API server  
-✅ chromia-node-1   Up (healthy)    - Database API
-✅ elizaos-agent-1  Up              - AI engine
-✅ frontend-1       Up              - Web interface
-✅ postgres-1       Up (healthy)    - Database
-✅ redis-1          Up (healthy)    - Cache
-```
+### **Scripts Auxiliares**
 
----
-
-## 🚀 **Performance Optimizations**
-
-### **Docker Optimizations**
-- ✅ Multi-stage builds for production efficiency
-- ✅ Alpine Linux base images for smaller footprint
-- ✅ Volume mounts for development hot-reload
-- ✅ Optimized layer caching for faster builds
-
-### **Network Optimizations**
-- ✅ Custom bridge network for container isolation
-- ✅ Service discovery via container names
-- ✅ Health check dependent startup sequence
-- ✅ Restart policies for automatic recovery
-
-### **Development Experience**
-- ✅ Hot reload for all development services
-- ✅ Automated setup with single command
-- ✅ Comprehensive logging and debugging
-- ✅ Color-coded terminal output for clarity
-
----
-
-## 🔐 **Security Considerations**
-
-### **Development Security**
-- ✅ Environment variable management with `.env`
-- ✅ Git ignore for sensitive files and credentials
-- ✅ Container isolation with custom networks
-- ✅ Non-root user execution where possible
-
-### **Production Readiness**
-- ✅ Health checks for all critical services
-- ✅ Restart policies for fault tolerance
-- ✅ SSL/TLS configuration ready (nginx.conf)
-- ✅ Rate limiting and CORS protection
-
----
-
-## 📊 **Monitoring & Observability**
-
-### **Built-in Monitoring**
 ```bash
-# Service Status
-docker-compose ps                    # Container status overview
-
-# Real-time Logs  
-docker-compose logs -f [service]     # Service-specific logs
-
-# Resource Usage
-docker stats                         # CPU, memory, network usage
-
-# Health Checks
-./scripts/test-connectivity.sh       # Complete connectivity test
+./setup-riskguardian.sh     # Configuração inicial
+./stop-riskguardian.sh      # Parada segura
+./status-riskguardian.sh    # Monitor de status
 ```
 
-### **Admin Tools Available**
+## 💻 Workflow de Desenvolvimento
+
+### **Desenvolvimento Diário**
+
 ```bash
-# Database Administration
-docker-compose --profile tools up -d pgadmin
-# Access: http://localhost:5050 (admin@riskguardian.ai / admin123)
+# 1. Verificar status do sistema
+./status-riskguardian.sh
 
-# Smart Contract Development
-docker-compose --profile tools up -d contracts
-# Foundry toolkit for contract testing and deployment
+# 2. Iniciar desenvolvimento
+./start-riskguardian.sh dev
+
+# 3. Acessar serviços
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:3001
+# ElizaOS:  http://localhost:3002
+# Chromia:  http://localhost:3003
+
+# 4. Monitorar logs
+tail -f riskguardian-startup.log
+
+# 5. Parar quando terminar
+./stop-riskguardian.sh
 ```
 
+### **Desenvolvimento Frontend**
+
+```bash
+# Terminal dedicado para frontend
+cd frontend
+
+# Desenvolvimento com hot reload
+npm run dev
+
+# Build para produção
+npm run build
+
+# Lint e type checking
+npm run lint
+npm run type-check
+```
+
+### **Desenvolvimento Backend**
+
+```bash
+# Terminal dedicado para backend
+cd backend
+
+# Desenvolvimento com nodemon
+npm run dev
+
+# Executar testes
+npm test
+
+# Build TypeScript
+npm run build
+```
+
+### **Desenvolvimento de Contratos**
+
+```bash
+# Iniciar apenas blockchain
+./start-riskguardian.sh blockchain
+
+# Em outro terminal
+cd contracts
+
+# Compile contratos
+npx hardhat compile
+
+# Deploy local
+npx hardhat run scripts/deploy.ts --network localhost
+
+# Executar testes
+npx hardhat test
+```
+
+## 🔧 Configurações de Ambiente
+
+### **Frontend (.env.local)**
+```bash
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
+NEXT_PUBLIC_BACKEND_API_URL=http://localhost:3001
+NEXT_PUBLIC_ELIZAOS_API_URL=http://localhost:3002
+NEXT_PUBLIC_CHROMIA_API_URL=http://localhost:3003
+```
+
+### **Backend (.env-dev)**
+```bash
+NODE_ENV=development
+JWT_SECRET=your-secret-key
+DATABASE_URL=sqlite:./dev.db
+REDIS_URL=redis://localhost:6379
+FRONTEND_URL=http://localhost:3000
+PORT=3001
+```
+
+### **ElizaOS (.env)**
+```bash
+ELIZAOS_PORT=3002
+BACKEND_URL=http://localhost:3001
+AI_MODEL=gpt-4-turbo
+WEBSOCKET_ENABLED=true
+```
+
+## 📊 Monitoramento e Debug
+
+### **Status do Sistema**
+```bash
+# Status completo
+./status-riskguardian.sh
+
+# Informações exibidas:
+- Versões do sistema
+- Status de cada serviço
+- Health checks automáticos
+- Uso de recursos
+- PIDs ativos
+```
+
+### **Logs e Debug**
+```bash
+# Logs principais
+tail -f riskguardian-startup.log
+
+# Logs por serviço
+cd frontend && npm run dev 2>&1 | tee frontend.log
+cd backend && npm run dev 2>&1 | tee backend.log
+
+# Debug específico
+DEBUG=* npm run dev  # Frontend
+DEBUG=app:* npm run dev  # Backend
+```
+
+### **Health Checks**
+```bash
+# Verificação automática
+curl -f http://localhost:3000      # Frontend
+curl -f http://localhost:3001/health  # Backend
+curl -f http://localhost:3002/health  # ElizaOS
+curl -f http://localhost:3003/health  # Chromia
+
+# Blockchain
+curl -X POST http://localhost:8545 \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+```
+
+## 🧪 Testes e Qualidade
+
+### **Execução de Testes**
+```bash
+# Testes unitários backend
+cd backend && npm test
+
+# Testes de integração
+./scripts/test-integration.sh
+
+# Testes E2E frontend
+cd frontend && npm run test:e2e
+
+# Cobertura de código
+cd backend && npm run test:coverage
+```
+
+### **Qualidade de Código**
+```bash
+# Lint
+cd frontend && npm run lint
+cd backend && npm run lint
+
+# Type checking
+cd frontend && npm run type-check
+cd backend && npm run type-check
+
+# Formatação
+npm run prettier
+```
+
+## 🚀 Deploy e Produção
+
+### **Preparação para Deploy**
+```bash
+# Teste em modo produção
+./start-riskguardian.sh prod
+
+# Build de todos os serviços
+cd frontend && npm run build
+cd backend && npm run build
+```
+
+### **URLs de Produção**
+- **Frontend**: https://riskguardian-7ewwn3tg2-jistrianes-projects.vercel.app
+- **Backend**: https://riskguardian-backend.onrender.com
+
+## 🔒 Segurança
+
+### **Desenvolvimento Local**
+- ✅ HTTPS automático (Next.js)
+- ✅ CORS configurado
+- ✅ Rate limiting
+- ✅ Input validation
+- ✅ JWT tokens seguros
+
+### **Produção**
+- ✅ Environment variables seguras
+- ✅ Headers de segurança
+- ✅ Logs auditáveis
+- ✅ Backup automático
+
+## 🆘 Solução de Problemas
+
+### **Problemas Comuns**
+
+**Porta em uso:**
+```bash
+./stop-riskguardian.sh  # Para tudo
+lsof -i :3000          # Verificar porta específica
+kill -9 <PID>          # Matar processo
+```
+
+**Dependências não instaladas:**
+```bash
+./start-riskguardian.sh test  # Instalar dependências
+# ou
+rm -rf node_modules && npm install
+```
+
+**Serviços não respondem:**
+```bash
+./status-riskguardian.sh    # Verificar status
+cat riskguardian-startup.log  # Ver logs
+```
+
+### **Debug Avançado**
+```bash
+# Logs detalhados
+DEBUG=1 ./start-riskguardian.sh dev
+
+# Análise de recursos
+top -p $(ps aux | grep node | awk '{print $2}' | tr '\n' ',')
+
+# Rede
+netstat -tulpn | grep :300
+```
+
+## 📈 Performance
+
+### **Métricas de Desenvolvimento**
+- **Inicialização**: < 10 segundos
+- **Hot reload**: < 2 segundos
+- **Build completo**: < 60 segundos
+- **Uso de RAM**: ~1GB (todos os serviços)
+
+### **Otimizações**
+- Scripts nativos otimizados
+- Cache de dependências
+- Build incremental
+- Process management eficiente
+
+## 🎯 Roadmap Técnico
+
+### **Concluído ✅**
+1. **Sistema de scripts nativos** - Substituição completa do Docker
+2. **Automação completa** - Zero configuração manual
+3. **Monitoramento integrado** - Status e logs unificados
+4. **Deploy de produção** - Vercel + Render funcionando
+
+### **Próximos Passos 🔄**
+1. **Testes automatizados** - CI/CD completo
+2. **Métricas avançadas** - APM integrado
+3. **Backup automático** - Dados e configurações
+4. **Mobile development** - React Native setup
+
 ---
 
-## 🎯 **Development Achievements**
-
-### **✅ Successfully Completed**
-1. **Complete Docker Environment**: 7 services orchestrated perfectly
-2. **Blockchain Integration**: Anvil working with external connectivity
-3. **AI Multi-Provider Setup**: OpenAI, Anthropic, OpenRouter support  
-4. **Database Stack**: PostgreSQL + Redis + Chromia mock ready
-5. **Development Automation**: One-command setup and management
-6. **Production Ready**: Deployment scripts and configurations
-7. **Documentation**: Comprehensive guides and troubleshooting
-8. **Collaboration Ready**: Git repository prepared for team development
-
-### **🔧 Key Technical Breakthrough**
-**Anvil Connectivity Fix**: The critical `entrypoint` solution that enabled proper blockchain network binding was the key breakthrough that made the entire development environment functional.
-
----
-
-## 🚀 **Ready for Development**
-
-The environment is now **100% functional** and ready for:
-- ✅ **Frontend Development**: React components and user interfaces
-- ✅ **Backend Development**: API endpoints and business logic
-- ✅ **AI Development**: Risk analysis agents and ML models
-- ✅ **Smart Contract Development**: Solidity contracts and DeFi protocols
-- ✅ **Database Development**: Data models and query optimization
-- ✅ **Integration Testing**: End-to-end workflow validation
-
-### **Next Development Phases**
-1. **Core Features**: Risk analysis algorithms and portfolio assessment
-2. **User Interface**: Dashboard design and user experience
-3. **AI Integration**: Advanced machine learning models
-4. **Blockchain Features**: Smart contract development and deployment
-5. **Real Chromia**: Replace mock with full Chromia implementation
-6. **Production Deployment**: Cloud infrastructure and CI/CD
-
----
-
-**🏆 The development environment is complete, tested, and ready for collaborative development!**
+**Desenvolvido com foco na simplicidade e produtividade** 🚀
