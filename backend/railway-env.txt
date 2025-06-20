@@ -1,0 +1,16 @@
+# COPIE E COLE ESTAS VARIÁVEIS NO RAILWAY:
+# =====================================
+
+NODE_ENV=production
+JWT_SECRET=riskguardian-super-secret-jwt-key-production-2024-32chars-minimum-secure
+JWT_EXPIRES_IN=7d
+FRONTEND_URL=https://riskguardian-7ewwn3tg2-jistrianes-projects.vercel.app
+ALLOWED_ORIGINS=https://riskguardian-7ewwn3tg2-jistrianes-projects.vercel.app,https://riskguardian-ai.vercel.app
+SEPOLIA_RPC_URL=https://sepolia.drpc.org
+SEPOLIA_CHAIN_ID=11155111
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+LOG_LEVEL=info
+
+# NOTA: DATABASE_URL e REDIS_URL serão geradas automaticamente pelo Railway
+# Não precisa adicionar essas duas manualmente! 
