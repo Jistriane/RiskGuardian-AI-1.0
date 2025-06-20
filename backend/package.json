@@ -13,7 +13,7 @@
         "test:coverage": "jest --coverage",
         "test:unit": "jest --testPathPattern=unit",
         "test:integration": "jest --testPathPattern=integration",
-        "clean": "rimraf dist",
+        "clean": "rm -rf dist",
         "prebuild": "npm run clean"
     },
     "dependencies": {
