@@ -3,8 +3,6 @@ name: Deploy RiskGuardian AI to GitHub Pages
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -27,8 +25,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
         
     - name: Setup Pages
       uses: actions/configure-pages@v4
@@ -38,7 +34,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd frontend
-        npm ci
+        npm install --legacy-peer-deps
         
     - name: Build with Next.js
       run: |
@@ -47,6 +43,7 @@ jobs:
       env:
         GITHUB_PAGES: true
         SKIP_TYPE_CHECK: true
+        NODE_OPTIONS: '--max_old_space_size=4096'
         
     - name: Copy build to docs folder
       run: |
