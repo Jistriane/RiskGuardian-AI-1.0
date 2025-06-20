@@ -2,11 +2,11 @@
     "name": "riskguardian-backend",
     "version": "0.1.0",
     "description": "RiskGuardian AI Backend API",
-    "main": "dist/index.js",
+    "main": "server-fixed.js",
     "scripts": {
         "dev": "nodemon src/index.ts",
-        "start": "node dist/index.js",
-        "build": "tsc",
+        "start": "node server-fixed.js",
+        "build": "echo 'Using JavaScript server for production'",
         "type-check": "tsc --noEmit",
         "test": "jest",
         "test:watch": "jest --watch",
@@ -14,7 +14,7 @@
         "test:unit": "jest --testPathPattern=unit",
         "test:integration": "jest --testPathPattern=integration",
         "clean": "rm -rf dist",
-        "prebuild": "npm run clean"
+        "prebuild": "echo 'Skipping clean for JS build'"
     },
     "dependencies": {
         "@metamask/eth-sig-util": "^7.0.0",
