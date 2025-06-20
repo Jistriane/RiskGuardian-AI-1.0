@@ -9,9 +9,9 @@ import { Shield, AlertTriangle, TrendingUp, Activity, BarChart3, RefreshCw } fro
 import { useTranslation } from '@/hooks/useTranslation';
 
 function getRiskColor(score: number): string {
-  if (score < 30) return 'text-green-500';
-  if (score < 60) return 'text-yellow-500';
-  return 'text-red-500';
+  if (score < 30) return 'text-green-600';
+  if (score < 60) return 'text-yellow-600';
+  return 'text-red-600';
 }
 
 function getRiskLevel(score: number, t: any): string {
@@ -34,9 +34,36 @@ export default function RiskAnalysisPage() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await refreshData();
+    if (refreshData) {
+      await refreshData();
+    }
     setTimeout(() => setIsRefreshing(false), 1000);
   };
+
+  if (!riskMetrics) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <header className="sticky top-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur">
+          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent">
+              🛡️ RiskGuardian AI
+            </h1>
+            <div className="w-64">
+              <WalletButton />
+            </div>
+          </div>
+        </header>
+        <main className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-500 mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Carregando análise de risco...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (!isConnected) {
     return (
@@ -70,25 +97,25 @@ export default function RiskAnalysisPage() {
   const riskFactors = [
     {
       name: t('volatility'),
-      score: riskMetrics.volatility || 45,
+      score: riskMetrics?.volatility || 45,
       description: 'Oscilação dos preços dos ativos',
       icon: '📈'
     },
     {
       name: t('liquidity'),
-      score: riskMetrics.liquidity || 75,
+      score: riskMetrics?.liquidity || 75,
       description: 'Facilidade de conversão em dinheiro',
       icon: '💧'
     },
     {
       name: t('concentration'),
-      score: 100 - (riskMetrics.diversification || 0),
+      score: 100 - (riskMetrics?.diversification || 0),
       description: 'Distribuição entre diferentes ativos',
       icon: '🎯'
     },
     {
       name: t('smartContract'),
-      score: riskMetrics.smartContractRisk || 25,
+      score: riskMetrics?.smartContractRisk || 25,
       description: 'Risco de falhas em contratos',
       icon: '📋'
     }
@@ -127,7 +154,7 @@ export default function RiskAnalysisPage() {
               <CardTitle className="text-sm font-medium">VaR 95%</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">-2.1%</div>
+              <div className="text-3xl font-bold">-{riskMetrics?.var95 || 2.1}%</div>
               <p className="text-sm text-gray-600 dark:text-gray-400">{t('twentyFourHours')}</p>
               <div className="text-xs text-gray-500 mt-1">
                 Max perda esperada
@@ -140,7 +167,7 @@ export default function RiskAnalysisPage() {
               <CardTitle className="text-sm font-medium">{t('volatility')}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-yellow-600">18.5%</div>
+              <div className="text-3xl font-bold text-yellow-600">{riskMetrics?.volatility || 18.5}%</div>
               <p className="text-sm text-yellow-600">Moderada</p>
               <div className="text-xs text-gray-500 mt-1">
                 Últimos 30 dias
@@ -153,7 +180,7 @@ export default function RiskAnalysisPage() {
               <CardTitle className="text-sm font-medium">Sharpe Ratio</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-blue-600">1.45</div>
+              <div className="text-3xl font-bold text-blue-600">{riskMetrics?.sharpeRatio || 1.45}</div>
               <p className="text-sm text-blue-600">Bom</p>
               <div className="text-xs text-gray-500 mt-1">
                 Retorno/Risco
@@ -228,72 +255,93 @@ export default function RiskAnalysisPage() {
           </Card>
         </div>
 
-        {/* Scenario Analysis */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('scenarioAnalysis')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  { scenario: t('bearMarket'), impact: '-35%', probability: '15%', color: 'text-red-600' },
-                  { scenario: t('normalCorrection'), impact: '-15%', probability: '35%', color: 'text-yellow-600' },
-                  { scenario: t('bullMarket'), impact: '+45%', probability: '25%', color: 'text-green-600' }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+        {/* Risk Factors Analysis */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>{t('riskFactors')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {riskFactors.map((factor, index) => (
+                <div key={index} className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">{factor.icon}</span>
                     <div>
-                      <div className="font-medium">{item.scenario}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">{t('probability')}: {item.probability}</div>
-                    </div>
-                    <div className={`text-lg font-bold ${item.color}`}>
-                      {item.impact}
+                      <h3 className="font-semibold">{factor.name}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{factor.description}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('riskRecommendations')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  { 
-                    action: t('diversifyExposure'), 
-                    priority: t('priority'), 
-                    color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400' 
-                  },
-                  { 
-                    action: t('increaseStablecoins'), 
-                    priority: t('priority'), 
-                    color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400' 
-                  },
-                  { 
-                    action: t('implementStopLoss'), 
-                    priority: t('priority'), 
-                    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400' 
-                  }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="font-medium">{item.action}</div>
-                      <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium mt-1 ${item.color}`}>
-                        {item.priority}
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-2xl font-bold">{factor.score}/100</span>
+                      <span className={`text-sm font-medium ${getRiskColor(factor.score)}`}>
+                        {getRiskLevel(factor.score, t)}
                       </span>
                     </div>
-                    <Button size="sm" variant="outline">
-                      {t('apply')}
-                    </Button>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full ${factor.score < 30 ? 'bg-green-500' : factor.score < 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                        style={{width: `${factor.score}%`}}
+                      ></div>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Risk Recommendations */}
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('recommendations')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[
+                {
+                  type: 'warning',
+                  title: 'Alta Concentração em ETH',
+                  description: 'Considere diversificar reduzindo a exposição em ETH de 40% para 25-30%',
+                  action: 'Rebalancear portfólio'
+                },
+                {
+                  type: 'info',
+                  title: 'Correlação entre LINK e ETH',
+                  description: 'Assets altamente correlacionados (0.82) podem aumentar o risco em quedas de mercado',
+                  action: 'Adicionar ativos descorrelacionados'
+                },
+                {
+                  type: 'success',
+                  title: 'Boa Exposição em Stablecoins',
+                  description: 'USDC oferece boa proteção contra volatilidade do mercado',
+                  action: 'Manter alocação atual'
+                }
+              ].map((rec, index) => (
+                <div key={index} className={`p-4 rounded-lg border-l-4 ${
+                  rec.type === 'warning' ? 'bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20' :
+                  rec.type === 'info' ? 'bg-blue-50 border-blue-400 dark:bg-blue-900/20' :
+                  'bg-green-50 border-green-400 dark:bg-green-900/20'
+                }`}>
+                  <div className="flex items-start gap-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                      rec.type === 'warning' ? 'bg-yellow-100 text-yellow-600' :
+                      rec.type === 'info' ? 'bg-blue-100 text-blue-600' :
+                      'bg-green-100 text-green-600'
+                    }`}>
+                      {rec.type === 'warning' ? '⚠️' : rec.type === 'info' ? 'ℹ️' : '✅'}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold">{rec.title}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{rec.description}</p>
+                      <p className="text-sm font-medium mt-2 text-blue-600 dark:text-blue-400">{rec.action}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Refresh Button */}
         <div className="flex justify-center">

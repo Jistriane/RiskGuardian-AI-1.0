@@ -23,9 +23,37 @@ export default function PortfolioPage() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await refreshData();
+    if (refreshData) {
+      await refreshData();
+    }
     setTimeout(() => setIsRefreshing(false), 1000);
   };
+
+  // Loading state durante a inicialização
+  if (!portfolio) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <header className="sticky top-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur">
+          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent">
+              🛡️ RiskGuardian AI
+            </h1>
+            <div className="w-64">
+              <WalletButton />
+            </div>
+          </div>
+        </header>
+        <main className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-500 mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Carregando portfolio...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (!isConnected) {
     return (
@@ -56,8 +84,8 @@ export default function PortfolioPage() {
     );
   }
 
-  const totalValue = parseFloat(portfolio.totalValue);
-  const hasAssets = portfolio.assets.length > 0;
+  const totalValue = portfolio?.totalValue || 0;
+  const hasAssets = portfolio?.assets?.length > 0;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -99,7 +127,7 @@ export default function PortfolioPage() {
               <CardTitle>{t('assets')}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{portfolio.assets.length}</div>
+              <div className="text-3xl font-bold">{portfolio?.assets?.length || 0}</div>
               <p className="text-gray-600 dark:text-gray-400 text-sm">Diferentes criptomoedas</p>
             </CardContent>
           </Card>
@@ -181,22 +209,15 @@ export default function PortfolioPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    { asset: 'ETH', balance: '7.7234', value: '$18,092.76', change: '+2.34%', allocation: '40%', isPositive: true },
-                    { asset: 'BTC', balance: '0.3117', value: '$13,569.57', change: '-1.23%', allocation: '30%', isPositive: false },
-                    { asset: 'LINK', balance: '466.21', value: '$6,784.78', change: '+5.67%', allocation: '15%', isPositive: true },
-                    { asset: 'USDC', balance: '4,523.19', value: '$4,523.19', change: '0.00%', allocation: '10%', isPositive: true },
-                    { asset: 'UNI', balance: '142.87', value: '$1,356.96', change: '+3.45%', allocation: '3%', isPositive: true },
-                    { asset: 'AAVE', balance: '12.45', value: '$904.63', change: '-2.11%', allocation: '2%', isPositive: false }
-                  ].map((holding, index) => (
+                  {(portfolio?.assets || []).map((holding, index) => (
                     <tr key={index} className="border-b border-gray-100 dark:border-gray-800">
-                      <td className="py-3 px-4 font-medium">{holding.asset}</td>
-                      <td className="py-3 px-4 text-right">{holding.balance}</td>
-                      <td className="py-3 px-4 text-right font-semibold">{holding.value}</td>
-                      <td className={`py-3 px-4 text-right ${holding.isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                        {holding.change}
+                      <td className="py-3 px-4 font-medium">{holding.symbol}</td>
+                      <td className="py-3 px-4 text-right">{holding.amount}</td>
+                      <td className="py-3 px-4 text-right font-semibold">{formatCurrency(holding.value)}</td>
+                      <td className={`py-3 px-4 text-right ${holding.change24h >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {holding.change24h >= 0 ? '+' : ''}{holding.change24h.toFixed(2)}%
                       </td>
-                      <td className="py-3 px-4 text-right">{holding.allocation}</td>
+                      <td className="py-3 px-4 text-right">{holding.allocation.toFixed(1)}%</td>
                     </tr>
                   ))}
                 </tbody>
