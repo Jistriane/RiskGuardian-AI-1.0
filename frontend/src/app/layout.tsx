@@ -94,6 +94,25 @@ export default function RootLayout({
         <meta name="theme-color" content="#00d395" />
         <meta name="color-scheme" content="dark light" />
         
+        {/* Script SPA para GitHub Pages */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Single Page Apps for GitHub Pages
+              (function(l) {
+                if (l.search[1] === '/' ) {
+                  var decoded = l.search.slice(1).split('&').map(function(s) { 
+                    return s.replace(/~and~/g, '&')
+                  }).join('?');
+                  window.history.replaceState(null, null,
+                      l.pathname.slice(0, -1) + decoded + l.hash
+                  );
+                }
+              }(window.location))
+            `,
+          }}
+        />
+        
         {/* Scripts de terceiros críticos */}
         <script
           dangerouslySetInnerHTML={{
