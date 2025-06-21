@@ -1,6 +1,19 @@
 # 🛡️ RiskGuardian AI - Sistema Completo de Gestão de Riscos DeFi
 
-**Plataforma completa de gestão de riscos para DeFi com IA integrada, automação Chainlink e análise em tempo real**
+**Plataforma inovadora de gestão de riscos que combina inteligência artificial com tecnologia blockchain para proteger investidores em DeFi e mercados financeiros tradicionais**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+
+## 🎯 O que é o RiskGuardian AI?
+
+O **RiskGuardian AI** funciona como um "piloto automático inteligente" para investimentos em DeFi, combinando a velocidade da automação blockchain com a inteligência da IA para manter os fundos dos usuários seguros. É essencialmente um sistema de "guardião financeiro" que:
+
+- 🔍 **Previne perdas** através de análise preditiva
+- 🛡️ **Automatiza proteções** sem intervenção manual  
+- 📊 **Simplifica decisões** complexas de investimento
+- ⚡ **Monitora 24/7** múltiplas redes e protocolos
 
 ## 🚀 Início Rápido
 
@@ -9,8 +22,8 @@
 **Para novos usuários:**
 ```bash
 # Clone o repositório
-git clone https://github.com/your-repo/riskguardian-ai.git
-cd riskguardian-ai
+git clone https://github.com/Jistriane/RiskGuardian-AI-1.0.git
+cd RiskGuardian-AI-1.0
 
 # Configuração inicial automática
 ./setup-riskguardian.sh
@@ -20,7 +33,7 @@ cd riskguardian-ai
 
 **Sistema completo em desenvolvimento:**
 ```bash
-# Inicia todos os serviços (Frontend + Backend + Blockchain + ElizaOS + Chromia)
+# Inicia todos os serviços
 ./start-riskguardian.sh dev
 
 # Verificar status dos serviços
@@ -31,11 +44,97 @@ cd riskguardian-ai
 ```
 
 **✅ Pronto!** Todos os serviços estarão rodando:
-- 🎨 **Frontend**: http://localhost:3000
-- 🔧 **Backend**: http://localhost:3001
+- 🎨 **Frontend**: http://localhost:3001
+- 🔧 **Backend**: http://localhost:8001
+- 🤖 **ElizaOS Agent**: http://localhost:3000
+- 🗄️ **PostgreSQL**: localhost:5432
+- 🔄 **Redis**: localhost:6379
 - ⛓️ **Blockchain**: http://localhost:8545
-- 🤖 **ElizaOS Agent**: http://localhost:3002
-- 🔗 **Chromia Services**: http://localhost:3003
+
+## 🏗️ Arquitetura e Tecnologias
+
+### Arquitetura do Sistema
+
+```
+┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+│   Frontend      │  │   Backend API   │  │  ElizaOS Agent  │
+│   Next.js       │◄─┤   Node.js/TS    │◄─┤   IA Engine     │
+│   Port: 3001    │  │   Port: 8001    │  │   Port: 3000    │
+└─────────────────┘  └─────────────────┘  └─────────────────┘
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 ▼
+                     ┌─────────────────┐
+                     │   Database      │
+                     │ PostgreSQL:5432 │
+                     │   Redis:6379    │
+                     └─────────────────┘
+                                 │
+                                 ▼
+                     ┌─────────────────┐
+                     │   Blockchain    │
+                     │ Anvil/Hardhat   │
+                     │   Port: 8545    │
+                     └─────────────────┘
+```
+
+### Stack Tecnológico
+
+**Frontend (Next.js 14):**
+- React 18 + TypeScript
+- Tailwind CSS + Shadcn/ui
+- Wagmi v2 + RainbowKit (Web3)
+- TradingView Charts
+- Socket.io Client
+- Zustand (State Management)
+
+**Backend (Node.js):**
+- Express + TypeScript
+- Prisma ORM + PostgreSQL
+- JWT Authentication
+- Rate Limiting & Security
+- Socket.io Server
+- Ethers.js v6
+
+**Blockchain & DeFi:**
+- Ethereum + Chainlink + Avalanche
+- Multi-chain Support (Sepolia, Mumbai, Fuji, BSC)
+- Smart Contracts (Solidity)
+- Hardhat Framework
+- OpenZeppelin Security
+
+**IA & Automação:**
+- ElizaOS Agent (IA conversacional)
+- OpenAI/Anthropic Integration
+- Chromia Services (Alertas em tempo real)
+- Anomaly Detection
+- WebSocket Real-time
+
+## ✨ Funcionalidades Principais
+
+### 🔍 Análise de Risco Inteligente
+- **IA Preditiva**: Usa ElizaOS para analisar tendências de mercado
+- **Monitoramento Multi-chain**: Análise em tempo real através de múltiplas redes
+- **Detecção de Anomalias**: Identifica atividades suspeitas e movimentos de "whales"
+- **Métricas Avançadas**: VaR, Sharpe Ratio, Volatilidade, Correlação
+
+### ⚠️ Sistema de Alertas Proativo
+- Notificações instantâneas sobre vulnerabilidades e ameaças
+- Alertas de volatilidade extrema
+- Detecção de atividades suspeitas em protocolos DeFi
+- WebSocket real-time para alertas instantâneos
+
+### 🛡️ Automação de Proteção
+- **Hedge Automático**: Contratos inteligentes com estratégias de proteção
+- **Stop-loss Inteligente**: Sistema cross-chain que protege posições
+- **Rebalanceamento Automático**: Ajusta portfólios baseado em análises de risco
+- **Chainlink Automation**: Execução automática via oráculos descentralizados
+
+### 📊 Dashboard Analítico Avançado
+- Visualização de dados em tempo real com TradingView
+- Métricas de risco personalizadas
+- Simulação de cenários "e se?" para testar estratégias
+- Interface responsiva para desktop e mobile
 
 ## 📋 Scripts de Sistema
 
@@ -54,7 +153,7 @@ cd riskguardian-ai
 # Desenvolvimento completo (padrão)
 ./start-riskguardian.sh dev
 
-# Modo produção (sem blockchain local)
+# Modo produção
 ./start-riskguardian.sh prod
 
 # Apenas blockchain local
@@ -64,85 +163,6 @@ cd riskguardian-ai
 ./start-riskguardian.sh test
 ```
 
-**📚 Documentação completa:** `cat SCRIPTS_SISTEMA.md`
-
-## 🛠️ Tecnologias Principais
-
-### Frontend
-- **Next.js 15** + React 19 + TypeScript
-- **Tailwind CSS** + Shadcn/ui
-- **Wagmi v2** + RainbowKit (Web3)
-- **TradingView Charts**
-
-### Backend
-- **Node.js** + Express + TypeScript
-- **Prisma ORM** + PostgreSQL/SQLite
-- **JWT Authentication**
-- **Rate Limiting & Security**
-
-### Blockchain & DeFi
-- **Ethereum** + Chainlink + Avalanche
-- **Multi-chain Support**
-- **Smart Contracts** (Solidity)
-- **Risk Management Protocols**
-
-### IA & Automação
-- **ElizaOS Agent** (IA conversacional)
-- **Chromia Services** (Alertas em tempo real)
-- **Anomaly Detection**
-- **WebSocket Real-time**
-
-## 🏗️ Arquitetura do Sistema
-
-```
-┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│   Frontend      │  │   Backend API   │  │  ElizaOS Agent  │
-│   Next.js       │◄─┤   Node.js/TS    │◄─┤   IA Engine     │
-│   Port: 3000    │  │   Port: 3001    │  │   Port: 3002    │
-└─────────────────┘  └─────────────────┘  └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 ▼
-                     ┌─────────────────┐
-                     │  Chromia AWS    │
-                     │  Alert System   │
-                     │   Port: 3003    │
-                     └─────────────────┘
-                                 │
-                                 ▼
-                     ┌─────────────────┐
-                     │   Blockchain    │
-                     │ Anvil/Hardhat   │
-                     │   Port: 8545    │
-                     └─────────────────┘
-```
-
-## ✨ Funcionalidades Principais
-
-### 🔗 Web3 & Blockchain
-- **Conexão Multi-Carteira**: RainbowKit + Wagmi v2
-- **Multi-Chain Support**: Ethereum, Polygon, Arbitrum, Base, Optimism
-- **Redes Testnet**: Desenvolvimento seguro
-- **Autenticação Web3**: Nonce + signature
-
-### 📊 Dashboard Analítico
-- **Portfolio Overview**: Visualização completa de ativos
-- **Risk Metrics**: Análise de risco em tempo real
-- **AI Insights**: Recomendações inteligentes via ElizaOS
-- **TradingView Charts**: Gráficos profissionais integrados
-
-### 🔔 Sistema de Alertas
-- **Real-time Alerts**: WebSocket + Socket.IO
-- **Anomaly Detection**: Detecção automática via Chromia
-- **Custom Notifications**: Alertas personalizáveis
-- **Smart Monitoring**: Monitoramento inteligente
-
-### ⚡ Automação Chainlink
-- **Upkeep Management**: Gerenciamento de automações
-- **Execution Monitoring**: Status em tempo real
-- **LINK Balance**: Controle de saldos
-- **Performance Tracking**: Métricas de performance
-
 ## 🔧 Desenvolvimento Manual
 
 ### Pré-requisitos
@@ -150,7 +170,8 @@ cd riskguardian-ai
 Node.js 18+
 npm 9+
 Git
-curl (opcional)
+PostgreSQL 13+
+Redis 6+
 ```
 
 ### Instalação Manual
@@ -179,7 +200,7 @@ npm run dev
 ### Blockchain Local
 ```bash
 # Usando Anvil (Foundry)
-anvil --port 8545
+anvil --port 8545 --host 0.0.0.0
 
 # Ou usando Hardhat
 npx hardhat node --port 8545
@@ -189,49 +210,51 @@ npx hardhat node --port 8545
 
 ```
 riskguardian-ai/
-├── 🎨 frontend/          # Next.js App
-├── 🔧 backend/           # API Node.js
-├── 🤖 elizaos-agent/     # IA Agent
-├── 🔗 chromia_aws/       # Alert System
-├── 📄 contracts/         # Smart Contracts
-├── 🚀 scripts/           # Deployment Scripts
-├── 📚 docs/              # Documentation
-├── 🛠️ *.sh              # System Scripts
-└── 📋 *.md               # Documentation
+├── 🎨 frontend/           # Next.js App (Porta 3001)
+├── 🔧 backend/            # API Node.js (Porta 8001)
+├── 🤖 elizaos-agent/      # IA Agent (Porta 3000)
+├── 🔗 chromia_aws/        # Alert System
+├── 📄 contracts/          # Smart Contracts Solidity
+├── 🚀 scripts/            # Deployment Scripts
+├── 📚 docs/               # Documentation
+├── 🛠️ *.sh               # System Scripts
+└── 📋 *.md                # Documentation
 ```
-
-## 🌐 URLs de Produção
-
-### Serviços Online
-- **Frontend**: https://riskguardian-7ewwn3tg2-jistrianes-projects.vercel.app
-- **Backend**: https://riskguardian-backend.onrender.com
-
-### Desenvolvimento Local
-- **Frontend**: http://localhost:3000
-- **Backend**: http://localhost:3001
-- **ElizaOS**: http://localhost:3002
-- **Chromia**: http://localhost:3003
-- **Blockchain**: http://localhost:8545
 
 ## 🔒 Configuração de Segurança
 
 ### Variáveis de Ambiente
 
-**Frontend (.env.local):**
-```bash
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
-NEXT_PUBLIC_BACKEND_API_URL=http://localhost:3001
-NEXT_PUBLIC_ELIZAOS_API_URL=http://localhost:3002
-NEXT_PUBLIC_CHROMIA_API_URL=http://localhost:3003
+**Backend (.env):**
+```env
+# Database
+DATABASE_URL="postgresql://user:pass@localhost:5432/riskguardian"
+
+# APIs
+ALCHEMY_API_KEY="your_alchemy_key"
+COINMARKETCAP_API_KEY="your_cmc_key"
+COINGECKO_API_KEY="your_coingecko_key"
+
+# JWT
+JWT_SECRET="your_jwt_secret_here"
+
+# Blockchain
+PRIVATE_KEY="your_wallet_private_key"
+ETHEREUM_RPC_URL="https://eth-mainnet.alchemyapi.io/v2/your-key"
 ```
 
-**Backend (.env-dev):**
-```bash
-NODE_ENV=development
-JWT_SECRET=your-secret-key
-DATABASE_URL=sqlite:./dev.db
-REDIS_URL=redis://localhost:6379
-FRONTEND_URL=http://localhost:3000
+**Frontend (.env.local):**
+```env
+NEXT_PUBLIC_API_URL="http://localhost:8001"
+NEXT_PUBLIC_WEBSOCKET_URL="ws://localhost:8001"
+NEXT_PUBLIC_ENVIRONMENT="development"
+```
+
+**ElizaOS (.env):**
+```env
+OPENAI_API_KEY="your_openai_key"
+ANTHROPIC_API_KEY="your_anthropic_key"
+ELIZAOS_PORT="3000"
 ```
 
 ## 🧪 Testes e Qualidade
@@ -266,16 +289,62 @@ cd backend && npm run dev 2>&1 | tee backend.log
 ### Health Checks
 ```bash
 # Frontend
-curl http://localhost:3000
+curl http://localhost:3001
 
 # Backend
-curl http://localhost:3001/health
+curl http://localhost:8001/health
 
 # ElizaOS
-curl http://localhost:3002/health
+curl http://localhost:3000/health
 
-# Chromia
-curl http://localhost:3003/health
+# Blockchain
+curl http://localhost:8545
+```
+
+## 🔌 APIs e Integrações
+
+### API Endpoints Principais
+
+**Autenticação:**
+```typescript
+POST /api/auth/login
+POST /api/auth/register
+GET /api/auth/profile
+```
+
+**Portfolio:**
+```typescript
+GET /api/portfolio/overview
+GET /api/portfolio/assets
+POST /api/portfolio/analyze
+```
+
+**Risk Analysis:**
+```typescript
+POST /api/risk/analyze
+GET /api/risk/metrics
+GET /api/risk/alerts
+```
+
+### Integrações Externas
+- **Blockchain**: Ethereum, Polygon, Avalanche, BSC
+- **Oráculos**: Chainlink Data Feeds, Automation, CCIP, VRF
+- **Market Data**: CoinGecko, CoinMarketCap, TheGraph
+- **IA Services**: OpenAI GPT-4, Anthropic Claude
+
+## 🌐 Deploy e Produção
+
+### URLs de Produção
+- **Frontend**: https://riskguardian-ai.vercel.app
+- **Backend**: https://riskguardian-backend.railway.app
+
+### Deploy Automático
+```bash
+# Deploy frontend (Vercel)
+npm run build:frontend
+
+# Deploy backend (Railway)
+npm run build:backend
 ```
 
 ## 🤝 Contribuição
@@ -286,32 +355,53 @@ curl http://localhost:3003/health
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
-## 📞 Suporte
+## 📞 Suporte e Contato
+
+### Canais de Comunicação
+- **Email**: jistriane@live.com
+- **LinkedIn**: www.linkedin.com/in/jibso
+- **Discord**: jistriane
+- **X (Twitter)**: @jistriane
+- **Instagram**: jibso87
+
+### Suporte Técnico
 
 Para problemas e dúvidas:
 
 1. **Verificar logs**: `cat riskguardian-startup.log`
 2. **Verificar status**: `./status-riskguardian.sh`
 3. **Reiniciar sistema**: `./stop-riskguardian.sh && ./start-riskguardian.sh`
-4. **Documentação**: `cat SCRIPTS_SISTEMA.md`
+4. **Documentação completa**: `DOCUMENTACAO_COMPLETA_RISKGUARDIAN_AI.md`
+
+## 🚀 Roadmap
+
+### Versão Atual (v1.0)
+- [x] Dashboard completo com métricas de risco
+- [x] Integração Web3 com múltiplas carteiras
+- [x] Sistema de alertas em tempo real
+- [x] IA ElizaOS para análise de portfólio
+- [x] Automação Chainlink básica
+- [x] Suporte multi-chain (Testnet)
+
+### Próximas Versões
+- [ ] **v1.1** - Mobile App (React Native)
+- [ ] **v1.2** - Suporte Mainnet completo
+- [ ] **v1.3** - IA Avançada com ML personalizado
+- [ ] **v2.0** - Ecossistema completo com DAO
 
 ## 📄 Licença
 
 MIT License - veja [LICENSE](LICENSE) para detalhes.
 
-## 🎯 Roadmap
+## 🎯 Diferenciais Competitivos
 
-- [x] Sistema de scripts automatizados
-- [x] Deploy de produção (Vercel + Render)
-- [x] Integração Web3 completa
-- [x] IA Agent (ElizaOS)
-- [x] Sistema de alertas (Chromia)
-- [ ] Mobile App (React Native)
-- [ ] Advanced Analytics
-- [ ] Multi-language Support
+- **Arquitetura Híbrida**: Combina o melhor de múltiplas blockchains
+- **IA Avançada**: ElizaOS como cérebro central para análise de risco
+- **Integração Completa Chainlink**: Usa 5+ serviços Chainlink
+- **UX Profissional**: Interface intuitiva inspirada em ferramentas de trading
 
 ---
 
 ⭐ **Star este projeto se te ajudou!**
 
-*RiskGuardian AI - Protegendo seus investimentos DeFi com inteligência artificial* 🛡️
+*RiskGuardian AI - Seu guardião financeiro inteligente protegendo investimentos DeFi 24/7* 🛡️

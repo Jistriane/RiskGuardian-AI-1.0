@@ -1,3 +1,15 @@
+/**
+ * @title RiskGuardian AI - Sistema Avançado de Proteção DeFi
+ * @author Jistriane (jistriane@live.com)
+ * @description Sistema completo de gestão de riscos para portfolios DeFi
+ * @github https://github.com/Jistriane/RiskGuardian-AI-1.0
+ * @linkedin https://www.linkedin.com/in/jibso
+ * @twitter @jistriane
+ * @license MIT
+ * @version 1.0.0
+ * @created 2025
+ */
+
 import axios from 'axios';
 
 const TX_HASH = "0x3920b7f50277b820e09d5cd8f556a8394f377c956bafb22726f058f396104f6e";

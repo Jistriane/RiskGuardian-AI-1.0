@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# RiskGuardian AI - Sistema Avançado de Proteção DeFi
+# Author: Jistriane (jistriane@live.com)
+# Description: Sistema completo de gestão de riscos para portfolios DeFi
+# GitHub: https://github.com/Jistriane/RiskGuardian-AI-1.0
+# LinkedIn: https://www.linkedin.com/in/jibso
+# Twitter: @jistriane
+# License: MIT
+# Version: 1.0.0
+# Created: 2025
+#
+
+#!/bin/bash
 
 echo "🚀 Setting up RiskGuardian AI Development Environment"
 echo "Architecture: PostgreSQL → Chromia → Backend → Frontend + ElizaOS"

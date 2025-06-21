@@ -1,3 +1,15 @@
+/**
+ * @title RiskGuardian AI - Sistema Avançado de Proteção DeFi
+ * @author Jistriane (jistriane@live.com)
+ * @description Sistema completo de gestão de riscos para portfolios DeFi
+ * @github https://github.com/Jistriane/RiskGuardian-AI-1.0
+ * @linkedin https://www.linkedin.com/in/jibso
+ * @twitter @jistriane
+ * @license MIT
+ * @version 1.0.0
+ * @created 2025
+ */
+
 const http = require('http');
 const url = require('url');
 
@@ -7,7 +19,7 @@ const PORT = process.env.PORT || 3001;
 const setCorsHeaders = (res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cache-Control');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Content-Type', 'application/json');
 };
@@ -26,7 +38,7 @@ const parseBody = (req) => {
             resolve({});
             return;
         }
-        
+
         let body = '';
         req.on('data', chunk => body += chunk);
         req.on('end', () => {
@@ -64,8 +76,7 @@ const generatePortfolioData = () => {
         portfolio: {
             totalValue: parseFloat((btcPrice * 0.5 + ethPrice * 2 + usdcPrice * 10000).toFixed(2)),
             totalChange24h: parseFloat(((Math.random() - 0.5) * 1000).toFixed(2)),
-            assets: [
-                {
+            assets: [{
                     symbol: 'BTC',
                     balance: 0.5,
                     value: parseFloat((btcPrice * 0.5).toFixed(2)),
@@ -98,7 +109,7 @@ const generatePortfolioData = () => {
 };
 
 // Server
-const server = http.createServer(async (req, res) => {
+const server = http.createServer(async(req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const path = parsedUrl.pathname;
     const method = req.method;
@@ -168,7 +179,7 @@ const server = http.createServer(async (req, res) => {
             res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
             res.setHeader('Pragma', 'no-cache');
             res.setHeader('Expires', '0');
-            
+
             sendJSON(res, generatePortfolioData());
 
         } else if (path === '/api/market/monitor' && method === 'POST') {

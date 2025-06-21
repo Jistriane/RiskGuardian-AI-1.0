@@ -1,4 +1,16 @@
 /**
+ * @title RiskGuardian AI - Sistema Avançado de Proteção DeFi
+ * @author Jistriane (jistriane@live.com)
+ * @description Sistema completo de gestão de riscos para portfolios DeFi
+ * @github https://github.com/Jistriane/RiskGuardian-AI-1.0
+ * @linkedin https://www.linkedin.com/in/jibso
+ * @twitter @jistriane
+ * @license MIT
+ * @version 1.0.0
+ * @created 2025
+ */
+
+/**
  * RiskGuardian Chromia AWS - Sistema Principal
  * Integração completa com nó Chromia real e PostgreSQL
  */
@@ -53,7 +65,7 @@ class RiskGuardianChromiaAWSSimple {
         // CORS headers
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cache-Control');
 
         if (req.method === 'OPTIONS') {
             res.writeHead(200);
