@@ -34,11 +34,11 @@ interface ChartDataPoint {
 }
 
 export function MarketData() {
-  const { formatTime } = useClientTime();
+  const { formatTime, isClient } = useClientTime();
   const [marketData, setMarketData] = useState<MarketData[]>([]);
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [selectedAsset, setSelectedAsset] = useState<string>('ETH');
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   // Simular dados de mercado em tempo real
   useEffect(() => {
@@ -103,13 +103,15 @@ export function MarketData() {
       setLastUpdate(new Date());
     };
 
-    updateData();
-
-    // Atualizar a cada 5 segundos
-    const interval = setInterval(updateData, 5000);
-
-    return () => clearInterval(interval);
-  }, [selectedAsset]); // Removido formatTime das dependências para evitar loop infinito
+    // Só atualizar no cliente para evitar hidratação
+    if (isClient) {
+      updateData();
+      
+      // Atualizar a cada 5 segundos apenas no cliente
+      const interval = setInterval(updateData, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [selectedAsset, isClient]); // Adicionado isClient às dependências
 
   const formatCurrency = (value: number, symbol: string = 'USD'): string => {
     if (symbol === 'USDC') {
@@ -206,7 +208,7 @@ export function MarketData() {
             <span>Gráfico de Preços - {selectedAsset}</span>
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <Clock className="h-4 w-4" />
-              Última atualização: {formatTime(lastUpdate.toISOString())}
+              Última atualização: {isClient && lastUpdate ? formatTime(lastUpdate.toISOString()) : '--:--:--'}
             </div>
           </CardTitle>
         </CardHeader>

@@ -1,0 +1,34 @@
+IMAGEM: 15-seguros-defi.png
+SEÇÃO: Seguros DeFi
+PROCESSADA: Sim
+DATA: 2025-01-27
+
+DESCRIÇÃO DETALHADA:
+Interface completa de seguros DeFi do RiskGuardian AI mostrando sistema avançado de proteção com apólices ativas, tipos disponíveis, histórico de sinistros e análise de risco inteligente.
+
+ELEMENTOS IDENTIFICADOS:
+1. Cabeçalho "🛡️ Seguros" com subtítulo explicativo
+2. 3 métricas principais: Cobertura Total ($75k), Prêmio Mensal ($375), Claims Ativos (1)
+3. Seção "Apólices Ativas" com 3 seguros detalhados
+4. Seção "Tipos de Seguro Disponíveis" com 4 opções contratuais
+5. "Histórico de Sinistros" com 2 claims (1 pago, 1 pendente)
+6. "Avaliação de Risco Inteligente" com análise atual e recomendações IA
+7. Sistema de status com cores (verde=ativo, amarelo=pendente, cinza=expirado)
+8. Botões "Contratar" para cada tipo de seguro
+
+TIPOS DE SEGURO:
+- Smart Contract Risk: 0.5% ao mês
+- Proteção de Preço: 0.3% ao mês  
+- Exchange Hack: 0.2% ao mês
+- Liquidation Protection: 0.4% ao mês
+
+FUNCIONALIDADES TÉCNICAS:
+- Sistema de claims automatizado
+- IA integrada para análise de risco
+- Renovação automática disponível
+- Interface responsiva e intuitiva
+- Histórico completo de transações
+- Recomendações personalizadas da IA
+- Múltiplos tipos de cobertura
+
+STATUS: Sistema de seguros DeFi totalmente funcional 

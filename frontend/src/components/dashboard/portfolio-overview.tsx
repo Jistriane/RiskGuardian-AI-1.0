@@ -35,12 +35,12 @@ function getRiskColor(score: number): string {
 export function PortfolioOverview() {
   const { data: realTimeData, isConnected } = useRealTimeData();
   const { t } = useTranslation();
-  const { formatTime } = useClientTime();
+  const { formatTime, isClient } = useClientTime();
 
   // Dados simulados para o portfolio
   const portfolio = {
     totalValue: '25750.42',
-    lastUpdate: new Date(),
+    lastUpdate: isClient ? new Date() : null,
     assets: [
       { symbol: 'ETH', balance: '5.5', value: '12925.48', price: realTimeData?.prices?.ETH || 2350.45 },
       { symbol: 'USDC', balance: '8500', value: '8500.00', price: realTimeData?.prices?.USDC || 1.00 },
@@ -116,7 +116,9 @@ export function PortfolioOverview() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-400">{t('lastUpdate')}</span>
-            <span className="text-sm font-medium text-gray-300">{formatTime(portfolio.lastUpdate)}</span>
+            <span className="text-sm font-medium text-gray-300">
+              {portfolio.lastUpdate ? formatTime(portfolio.lastUpdate) : '--:--:--'}
+            </span>
           </div>
           
           <div className="bg-gray-800/40 rounded-lg p-4">

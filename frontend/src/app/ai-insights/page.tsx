@@ -53,15 +53,9 @@ const aiResponses = [
 
 export default function AIInsightsPage() {
   const { t } = useTranslation();
-  const { formatTime } = useClientTime();
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: '1',
-      type: 'ai',
-      message: 'Olá! Sou a ElizaOS AI. Como posso ajudar com sua análise de risco hoje?',
-      timestamp: new Date()
-    }
-  ]);
+  const { formatTime, isClient } = useClientTime();
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -69,6 +63,21 @@ export default function AIInsightsPage() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Inicializar mensagens apenas no cliente para evitar erro de hidratação
+  useEffect(() => {
+    if (isClient && !isInitialized) {
+      setChatMessages([
+        {
+          id: '1',
+          type: 'ai',
+          message: 'Olá! Sou a ElizaOS AI. Como posso ajudar com sua análise de risco hoje?',
+          timestamp: new Date()
+        }
+      ]);
+      setIsInitialized(true);
+    }
+  }, [isClient, isInitialized]);
 
   useEffect(() => {
     scrollToBottom();

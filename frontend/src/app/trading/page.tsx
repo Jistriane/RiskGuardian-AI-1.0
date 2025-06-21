@@ -18,7 +18,7 @@ import { useRealTimeData } from '@/hooks/useRealTimeData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TradingChart } from '@/components/ui/trading-chart';
-import { TrendingUp, TrendingDown, BarChart3, Activity, DollarSign, RefreshCw, Wallet, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, RefreshCw, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const tradingPairs = [
@@ -30,7 +30,7 @@ const tradingPairs = [
 ];
 
 export default function TradingPage() {
-  const { data: realTimeData, isLoading } = useRealTimeData();
+  const { data: realTimeData, loading: isLoading } = useRealTimeData();
   const [selectedPair, setSelectedPair] = useState('ETH/USDC');
   const [orderBook, setOrderBook] = useState<any>({ bids: [], asks: [] });
   const [recentTrades, setRecentTrades] = useState<any[]>([]);
@@ -48,7 +48,8 @@ export default function TradingPage() {
   useEffect(() => {
     if (!realTimeData) return;
 
-    const basePrice = realTimeData.prices[baseSymbol] || selectedPairData?.basePrice || 2350;
+    const rawBasePrice = realTimeData.prices[baseSymbol] || selectedPairData?.basePrice || 2350;
+    const basePrice = typeof rawBasePrice === 'number' ? rawBasePrice : parseFloat(String(rawBasePrice)) || 2350;
     
     // Mock order book com spread realista
     const spread = basePrice * 0.0005; // 0.05% spread
@@ -93,24 +94,39 @@ export default function TradingPage() {
     setSellPrice(asks[0]?.price || basePrice.toFixed(2));
   }, [realTimeData, selectedPair, baseSymbol, selectedPairData]);
 
-  const currentPrice = realTimeData?.prices[baseSymbol] || selectedPairData?.basePrice || 0;
+  const rawCurrentPrice = realTimeData?.prices[baseSymbol] || selectedPairData?.basePrice || 0;
+  const currentPrice = typeof rawCurrentPrice === 'number' ? rawCurrentPrice : (typeof rawCurrentPrice === 'object' && rawCurrentPrice.price ? rawCurrentPrice.price : parseFloat(String(rawCurrentPrice)) || 0);
   const priceChange = selectedPairData?.change || 0;
 
-  const formatCurrency = (value: number) => {
-    if (value > 1000) {
-      return `$${(value / 1000).toFixed(1)}k`;
+  const formatCurrency = (value: number | string | null | undefined) => {
+    const numValue = typeof value === 'number' ? value : parseFloat(String(value || 0));
+    
+    // Verificar se é um número válido
+    if (isNaN(numValue) || !isFinite(numValue)) {
+      return '$0.00';
     }
-    return `$${value.toFixed(2)}`;
+    
+    if (numValue > 1000) {
+      return `$${(numValue / 1000).toFixed(1)}k`;
+    }
+    return `$${numValue.toFixed(2)}`;
   };
 
-  const formatVolume = (volume: number) => {
-    if (volume > 1000000) {
-      return `${(volume / 1000000).toFixed(1)}M`;
+  const formatVolume = (volume: number | string | null | undefined) => {
+    const numVolume = typeof volume === 'number' ? volume : parseFloat(String(volume || 0));
+    
+    // Verificar se é um número válido
+    if (isNaN(numVolume) || !isFinite(numVolume)) {
+      return '0';
     }
-    if (volume > 1000) {
-      return `${(volume / 1000).toFixed(1)}K`;
+    
+    if (numVolume > 1000000) {
+      return `${(numVolume / 1000000).toFixed(1)}M`;
     }
-    return volume.toFixed(0);
+    if (numVolume > 1000) {
+      return `${(numVolume / 1000).toFixed(1)}K`;
+    }
+    return numVolume.toFixed(0);
   };
 
   return (
@@ -161,7 +177,7 @@ export default function TradingPage() {
                 <span className="mr-2">{pair.icon}</span>
                 {pair.symbol}
                 <span className={`ml-2 ${pair.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {pair.change >= 0 ? '+' : ''}{pair.change.toFixed(2)}%
+                  {pair.change >= 0 ? '+' : ''}{typeof pair.change === 'number' ? pair.change.toFixed(2) : '0.00'}%
                 </span>
               </Button>
             ))}
@@ -181,7 +197,7 @@ export default function TradingPage() {
                   </div>
                   <div className={`flex items-center ${priceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {priceChange >= 0 ? <TrendingUp className="h-4 w-4 mr-1" /> : <TrendingDown className="h-4 w-4 mr-1" />}
-                    {priceChange >= 0 ? '+' : ''}{priceChange.toFixed(2)}%
+                    {priceChange >= 0 ? '+' : ''}{typeof priceChange === 'number' ? priceChange.toFixed(2) : '0.00'}%
                   </div>
                 </div>
               </CardTitle>
@@ -214,9 +230,9 @@ export default function TradingPage() {
                 {/* Current Price Spread */}
                 <div className="py-2 border-y border-gray-200 dark:border-gray-700">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-gray-900 dark:text-white">
-                      ${currentPrice.toFixed(2)}
-                    </div>
+                                      <div className="text-lg font-bold text-gray-900 dark:text-white">
+                    {formatCurrency(currentPrice)}
+                  </div>
                     <div className="text-xs text-gray-500">{selectedPair}</div>
                   </div>
                 </div>
@@ -357,7 +373,7 @@ export default function TradingPage() {
             <CardContent className="p-4">
               <div className="text-sm text-gray-600 dark:text-gray-400">{t('change')} 24h</div>
               <div className={`text-lg font-semibold ${priceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {priceChange >= 0 ? '+' : ''}{priceChange.toFixed(2)}%
+                {priceChange >= 0 ? '+' : ''}{typeof priceChange === 'number' ? priceChange.toFixed(2) : '0.00'}%
               </div>
             </CardContent>
           </Card>

@@ -1,0 +1,30 @@
+IMAGEM: 08-gestao-portfolio.png
+SEÇÃO: 💼 Gestão de Portfolio > Visão Geral do Portfolio
+PROCESSADA: ✅ SIM
+DATA: 2025-01-27
+DESCRIÇÃO: Interface completa de gestão de portfolio com dados reais
+
+ELEMENTOS PRINCIPAIS:
+- Cabeçalho com idioma português e wallet conectada (0xFE...6F8A)
+- 4 cards de métricas: Valor Total ($39,292.65), Mudança 24h (+$490.92), Total de Ativos (3), Performance (1.25%)
+- Tabela detalhada com 3 ativos:
+  * Bitcoin (BTC): 0.5 BTC, $23,172.82, -$56.72 (58.97%)
+  * Ethereum (ETH): 2.0 ETH, $6,130.85, -$69.60 (15.60%)
+  * USD Coin (USDC): 10,000 USDC, $9,988.99, +$0.69 (25.42%)
+
+CARACTERÍSTICAS TÉCNICAS:
+- Timestamp: 03:14:49
+- Botão de atualização manual
+- Dados precisos até 6 casas decimais
+- Conversão automática USD
+- Cálculo automático de alocação percentual
+- Códigos de cores para status (verde/vermelho/amarelo/azul)
+
+ANÁLISE ESTRATÉGICA:
+- Portfolio de $39K com estratégia Bitcoin-heavy (60%)
+- Performance positiva (+1.25%) apesar de correções individuais
+- Diversificação básica em 3 ativos
+- 25% em stablecoin para proteção
+- Sugestões de otimização incluídas na explicação
+
+STATUS: IMAGEM TOTALMENTE PROCESSADA E INTEGRADA AO MANUAL 

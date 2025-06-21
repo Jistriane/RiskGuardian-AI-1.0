@@ -1,0 +1,46 @@
+IMAGEM: 09-dashboard-riscos.png
+SEÇÃO: ⚠️ Análise de Riscos > Dashboard de Riscos
+PROCESSADA: ✅ SIM
+DATA: 2025-01-27
+DESCRIÇÃO: Dashboard completo de análise de riscos com métricas avançadas
+
+ELEMENTOS PRINCIPAIS:
+- Status geral: BAIXO (verde) baseado em volatilidade de 8.88%
+- 4 métricas principais: Volatilidade (8.88%), VaR (-$368.69), Sharpe (0.71), Beta (1.88)
+- Exposição por ativo: BTC 60.37% (Alto), ETH 14.78% (Baixo), USDC 24.84% (Baixo)
+- Métricas performance: Max Drawdown (-10.07%), Mudança 24h (+$81.90), Performance (0.20%)
+- Recomendação IA: "Baixo Sharpe Ratio - O retorno ajustado ao risco pode ser melhorado"
+
+MÉTRICAS FINANCEIRAS AVANÇADAS:
+- Volatilidade anualizada: 8.88% (excelente para crypto)
+- Value at Risk (95%): -$368.69 (perda máxima esperada)
+- Sharpe Ratio: 0.71 (moderado, meta > 1.0)
+- Beta: 1.88 (88% mais volátil que mercado)
+- Max Drawdown: -10.07% (maior queda histórica)
+
+ANÁLISE DE CONCENTRAÇÃO:
+- Bitcoin dominante: 60.37% ($24,532.34) - Risco Alto
+- Ethereum equilibrado: 14.78% ($6,007.19) - Risco Baixo  
+- USDC estabilizador: 24.84% ($10,094.10) - Risco Baixo
+- Diversificação: 3 ativos (básica mas focada)
+
+SISTEMA DE CORES:
+- Verde: Métricas favoráveis, baixo risco
+- Amarelo: Atenção, pode ser otimizado
+- Vermelho: Alerta, requer ação
+- Branco: Informativo, neutro
+
+RECOMENDAÇÕES ESTRATÉGICAS:
+- Rebalancear: Reduzir BTC para ~50%
+- Diversificar: Adicionar ativos descorrelacionados
+- Monitorar Beta: Acompanhar correlação com mercado
+- Otimizar Sharpe: Buscar melhor relação risco/retorno
+
+FUNCIONALIDADES TÉCNICAS:
+- Timestamp: 03:20:07 (atualização automática)
+- Botão refresh manual
+- Cálculos estatísticos avançados
+- Recomendações de IA em tempo real
+- Interface intuitiva com códigos de cores
+
+STATUS: IMAGEM TOTALMENTE PROCESSADA E INTEGRADA AO MANUAL 

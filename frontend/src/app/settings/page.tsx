@@ -40,7 +40,7 @@ import {
 
 export default function SettingsPage() {
   const { t } = useI18n();
-  const { formatDateTime } = useClientTime();
+  const { formatDateTime, isClient } = useClientTime();
   
   const [notifications, setNotifications] = useState({
     priceAlerts: true,
@@ -547,7 +547,9 @@ export default function SettingsPage() {
               </div>
               <div className="text-center">
                 <p className="font-medium">{t.settings.lastSync}</p>
-                <p className="text-muted-foreground">{formatDateTime(new Date().toISOString())}</p>
+                <p className="text-muted-foreground">
+                  {isClient ? formatDateTime(new Date().toISOString()) : '--/--/---- --:--:--'}
+                </p>
               </div>
               <div className="text-center">
                 <p className="font-medium">{t.settings.status}</p>
