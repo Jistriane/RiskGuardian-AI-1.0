@@ -1,8 +1,14 @@
 {
     "name": "riskguardian-backend",
-    "version": "0.1.0",
-    "description": "RiskGuardian AI Backend API",
+    "version": "1.0.0",
+    "description": "RiskGuardian AI Backend API - Advanced DeFi Risk Management System",
+    "author": "Jistriane Santos <jistriane@live.com>",
     "main": "simple-server.js",
+    "homepage": "https://riskguardian-backend.railway.app",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Jistriane/RiskGuardian-AI-1.0"
+    },
     "scripts": {
         "dev": "nodemon src/index.ts",
         "start": "node simple-server.js",

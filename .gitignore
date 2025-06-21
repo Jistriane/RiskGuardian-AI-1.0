@@ -502,3 +502,7 @@ node_modules/
 dist/
 build/
 *.log
+
+# RiskGuardian AI
+riskguardian-startup.log
+*.pid

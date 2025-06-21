@@ -16,10 +16,11 @@ import { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useRealTimeData } from '@/hooks/useRealTimeData';
 import { Monitor, AlertTriangle, CheckCircle, Clock, Zap, Activity, Bell, Settings, RefreshCw } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTranslation } from '@/hooks/useTranslation';
+import { AlertTimestamp } from '@/components/monitoring/alert-timestamp';
+import { RealTimeStatus } from '@/components/monitoring/real-time-status';
 
 interface SystemAlert {
   id: string;
@@ -42,7 +43,6 @@ interface SystemMetric {
 }
 
 export default function MonitoringPage() {
-  const { portfolio, riskMetrics, marketData, isConnected } = useRealTimeData();
   const [alerts, setAlerts] = useState<SystemAlert[]>([
     {
       id: '1',
@@ -162,7 +162,7 @@ export default function MonitoringPage() {
         if (Math.random() < 0.1) {
           const newAlert: SystemAlert = {
             id: Date.now().toString(),
-            type: ['info', 'warning', 'critical'][Math.floor(Math.random() * 3)] as any,
+            type: (['info', 'warning', 'critical'] as const)[Math.floor(Math.random() * 3)],
             title: 'Novo Evento do Sistema',
             message: 'Um novo evento foi detectado pelo sistema de monitoramento.',
             timestamp: new Date(),
@@ -272,6 +272,16 @@ export default function MonitoringPage() {
             </Button>
           </div>
         </div>
+
+        <RealTimeStatus
+          systemUptime={99.97}
+          responseTime={45}
+          activeAlerts={criticalAlerts + warningAlerts}
+          healthyServices={healthyMetrics}
+          totalServices={systemMetrics.length}
+          lastUpdated={new Date()}
+          onRefresh={() => window.location.reload()}
+        />
 
         {/* Status Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -439,7 +449,7 @@ export default function MonitoringPage() {
                         <p className="text-sm text-gray-300 mt-1">{alert.message}</p>
                         <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
                           <span>Fonte: {alert.source}</span>
-                          <span>{alert.timestamp.toLocaleString('pt-BR')}</span>
+                          <AlertTimestamp timestamp={alert.timestamp} />
                           {alert.acknowledged && (
                             <span className="text-blue-400">• Reconhecido</span>
                           )}

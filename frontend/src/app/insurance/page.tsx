@@ -19,12 +19,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useClientTime } from '@/hooks/useClientTime';
+import { useInsuranceData } from '@/hooks/useInsuranceData';
+import { useAccount } from 'wagmi';
+import { InsuranceStatus } from '@/components/insurance/insurance-status';
 import { 
   Shield, 
   TrendingUp, 
   AlertTriangle, 
   CheckCircle, 
-  Clock, 
   DollarSign,
   FileText,
   Calendar,
@@ -32,7 +34,7 @@ import {
   Target
 } from 'lucide-react';
 
-interface InsurancePolicy {
+interface PolicyWithAsset {
   id: string;
   type: string;
   coverage: number;
@@ -41,83 +43,22 @@ interface InsurancePolicy {
   endDate: string;
   status: 'active' | 'expired' | 'pending';
   autoRenewal: boolean;
-}
-
-interface ClaimHistory {
-  id: string;
-  policyId: string;
-  amount: number;
-  date: string;
-  status: 'paid' | 'pending' | 'denied';
-  description: string;
+  assetBased?: string;
 }
 
 export default function InsurancePage() {
   const { t } = useTranslation();
   const { formatDate } = useClientTime();
+  const { isConnected } = useAccount();
+  const { data: insuranceData, isLoading: insuranceLoading } = useInsuranceData();
   
   const [selectedPolicy, setSelectedPolicy] = useState<string | null>(null);
 
-  // Mock data - em produção viria da API
-  const policies: InsurancePolicy[] = [
-    {
-      id: '1',
-      type: 'Smart Contract Risk',
-      coverage: 50000,
-      premium: 250,
-      startDate: '2024-01-15T00:00:00Z',
-      endDate: '2024-07-15T00:00:00Z',
-      status: 'active',
-      autoRenewal: true
-    },
-    {
-      id: '2',
-      type: 'Price Protection',
-      coverage: 25000,
-      premium: 125,
-      startDate: '2024-02-01T00:00:00Z',
-      endDate: '2024-08-01T00:00:00Z',
-      status: 'active',
-      autoRenewal: false
-    },
-    {
-      id: '3',
-      type: 'Exchange Hack',
-      coverage: 100000,
-      premium: 500,
-      startDate: '2023-12-01T00:00:00Z',
-      endDate: '2024-06-01T00:00:00Z',
-      status: 'expired',
-      autoRenewal: false
-    }
-  ];
-
-  const claims: ClaimHistory[] = [
-    {
-      id: '1',
-      policyId: '1',
-      amount: 5000,
-      date: '2024-03-15T00:00:00Z',
-      status: 'paid',
-      description: 'Smart contract exploit compensation'
-    },
-    {
-      id: '2',
-      policyId: '2',
-      amount: 2500,
-      date: '2024-04-01T00:00:00Z',
-      status: 'pending',
-      description: 'Price protection claim'
-    }
-  ];
-
-  const totalCoverage = policies
-    .filter(p => p.status === 'active')
-    .reduce((sum, p) => sum + p.coverage, 0);
-
-  const totalPremiums = policies
-    .filter(p => p.status === 'active')
-    .reduce((sum, p) => sum + p.premium, 0);
+  // Usar dados reais da carteira ou dados padrão se não conectada
+  const policies = insuranceData?.policies || [];
+  const claims = insuranceData?.claims || [];
+  const totalCoverage = insuranceData?.totalCoverage || 0;
+  const totalPremiums = insuranceData?.totalPremiums || 0;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -145,15 +86,74 @@ export default function InsurancePage() {
     }
   };
 
+  if (!isConnected) {
+    return (
+      <DashboardLayout>
+        <div className="space-y-6">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">🛡️ {t('insuranceTitle')}</h1>
+            <p className="text-muted-foreground">
+              {t('insuranceSubtitle')}
+            </p>
+          </div>
+          
+          <Card className="bg-yellow-900/20 border-yellow-800/30">
+            <CardContent className="p-8 text-center">
+              <AlertTriangle className="h-12 w-12 text-yellow-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-yellow-400 mb-2">
+                Carteira Não Conectada
+              </h3>
+              <p className="text-gray-300">
+                Conecte sua carteira para visualizar apólices de seguro baseadas no seu portfolio real.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (insuranceLoading) {
+    return (
+      <DashboardLayout>
+        <div className="space-y-6">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">🛡️ {t('insuranceTitle')}</h1>
+            <p className="text-muted-foreground">
+              {t('insuranceSubtitle')}
+            </p>
+          </div>
+          
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-gray-300">Carregando dados de seguro baseados no seu portfolio...</p>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">🛡️ {t('insuranceTitle')}</h1>
           <p className="text-muted-foreground">
-            {t('insuranceSubtitle')}
+            {t('insuranceSubtitle')} - <span className="text-green-400">📊 Dados baseados no seu portfolio real</span>
           </p>
         </div>
+
+        <InsuranceStatus
+          totalCoverage={totalCoverage}
+          totalPremiums={totalPremiums}
+          coverageRatio={insuranceData?.coverageRatio || 0}
+          riskScore={insuranceData?.riskScore || 0}
+          activePolicies={policies.filter(p => p.status === 'active').length}
+          lastUpdated={new Date()}
+          onRefresh={() => window.location.reload()}
+        />
 
         <div className="grid gap-6 lg:grid-cols-3">
           <Card className="bg-gradient-to-br from-green-900/50 to-emerald-900/50 border-green-800/50">
@@ -228,6 +228,9 @@ export default function InsurancePage() {
                       <div className="flex items-center gap-2">
                         <Target className="h-4 w-4 text-blue-500" />
                         <span className="font-medium">{policy.type}</span>
+                        <Badge className="bg-green-900/20 border-green-800/30 text-green-400 text-xs">
+                          🟢 Dados Reais
+                        </Badge>
                       </div>
                       {getStatusBadge(policy.status)}
                     </div>
@@ -254,12 +257,19 @@ export default function InsurancePage() {
                       </div>
                     </div>
                     
-                    {policy.autoRenewal && (
-                      <div className="flex items-center gap-1 mt-2 text-xs text-green-400">
-                        <CheckCircle className="h-3 w-3" />
-                        Renovação Automática
-                      </div>
-                    )}
+                    <div className="flex items-center justify-between mt-2">
+                      {policy.autoRenewal && (
+                        <div className="flex items-center gap-1 text-xs text-green-400">
+                          <CheckCircle className="h-3 w-3" />
+                          Renovação Automática
+                        </div>
+                      )}
+                      {(policy as PolicyWithAsset).assetBased && (
+                        <div className="text-xs text-blue-400">
+                          Baseado em: {(policy as PolicyWithAsset).assetBased}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -414,38 +424,53 @@ export default function InsurancePage() {
                 <div className="p-3 bg-blue-900/20 border border-blue-800/30 rounded-lg">
                   <div className="flex items-center gap-2 text-blue-400 text-sm font-medium">
                     <Shield className="h-4 w-4" />
-                    Cobertura Adequada
+                    Cobertura {(insuranceData?.coverageRatio || 0) > 0.7 ? 'Adequada' : 'Insuficiente'}
                   </div>
                   <p className="text-xs text-gray-400 mt-1">
-                    Seguros atuais cobrem 75% do portfolio
+                    Seguros atuais cobrem {Math.round((insuranceData?.coverageRatio || 0) * 100)}% do portfolio
                   </p>
                 </div>
               </div>
               
               <div className="space-y-4">
-                <h3 className="font-semibold">Recomendações da IA</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold">Recomendações da IA</h3>
+                  <Badge className="bg-blue-900/20 border-blue-800/30 text-blue-400 text-xs">
+                    🤖 Baseado no Portfolio Real
+                  </Badge>
+                </div>
                 
                 <div className="space-y-2">
-                  <div className="p-3 bg-gray-800/50 rounded-lg">
-                    <div className="text-sm font-medium">🎯 Aumentar Proteção de Preço</div>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Considere adicionar proteção para ETH (+$10k cobertura)
-                    </p>
-                  </div>
-                  
-                  <div className="p-3 bg-gray-800/50 rounded-lg">
-                    <div className="text-sm font-medium">⚡ Otimizar Prêmios</div>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Renegociar apólice #2 pode reduzir custos em 15%
-                    </p>
-                  </div>
-                  
-                  <div className="p-3 bg-gray-800/50 rounded-lg">
-                    <div className="text-sm font-medium">🔄 Renovação Automática</div>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Ativar renovação automática para evitar lapsos
-                    </p>
-                  </div>
+                  {insuranceData?.recommendations.map((recommendation, index) => (
+                    <div key={index} className="p-3 bg-gray-800/50 rounded-lg">
+                      <div className="text-sm font-medium">
+                        {index === 0 && '🎯'} {index === 1 && '⚡'} {index === 2 && '🔄'} {recommendation}
+                      </div>
+                    </div>
+                  )) || (
+                    <>
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <div className="text-sm font-medium">🎯 Aumentar Proteção de Preço</div>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Considere adicionar proteção para ETH (+$10k cobertura)
+                        </p>
+                      </div>
+                      
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <div className="text-sm font-medium">⚡ Otimizar Prêmios</div>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Renegociar apólice #2 pode reduzir custos em 15%
+                        </p>
+                      </div>
+                      
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <div className="text-sm font-medium">🔄 Renovação Automática</div>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Ativar renovação automática para evitar lapsos
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

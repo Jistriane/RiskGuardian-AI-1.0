@@ -402,6 +402,33 @@ MIT License - veja [LICENSE](LICENSE) para detalhes.
 
 ---
 
+## 👨‍💻 **Desenvolvedor**
+
+**Jistriane Santos**  
+🏢 **Arquiteto de Software Sênior & Desenvolvedor Blockchain**  
+📧 **Email**: jistriane@live.com  
+🌐 **Especialidades**: DeFi, Smart Contracts, IA, Automação Blockchain  
+
+### 🚀 **Sobre o Desenvolvedor**
+Especialista em desenvolvimento de sistemas DeFi complexos com mais de 10 anos de experiência em arquitetura de software. Criador do RiskGuardian AI, sistema pioneiro em proteção automatizada de portfolios cripto usando inteligência artificial e automação blockchain.
+
+### 🎯 **Expertise Técnica**
+- **Blockchain Development**: Ethereum, Smart Contracts, DeFi Protocols
+- **AI & Machine Learning**: Análise de riscos, Sistemas de recomendação
+- **Full-Stack Development**: React, Node.js, TypeScript, Next.js
+- **DevOps & Cloud**: AWS, Docker, CI/CD, Monitoramento
+- **Database Systems**: PostgreSQL, Redis, Blockchain indexing
+
+### 🏆 **Projetos e Conquistas**
+- **RiskGuardian AI**: Sistema completo de proteção DeFi com IA
+- **Integração Chainlink**: 5+ serviços Chainlink implementados
+- **ElizaOS Integration**: IA avançada para análise de portfolio
+- **Multi-Chain Support**: Ethereum, Polygon, Avalanche, BSC
+- **Professional UX**: Interface moderna inspirada em ferramentas de trading
+
+---
+
 ⭐ **Star este projeto se te ajudou!**
 
-*RiskGuardian AI - Seu guardião financeiro inteligente protegendo investimentos DeFi 24/7* 🛡️
+**© 2025 RiskGuardian AI - Desenvolvido por Jistriane Santos**  
+*Seu guardião financeiro inteligente protegendo investimentos DeFi 24/7* 🛡️

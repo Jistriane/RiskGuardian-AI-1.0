@@ -1,6 +1,18 @@
 {
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "hardhat": "^2.24.3"
-  }
+    "name": "riskguardian-ai",
+    "version": "1.0.0",
+    "private": true,
+    "description": "RiskGuardian AI - Advanced DeFi Risk Management System with AI",
+    "author": "Jistriane Santos <jistriane@live.com>",
+    "homepage": "https://riskguardian-ai.vercel.app",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Jistriane/RiskGuardian-AI-1.0"
+    },
+    "keywords": ["DeFi", "Risk Management", "AI", "Blockchain", "Chainlink", "ElizaOS", "Smart Contracts"],
+    "license": "MIT",
+    "devDependencies": {
+        "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+        "hardhat": "^2.24.3"
+    }
 }

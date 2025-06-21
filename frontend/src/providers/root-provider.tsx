@@ -13,39 +13,40 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { WagmiProvider, createConfig, http } from 'wagmi';
+import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { mainnet, sepolia } from 'wagmi/chains';
-import { metaMask, coinbaseWallet } from 'wagmi/connectors';
 import { I18nProvider } from '@/contexts/i18n-context';
-import '@rainbow-me/rainbowkit/styles.css';
+import { config } from '@/config/wagmi';
 
-// Configuração simplificada sem WalletConnect
-const config = createConfig({
-  chains: [mainnet, sepolia],
-  connectors: [
-    metaMask(),
-    coinbaseWallet({ 
-      appName: 'RiskGuardian AI'
-    }),
-  ],
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-  },
-  ssr: true,
-});
-
+// Query Client para React Query - configurado para dados em tempo real
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
-      retry: 3,
-      staleTime: 60 * 1000,
+      staleTime: 5 * 1000, // 5 segundos - dados ficam "frescos" por pouco tempo
+      gcTime: 2 * 60 * 1000, // 2 minutos - garbage collection mais agressiva
+      retry: 3, // Mais tentativas para dados críticos
+      refetchOnWindowFocus: true, // Atualizar quando a janela receber foco
+      refetchOnMount: true, // Atualizar ao montar componente
+      refetchOnReconnect: true, // Atualizar quando reconectar
+      refetchInterval: 10 * 1000, // Atualizar a cada 10 segundos para tempo real
+      refetchIntervalInBackground: true, // Continuar atualizando em background
+    },
+    mutations: {
+      retry: 2,
     },
   },
 });
+
+// Log de debug para monitorar queries
+if (process.env.NODE_ENV === 'development') {
+  queryClient.getQueryCache().subscribe((event) => {
+    console.log('🔄 React Query Event:', {
+      type: event.type,
+      query: event.query.queryKey,
+      state: event.query.state.status
+    });
+  });
+}
 
 interface RootProviderProps {
   children: ReactNode;
@@ -53,17 +54,13 @@ interface RootProviderProps {
 
 export function RootProvider({ children }: RootProviderProps) {
   return (
-    <I18nProvider>
-      <WagmiProvider config={config as any}>
-        <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider modalSize="compact">
-            <div className="min-h-screen bg-gray-900 text-white">
-              {children}
-            </div>
-          </RainbowKitProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
-    </I18nProvider>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <I18nProvider>
+          {children}
+        </I18nProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
 

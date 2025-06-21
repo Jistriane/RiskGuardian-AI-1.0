@@ -12,18 +12,30 @@
 
 import { createConfig, http } from 'wagmi';
 import { mainnet, sepolia, polygon, arbitrum } from 'wagmi/chains';
-import { metaMask, walletConnect, coinbaseWallet } from 'wagmi/connectors';
+import { metaMask, walletConnect, coinbaseWallet, injected } from 'wagmi/connectors';
 
-// Project ID para WalletConnect
+// Project ID para WalletConnect - Em produção, configure no cloud.reown.com
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '2c4d1b29a853cac73e4e05a1cb7b2efb';
+
+// Configuração otimizada para desenvolvimento
+const isDevelopment = typeof window !== 'undefined' && window.location.hostname === 'localhost';
 
 export const config = createConfig({
   chains: [mainnet, sepolia, polygon, arbitrum],
   connectors: [
+    // Priorizar MetaMask e carteiras injetadas em desenvolvimento
     metaMask(),
+    injected(),
+    // WalletConnect com configuração otimizada
     walletConnect({
       projectId,
       showQrModal: true,
+      metadata: {
+        name: 'RiskGuardian AI',
+        description: 'Sistema Avançado de Proteção DeFi',
+        url: isDevelopment ? 'http://localhost:3001' : 'https://riskguardian.ai',
+        icons: ['https://example.com/logo.png'],
+      },
     }),
     coinbaseWallet({
       appName: 'RiskGuardian AI',
@@ -36,6 +48,11 @@ export const config = createConfig({
     [polygon.id]: http(),
     [arbitrum.id]: http(),
   },
+  // Configurações otimizadas para desenvolvimento
+  ...(isDevelopment && {
+    ssr: false,
+    storage: null, // Desabilitar persistência em desenvolvimento
+  }),
 });
 
 declare module 'wagmi' {

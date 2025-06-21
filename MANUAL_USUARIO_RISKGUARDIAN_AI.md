@@ -1498,111 +1498,149 @@ O sistema calcula **volatilidade avançada** usando múltiplas metodologias:
 
 ## 🛡️ Sistema de Seguros DeFi
 
-### Proteção Inteligente para Ativos Digitais
+### Sistema de Proteção Inteligente
 
 ![Seguros DeFi](docs/images/manual/15-seguros-defi.png)
 
-#### **1. Visão Geral das Métricas**
-- **Cobertura Total**: $75.000 com 2 apólices ativas
-- **Prêmio Mensal**: $375 com próximo pagamento em 15 dias
-- **Claims Ativos**: 1 sinistro de $2.500 em análise
-
-#### **2. Apólices Ativas**
-
-**Smart Contract Risk ($50.000)**
-- Prêmio mensal: $250 (0.5% ao mês)
-- Período: 14/01/2024 a 14/07/2024
-- Status: ✅ Garantia Automática ativa
-- Proteção contra bugs e exploits em contratos
-
-**Price Protection ($25.000)**
-- Prêmio mensal: $125 (0.3% ao mês)
-- Período: 31/01/2024 a 31/07/2024
-- Status: ✅ Ativo
-- Proteção contra quedas bruscas de preço
-
-**Exchange Hack ($100.000)**
-- Prêmio mensal: $500 (0.2% ao mês)
-- Período: 30/11/2023 a 31/05/2024
-- Status: ⏳ Expirado
-- Cobertura contra hacks de exchanges
-
-#### **3. Tipos de Seguro Disponíveis**
-
-**Smart Contract Risk (0.5% ao mês)**
-- Protege contra bugs e exploits em contratos inteligentes
-- Cobertura para falhas de código e vulnerabilidades
-- Processamento automático de claims
-
-**Proteção de Preço (0.3% ao mês)**
-- Protege contra quedas bruscas de preço dos ativos
-- Cobertura para volatilidade extrema
-- Acionamento automático por oráculos
-
-**Exchange Hack (0.2% ao mês)**
-- Cobertura em caso de hack ou falência de exchanges
-- Proteção para ativos mantidos em exchanges
-- Verificação automática de incidentes
-
-**Liquidation Protection (0.4% ao mês)**
-- Protege contra liquidação forçada em posições alavancadas
-- Cobertura para posições de DeFi e margin trading
-- Monitoramento contínuo de health factor
-
-#### **4. Histórico de Sinistros**
-
-**Claim #1 - Processado**
-- Valor: $5.000
-- Data: 15/03/2024
-- Tipo: Smart contract exploit compensation
-- Status: 🟢 Pago
-
-**Claim #2 - Em Análise**
-- Valor: $2.500
-- Data: 31/03/2024
-- Tipo: Price protection claim
-- Status: 🟡 Pendente
-
-#### **5. Avaliação de Risco Inteligente**
-
-**Análise Atual do Portfolio:**
-- ✅ **Baixo Risco de Smart Contract**: Protocolos auditados e com histórico sólido
-- ⚠️ **Exposição Moderada à Volatilidade**: Posições concentradas em ativos voláteis
-- 🔵 **Cobertura Adequada**: Seguro atual cobre 75% do portfolio
-
-**Recomendações da IA:**
-- 🔴 **Aumentar Proteção de Preço**: Considere aumentar para $40k (posições atuais)
-- 🟡 **Otimizar Prêmios**: Diversifique portfolio para reduzir custos em 15%
-- 🔵 **Renovação Automática**: Ative renovação automática para evitar lapsos
-
-#### **6. Como Contratar um Seguro**
-
-**Passo a Passo:**
-1. **Selecione o Tipo**: Escolha o tipo de proteção desejado
-2. **Defina a Cobertura**: Determine o valor a ser protegido
-3. **Revise os Termos**: Analise taxa, período e condições
-4. **Conecte a Wallet**: Confirme com sua carteira digital
-5. **Pague o Prêmio**: Efetue o pagamento do primeiro mês
-6. **Ativação**: Proteção ativa imediatamente
-
-**Processo de Claim:**
-1. **Detecção Automática**: Sistema identifica eventos cobertos
-2. **Verificação**: Oráculos confirmam as condições
-3. **Processamento**: IA analisa e processa o claim
-4. **Pagamento**: Valor depositado automaticamente na wallet
-
-#### **7. Funcionalidades Avançadas**
-- **Renovação Automática**: Proteção contínua sem interrupções
-- **Claims Automáticos**: Processamento via smart contracts
-- **Oráculos Múltiplos**: Dados de preço de fontes confiáveis
-- **IA Integrada**: Análise de risco personalizada
-- **Transparência Total**: Histórico completo na blockchain
-
-#### **8. Aspectos de Segurança**
-- **Contratos Auditados**: Todos os seguros baseados em código verificado
-- **Fundos Segregados**: Reservas mantidas em contratos separados
-- **Governança Descentralizada**: Decisões tomadas pela comunidade
-- **Sem Intermediários**: Pagamentos diretos via blockchain
+> **Explicação da Imagem - ATUALIZADA COM DADOS REAIS:**
+> 
+> Esta tela mostra o **sistema completo de Seguros DeFi** com dados reais do portfólio, demonstrando proteção ativa de $7.946. A análise detalhada dos elementos:
+> 
+> **1. Header da Página:**
+> - **Título**: "🛡️ Seguros" com ícone de proteção
+> - **Subtítulo**: "Proteja seus ativos com seguros DeFi inteligentes"
+> - **Badge Verde**: "🟢 Dados baseados no seu portfólio real"
+> - **Interface**: Tema escuro profissional com design moderno
+> 
+> **2. Status dos Seguros (Seção Roxa Superior):**
+> - **Cobertura Total**: $7.946 (2 apólices ativas)
+> - **Prêmio Mensal**: $34 (custo total mensal)
+> - **% Portfólio Coberto**: 100% (proteção completa)
+> - **Claims Ativos**: 1 ($130 em análise)
+> - **Última atualização**: 15:29 (dados em tempo real)
+> 
+> **3. Métricas de Cobertura (3 Cards Principais):**
+> 
+> **🟢 Cobertura Total**: $7.946
+> - **Status**: 2 apólices ativas
+> - **Cor**: Verde (situação favorável)
+> - **Significado**: Valor total protegido pelos seguros
+> 
+> **🔵 Prêmio Mensal**: $34
+> - **Status**: Próximo pagamento em 25 dias
+> - **Cor**: Azul (informação neutra)
+> - **Significado**: Custo mensal total dos seguros
+> 
+> **🟣 Claims Ativos**: 1
+> - **Status**: $130 em análise
+> - **Cor**: Roxo (processo em andamento)
+> - **Significado**: Sinistro sendo processado
+> 
+> **4. Apólices Ativas (3 Seguros Configurados):**
+> 
+> **🔵 Smart Contract Risk** (Dados Reais):
+> - **Cobertura**: $5.000 (máxima para contratos)
+> - **Prêmio Mensal**: $25 (0.5% do valor coberto)
+> - **Vencimento**: 22/06/2025
+> - **Baseado em**: Tokens ETH do portfólio
+> - **Status**: ✅ Ativa (proteção funcionando)
+> - **Descrição**: Proteção contra bugs em smart contracts
+> 
+> **🔵 Price Protection** (Dados Reais):
+> - **Cobertura**: $2.946 (baseada no valor atual)
+> - **Prêmio Mensal**: $9 (0.3% do valor coberto)
+> - **Vencimento**: 03/12/2025
+> - **Baseado em**: Portfolio Total
+> - **Status**: ✅ Ativa (proteção funcionando)
+> - **Descrição**: Proteção contra quedas bruscas de preço
+> 
+> **🔴 Exchange Hack** (Dados Reais):
+> - **Cobertura**: $4.000 (valor configurado)
+> - **Prêmio Mensal**: $10 (0.2% do valor coberto)
+> - **Vencimento**: 23/06/2025
+> - **Baseado em**: Tokens ETH
+> - **Status**: ❌ Cancelada (não está ativa)
+> - **Descrição**: Cobertura contra hack de exchanges
+> 
+> **5. Tipos de Seguro Disponíveis (4 Opções):**
+> 
+> **🔵 Smart Contract Risk**:
+> - **Proteção**: Contra bugs e exploits em contratos
+> - **Taxa**: 0.5% ao mês
+> - **Botão**: "Contratar" (azul)
+> 
+> **🔵 Proteção de Preço**:
+> - **Proteção**: Contra quedas bruscas de preço dos ativos
+> - **Taxa**: 0.3% ao mês
+> - **Botão**: "Contratar" (azul)
+> 
+> **🔴 Exchange Hack**:
+> - **Proteção**: Cobertura contra hack de exchanges
+> - **Taxa**: 0.2% ao mês
+> - **Botão**: "Contratar" (vermelho)
+> 
+> **🟣 Liquidation Protection**:
+> - **Proteção**: Contra liquidação forçada em protocolos
+> - **Taxa**: 0.4% ao mês
+> - **Botão**: "Contratar" (roxo)
+> 
+> **6. Histórico de Sinistros (2 Claims):**
+> 
+> **📋 Claim #1**:
+> - **Valor**: $929
+> - **Data**: 07/06/2025
+> - **Status**: ✅ Pago (processado com sucesso)
+> - **Descrição**: Compensação por exploit em protocolo DeFi
+> 
+> **📋 Claim #2**:
+> - **Valor**: $130
+> - **Data**: 18/06/2025
+> - **Status**: ⏳ Pendente (em análise)
+> - **Descrição**: Proteção contra queda de preço do ETH
+> 
+> **7. Avaliação de Risco Inteligente:**
+> 
+> **🤖 Análise Atual do Portfolio**:
+> - **IA Status**: Sistema de análise ativo
+> - **Avaliação**: Baseada em dados reais do portfólio
+> 
+> **💡 Recomendações da IA**:
+> - **Sugestão Principal**: "Aumentar cobertura para 90% do portfólio"
+> - **Justificativa**: Baseada na volatilidade atual dos ativos
+> - **Badge**: "🟢 Baseado no Portfólio Real"
+> 
+> **📊 Status de Risco**:
+> - **Smart Contract**: Baixo risco (indicador verde)
+> - **Avaliação**: Contratos auditados e seguros
+> 
+> **8. Cálculo de Prêmios (Baseado em Dados Reais):**
+> 
+> **Smart Contract Risk**: $5.000 × 0.5% = $25/mês
+> **Price Protection**: $2.946 × 0.3% = $9/mês  
+> **Exchange Hack**: $4.000 × 0.2% = $10/mês (cancelada)
+> **Total Ativo**: $34/mês para $7.946 de cobertura
+> 
+> **9. Indicadores de Fonte dos Dados:**
+> - **🟢 Dados Reais**: Todas as apólices baseadas no portfólio real
+> - **Valores Dinâmicos**: Coberturas calculadas automaticamente
+> - **Prêmios Reais**: Baseados em percentuais de mercado
+> - **IA Integrada**: Recomendações baseadas em análise real
+> 
+> **Como usar este sistema:**
+> - **Monitore cobertura**: Mantenha 80-100% do portfólio protegido
+> - **Analise prêmios**: Custo de $34/mês para $7.946 de proteção
+> - **Acompanhe claims**: Verifique status de sinistros pendentes
+> - **Siga recomendações**: Use insights da IA para otimizar proteção
+> - **Configure alertas**: Para vencimentos e renovações de apólices
+> - **Diversifique proteção**: Combine diferentes tipos de seguro
+> 
+> **Vantagens do Sistema:**
+> - ✅ **Proteção Completa**: 100% do portfólio pode ser coberto
+> - ✅ **Prêmios Competitivos**: 0.2% a 0.5% ao mês
+> - ✅ **Claims Automáticos**: Processamento inteligente
+> - ✅ **IA Integrada**: Recomendações personalizadas
+> - ✅ **Dados Reais**: Baseado no portfólio atual
+> - ✅ **Interface Intuitiva**: Fácil configuração e monitoramento
 
 ---
 
@@ -1801,5 +1839,39 @@ Este projeto está licenciado sob a [MIT License](LICENSE).
 
 ---
 
-**© 2025 RiskGuardian AI - Desenvolvido por Jistriane**  
-**GitHub:** https://github.com/Jistriane/RiskGuardian-AI-1.0
+## 👨‍💻 **Desenvolvedor**
+
+**Jistriane Santos**  
+🏢 **Arquiteto de Software Sênior & Desenvolvedor Blockchain**  
+📧 **Email**: jistriane@live.com  
+🌐 **Especialidades**: DeFi, Smart Contracts, IA, Automação Blockchain  
+
+### 🚀 **Sobre o Desenvolvedor**
+Especialista em desenvolvimento de sistemas DeFi complexos com mais de 10 anos de experiência em arquitetura de software. Criador do RiskGuardian AI, sistema pioneiro em proteção automatizada de portfolios cripto usando inteligência artificial e automação blockchain.
+
+### 🎯 **Expertise Técnica**
+- **Blockchain Development**: Ethereum, Smart Contracts, DeFi Protocols
+- **AI & Machine Learning**: Análise de riscos, Sistemas de recomendação
+- **Full-Stack Development**: React, Node.js, TypeScript, Next.js
+- **DevOps & Cloud**: AWS, Docker, CI/CD, Monitoramento
+- **Database Systems**: PostgreSQL, Redis, Blockchain indexing
+
+### 🏆 **Projetos e Conquistas**
+- **RiskGuardian AI**: Sistema completo de proteção DeFi com IA
+- **Integração Chainlink**: 5+ serviços Chainlink implementados
+- **ElizaOS Integration**: IA avançada para análise de portfolio
+- **Multi-Chain Support**: Ethereum, Polygon, Avalanche, BSC
+- **Professional UX**: Interface moderna inspirada em ferramentas de trading
+
+### 📞 **Contato Profissional**
+- **Email**: jistriane@live.com
+- **LinkedIn**: www.linkedin.com/in/jibso
+- **Discord**: jistriane
+- **X (Twitter)**: @jistriane
+- **Instagram**: jibso87
+- **GitHub**: https://github.com/Jistriane/RiskGuardian-AI-1.0
+
+---
+
+**© 2025 RiskGuardian AI - Desenvolvido por Jistriane Santos**  
+**Sistema Avançado de Proteção DeFi com Inteligência Artificial**
