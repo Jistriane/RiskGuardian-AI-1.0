@@ -336,15 +336,26 @@ GET /api/risk/alerts
 
 ### URLs de Produção
 - **Frontend**: https://riskguardian-ai.vercel.app
-- **Backend**: https://riskguardian-backend.railway.app
+- **Backend Produção**: https://riskguardian-backend.railway.app
+- **Backend Testnet**: https://68586771d862357f5960ed5a--unrivaled-selkie-96e1f5.netlify.app/
+
+### 🎉 **Backend Testnet Sepolia - ONLINE!**
+✅ **Status**: Funcionando 100%  
+🌐 **URL**: https://68586771d862357f5960ed5a--unrivaled-selkie-96e1f5.netlify.app/  
+⛓️ **Rede**: Sepolia Testnet (Chain ID: 11155111)  
+🔧 **Tecnologia**: Netlify Functions + Node.js  
+📊 **Endpoints**: `/api`, `/portfolio`, `/market`, `/config`  
 
 ### Deploy Automático
 ```bash
 # Deploy frontend (Vercel)
 npm run build:frontend
 
-# Deploy backend (Railway)
+# Deploy backend produção (Railway)
 npm run build:backend
+
+# Deploy backend testnet (Netlify) - Automático via GitHub
+git push origin main
 ```
 
 ## 🤝 Contribuição
@@ -382,6 +393,8 @@ Para problemas e dúvidas:
 - [x] IA ElizaOS para análise de portfólio
 - [x] Automação Chainlink básica
 - [x] Suporte multi-chain (Testnet)
+- [x] **Backend Testnet Sepolia funcionando 100%**
+- [x] **Deploy automático via Netlify Functions**
 
 ### Próximas Versões
 - [ ] **v1.1** - Mobile App (React Native)
