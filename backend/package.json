@@ -9,6 +9,9 @@
         "type": "git",
         "url": "https://github.com/Jistriane/RiskGuardian-AI-1.0"
     },
+    "engines": {
+        "node": "18.x"
+    },
     "scripts": {
         "dev": "nodemon src/index.ts",
         "start": "node simple-server.js",

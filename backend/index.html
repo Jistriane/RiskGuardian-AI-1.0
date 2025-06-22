@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiskGuardian AI Backend - Testnet Sepolia</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 40px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            color: #4ade80;
+            font-weight: bold;
+        }
+        
+        .endpoint {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        
+        a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🚀 RiskGuardian AI Backend</h1>
+        <p class="status">✅ ONLINE - Testnet Sepolia</p>
+
+        <h3>🔗 Endpoints Disponíveis:</h3>
+
+        <div class="endpoint">
+            <a href="/.netlify/functions/api" target="_blank">/.netlify/functions/api</a>
+            <br><small>Status da API</small>
+        </div>
+
+        <div class="endpoint">
+            <a href="/.netlify/functions/api/portfolio" target="_blank">/.netlify/functions/api/portfolio</a>
+            <br><small>Dados do Portfólio</small>
+        </div>
+
+        <div class="endpoint">
+            <a href="/.netlify/functions/api/market" target="_blank">/.netlify/functions/api/market</a>
+            <br><small>Dados de Mercado</small>
+        </div>
+
+        <div class="endpoint">
+            <a href="/.netlify/functions/api/config" target="_blank">/.netlify/functions/api/config</a>
+            <br><small>Configurações da Rede</small>
+        </div>
+
+        <hr style="margin: 30px 0; border: 1px solid rgba(255,255,255,0.3);">
+
+        <h3>⚙️ Configurações:</h3>
+        <p><strong>Rede:</strong> Sepolia Testnet</p>
+        <p><strong>Chain ID:</strong> 11155111</p>
+        <p><strong>Ambiente:</strong> Testnet</p>
+        <p><strong>Versão:</strong> 1.0.0</p>
+
+        <p style="margin-top: 30px; font-size: 0.9em; opacity: 0.8;">
+            Backend para RiskGuardian AI - Sistema de Gestão de Risco DeFi
+        </p>
+    </div>
+</body>
+
+</html>
