@@ -536,23 +536,23 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-500" />
-              {t.settings.systemStatus}
+              Status do Sistema
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div className="text-center">
-                <p className="font-medium">{t.settings.version}</p>
+                <p className="font-medium">Versão</p>
                 <p className="text-muted-foreground">v1.0.0</p>
               </div>
               <div className="text-center">
-                <p className="font-medium">{t.settings.lastSync}</p>
+                <p className="font-medium">Última Sincronização</p>
                 <p className="text-muted-foreground">
                   {isClient ? formatDateTime(new Date().toISOString()) : '--/--/---- --:--:--'}
                 </p>
               </div>
               <div className="text-center">
-                <p className="font-medium">{t.settings.status}</p>
+                <p className="font-medium">Status</p>
                 <p className="text-green-500 font-medium">✅ Online</p>
               </div>
             </div>

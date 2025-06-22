@@ -1,24 +1,12 @@
 {
     "version": 2,
-    "name": "riskguardian-ai-frontend",
     "framework": "nextjs",
-    "build": {
-        "env": {
-            "NODE_ENV": "production",
-            "NEXT_TELEMETRY_DISABLED": "1"
-        }
-    },
-    "functions": {
-        "src/app/api/**/*.ts": {
-            "runtime": "nodejs18.x",
-            "maxDuration": 30
-        }
-    },
+    "buildCommand": "npm run build",
+    "devCommand": "npm run dev",
+    "installCommand": "npm install",
+    "outputDirectory": ".next",
 
-    "rewrites": [{
-        "source": "/api/:path*",
-        "destination": "/api/:path*"
-    }],
+
     "headers": [{
             "source": "/api/:path*",
             "headers": [{
@@ -61,13 +49,10 @@
         }
     ],
     "env": {
-        "NODE_ENV": "production",
+        "NODE_ENV": "development",
+        "NEXT_PUBLIC_ENVIRONMENT": "testnet",
         "NEXT_PUBLIC_API_URL": "https://riskguardian-backend.onrender.com",
-        "NEXT_PUBLIC_WS_URL": "wss://riskguardian-backend.onrender.com",
-        "NEXT_PUBLIC_WEBSOCKET_URL": "wss://riskguardian-backend.onrender.com",
-        "NEXT_PUBLIC_APP_URL": "https://riskguardian-ai.vercel.app"
-    },
-    "github": {
-        "silent": true
+        "NEXT_PUBLIC_NETWORK": "sepolia",
+        "NEXT_PUBLIC_CHAIN_ID": "11155111"
     }
 }

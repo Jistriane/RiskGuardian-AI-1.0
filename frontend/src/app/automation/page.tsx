@@ -38,7 +38,7 @@ interface AutomationRule {
 }
 
 export default function AutomationPage() {
-  const { portfolio, riskMetrics, marketData, isConnected } = useRealTimeData();
+  const { data, loading, error, isRealTime } = useRealTimeData();
   const [automationRules, setAutomationRules] = useState<AutomationRule[]>([
     {
       id: '1',
