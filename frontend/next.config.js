@@ -15,57 +15,89 @@ const nextConfig = {
     trailingSlash: true,
     basePath: process.env.GITHUB_PAGES === 'true' ? '/RiskGuardian-AI-1.0' : '',
     assetPrefix: process.env.GITHUB_PAGES === 'true' ? '/RiskGuardian-AI-1.0/' : '',
+
+    // Configurações de imagens otimizadas
     images: {
-        unoptimized: false,
+        unoptimized: process.env.GITHUB_PAGES === 'true',
+        domains: ['localhost'],
+        formats: ['image/webp', 'image/avif'],
     },
+
+    // Configurações experimentais otimizadas
     experimental: {
-        esmExternals: false,
+        esmExternals: 'loose',
+        optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     },
-    webpack: (config, { isServer }) => {
-        // Fixes npm packages that depend on `fs` module
+
+    // Configuração webpack otimizada
+    webpack: (config, { dev, isServer }) => {
+        // Configurações de fallback para módulos Node.js
         if (!isServer) {
             config.resolve.fallback = {
+                ...config.resolve.fallback,
                 fs: false,
                 net: false,
                 tls: false,
                 crypto: false,
-            }
+                stream: false,
+                url: false,
+                zlib: false,
+                http: false,
+                https: false,
+                assert: false,
+                os: false,
+                path: false,
+            };
         }
 
-        // Exclude problematic HeartbeatWorker
-        config.externals = config.externals || []
-        config.externals.push({
-            './HeartbeatWorker': 'HeartbeatWorker',
-            './HeartbeatWorker.js': 'HeartbeatWorker',
-        })
+        // Otimizações para desenvolvimento
+        if (dev) {
+            config.watchOptions = {
+                poll: 1000,
+                aggregateTimeout: 300,
+            };
+        }
 
-        // Handle workers
-        config.module.rules.push({
-            test: /\.worker\.js$/,
-            loader: 'worker-loader',
-            options: {
-                inline: 'no-fallback',
+        // Configurações de otimização
+        config.optimization = {
+            ...config.optimization,
+            splitChunks: {
+                chunks: 'all',
+                cacheGroups: {
+                    vendor: {
+                        test: /[\\/]node_modules[\\/]/,
+                        name: 'vendors',
+                        chunks: 'all',
+                        priority: 10,
+                    },
+                    common: {
+                        name: 'common',
+                        minChunks: 2,
+                        chunks: 'all',
+                        priority: 5,
+                    },
+                },
             },
-        })
+        };
 
-        // Disable optimization for GitHub Pages
-        if (process.env.GITHUB_PAGES === 'true') {
-            config.optimization.minimize = false
-            config.optimization.minimizer = []
-        }
-
-        return config
+        return config;
     },
+
+    // Configurações de TypeScript mais tolerantes para desenvolvimento
     typescript: {
-        ignoreBuildErrors: process.env.NODE_ENV === 'production',
+        ignoreBuildErrors: false,
     },
+
     eslint: {
-        ignoreDuringBuilds: process.env.NODE_ENV === 'production',
+        ignoreDuringBuilds: false,
     },
+
+    // Variáveis de ambiente
     env: {
         CUSTOM_KEY: 'my-value',
     },
-    // Headers seguros mas compatíveis com Web3
+
+    // Headers de segurança otimizados
     async headers() {
         return [{
             source: '/(.*)',
@@ -81,10 +113,15 @@ const nextConfig = {
                     key: 'X-XSS-Protection',
                     value: '1; mode=block',
                 },
+                {
+                    key: 'Referrer-Policy',
+                    value: 'strict-origin-when-cross-origin',
+                },
             ],
         }];
     },
-    // Redirect configuration
+
+    // Configuração de redirecionamento
     async redirects() {
         return [{
             source: '/',
@@ -92,12 +129,13 @@ const nextConfig = {
             permanent: false,
         }];
     },
-    // Configurações para APIs e funcionalidades dinâmicas
+
+    // Configurações de rewrite para APIs
     async rewrites() {
         return [{
             source: '/api/:path*',
             destination: '/api/:path*',
-        }, ]
+        }, ];
     },
 };
 

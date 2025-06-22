@@ -39,6 +39,17 @@ export interface Translations {
     inactive: string;
     enabled: string;
     disabled: string;
+    tryAgain: string;
+    noData: string;
+    realTime: string;
+    totalValue: string;
+    change24h: string;
+    performance: string;
+    assets: string;
+    balance: string;
+    value: string;
+    allocation: string;
+    price: string;
   };
 
   // Navigation
@@ -211,6 +222,24 @@ export interface Translations {
     low: string;
     change: string;
     lastUpdate: string;
+    live: string;
+    paused: string;
+    recentTrades: string;
+    bids: string;
+    asks: string;
+    spread: string;
+    time: string;
+    size: string;
+    placeBuyOrder: string;
+    placeSellOrder: string;
+    marketOrder: string;
+    limitOrder: string;
+    stopOrder: string;
+    orderHistory: string;
+    openOrders: string;
+    tradingFees: string;
+    availableBalance: string;
+    estimatedTotal: string;
   };
 
   // Portfolio
@@ -358,7 +387,7 @@ export interface Translations {
     smartRebalancing: string;
   };
 
-  // AI Insights
+  // AI Insights - Simplificado
   aiInsights: {
     title: string;
     subtitle: string;
@@ -371,6 +400,28 @@ export interface Translations {
     bullish: string;
     bearish: string;
     neutral: string;
+    chatTitle: string;
+    online: string;
+    version: string;
+    greeting: string;
+    inputPlaceholder: string;
+    quickActions: {
+      analyzeRisk: string;
+      suggestRebalance: string;
+      yieldOpportunities: string;
+      market: string;
+    };
+    portfolioRisk: string;
+    volatility: string;
+    diversification: string;
+    moderate: string;
+    good: string;
+    rebalancing: string;
+    opportunity: string;
+    alert: string;
+    rebalanceDescription: string;
+    yieldDescription: string;
+    correlationAlert: string;
   };
 
   // Settings
@@ -423,6 +474,140 @@ export interface Translations {
     '24h': string;
     '7d': string;
     '30d': string;
+  };
+
+  // Automation Page
+  automation: {
+    title: string;
+    subtitle: string;
+    activeAutomations: string;
+    createAutomation: string;
+    stopLoss: string;
+    takeProfit: string;
+    rebalancing: string;
+    hedging: string;
+    enabled: string;
+    disabled: string;
+    trigger: string;
+    action: string;
+    conditions: string;
+    frequency: string;
+    lastExecution: string;
+    nextExecution: string;
+    performance: string;
+    automationHistory: string;
+    riskManagement: string;
+    portfolioProtection: string;
+    smartRebalancing: string;
+    volatilityThreshold: string;
+    priceThreshold: string;
+    timeBasedTrigger: string;
+    conditionBasedTrigger: string;
+  };
+
+  // Insurance Page
+  insurance: {
+    title: string;
+    subtitle: string;
+    activeProtocols: string;
+    coverageAmount: string;
+    premium: string;
+    deductible: string;
+    claimHistory: string;
+    availableCoverage: string;
+    protocolRisk: string;
+    smartContractRisk: string;
+    liquidityRisk: string;
+    governanceRisk: string;
+    coverageRatio: string;
+    riskScore: string;
+    premiumCalculation: string;
+    claimProcess: string;
+    policyDetails: string;
+    coveragePeriod: string;
+    renewalDate: string;
+    insuranceProvider: string;
+    contract: string;
+    purchase: string;
+    renew: string;
+    claim: string;
+  };
+
+  // Risk Analysis Page
+  riskAnalysis: {
+    title: string;
+    subtitle: string;
+    overallRisk: string;
+    riskMetrics: string;
+    volatility: string;
+    sharpeRatio: string;
+    maxDrawdown: string;
+    var: string;
+    beta: string;
+    correlation: string;
+    diversification: string;
+    concentration: string;
+    liquidityRisk: string;
+    counterpartyRisk: string;
+    marketRisk: string;
+    operationalRisk: string;
+    regulatoryRisk: string;
+    riskTolerance: string;
+    riskCapacity: string;
+    riskBudget: string;
+    stressTest: string;
+    scenarioAnalysis: string;
+    monteCarlo: string;
+    backtest: string;
+    riskAdjustedReturn: string;
+    informationRatio: string;
+    trackingError: string;
+    downside: string;
+    upside: string;
+  };
+
+  // Monitoring Page
+  monitoring: {
+    title: string;
+    subtitle: string;
+    systemStatus: string;
+    activeAlerts: string;
+    alertHistory: string;
+    performanceMetrics: string;
+    uptime: string;
+    latency: string;
+    throughput: string;
+    errorRate: string;
+    apiStatus: string;
+    blockchainStatus: string;
+    priceOracle: string;
+    dataFeeds: string;
+    networkHealth: string;
+    gasTracker: string;
+    transactionPool: string;
+    nodeStatus: string;
+    consensusStatus: string;
+    validatorStatus: string;
+    bridgeStatus: string;
+    liquidityStatus: string;
+    protocolStatus: string;
+    securityStatus: string;
+    complianceStatus: string;
+    auditStatus: string;
+    incidentResponse: string;
+    maintenanceWindow: string;
+    serviceLevel: string;
+    availability: string;
+    reliability: string;
+  };
+
+  // 404 Page
+  notFound: {
+    title: string;
+    subtitle: string;
+    backToDashboard: string;
+    viewPortfolio: string;
+    contactSupport: string;
   };
 }
 

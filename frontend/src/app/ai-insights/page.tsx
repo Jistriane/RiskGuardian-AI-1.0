@@ -13,7 +13,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useI18n } from '@/contexts/i18n-context';
 import { useClientTime } from '@/hooks/useClientTime';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,7 +52,7 @@ const aiResponses = [
 ];
 
 export default function AIInsightsPage() {
-  const { t } = useTranslation();
+  const { t } = useI18n();
   const { formatTime, isClient } = useClientTime();
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -71,7 +71,7 @@ export default function AIInsightsPage() {
         {
           id: '1',
           type: 'ai',
-          message: 'Olá! Sou a ElizaOS AI. Como posso ajudar com sua análise de risco hoje?',
+          message: t.aiInsights?.greeting || 'Olá! Sou a ElizaOS AI. Como posso ajudar com sua análise de risco hoje?',
           timestamp: new Date()
         }
       ]);
@@ -115,26 +115,26 @@ export default function AIInsightsPage() {
   };
 
   const quickActions = [
-    "Analisar risco do portfolio",
-    "Sugerir rebalanceamento",
-    "Oportunidades de yield",
-    "Análise de mercado"
+    t.aiInsights?.quickActions?.analyzeRisk || 'Analisar risco do portfolio',
+    t.aiInsights?.quickActions?.suggestRebalance || 'Sugerir rebalanceamento',
+    t.aiInsights?.quickActions?.yieldOpportunities || 'Oportunidades de yield',
+    t.aiInsights?.quickActions?.market || 'Análise de mercado'
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">{t('aiInsights.title')}</h1>
-          <p className="text-gray-400 mt-2">{t('aiInsights.subtitle')}</p>
+          <h1 className="text-3xl font-bold text-white">{t.aiInsights?.title || 'Insights de IA'}</h1>
+          <p className="text-gray-400 mt-2">{t.aiInsights?.subtitle || 'Análise inteligente do seu portfólio DeFi'}</p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="bg-green-900/20 border-green-800/30 text-green-400">
-            🟢 Online
+            🟢 {t.aiInsights?.online || 'Online'}
           </Badge>
           <Badge variant="outline" className="bg-blue-900/20 border-blue-800/30 text-blue-400">
             <Brain className="h-3 w-3 mr-1" />
-            ElizaOS v2.1
+            {t.aiInsights?.version || 'ElizaOS v2.1'}
           </Badge>
         </div>
       </div>
@@ -145,7 +145,7 @@ export default function AIInsightsPage() {
             <CardHeader className="border-b border-gray-700">
               <CardTitle className="flex items-center gap-2">
                 <Bot className="h-5 w-5 text-blue-500" />
-                Chat com ElizaOS AI
+                {t.aiInsights?.chatTitle || 'Chat com ElizaOS AI'}
               </CardTitle>
             </CardHeader>
             
@@ -213,7 +213,7 @@ export default function AIInsightsPage() {
                   <Input
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="Digite sua pergunta sobre análise de risco..."
+                    placeholder={t.aiInsights?.inputPlaceholder || 'Digite sua pergunta sobre análise de risco...'}
                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                     className="flex-1"
                   />
@@ -231,7 +231,7 @@ export default function AIInsightsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <BarChart3 className="h-4 w-4" />
-                {t('aiInsights.marketAnalysis')}
+                {t.aiInsights?.marketAnalysis || 'Análise de Mercado'}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -263,23 +263,23 @@ export default function AIInsightsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Shield className="h-4 w-4" />
-                {t('aiInsights.riskAssessment')}
+                {t.aiInsights?.riskAssessment || 'Avaliação de Risco'}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Portfolio Risk</span>
+                <span className="text-sm text-gray-400">{t.aiInsights?.portfolioRisk || 'Risco do Portfolio'}</span>
                 <Badge variant="outline" className="bg-yellow-900/20 border-yellow-800/30 text-yellow-400">
-                  Moderado
+                  {t.aiInsights?.moderate || 'Moderado'}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Volatilidade</span>
+                <span className="text-sm text-gray-400">{t.aiInsights?.volatility || 'Volatilidade'}</span>
                 <span className="text-xs text-gray-300">18.5%</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Diversificação</span>
-                <span className="text-xs text-green-500">Boa</span>
+                <span className="text-sm text-gray-400">{t.aiInsights?.diversification || 'Diversificação'}</span>
+                <span className="text-xs text-green-500">{t.aiInsights?.good || 'Boa'}</span>
               </div>
             </CardContent>
           </Card>
@@ -288,32 +288,32 @@ export default function AIInsightsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Target className="h-4 w-4" />
-                {t('aiInsights.recommendations')}
+                {t.aiInsights?.recommendations || 'Recomendações'}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="p-2 bg-blue-900/20 border border-blue-800/30 rounded text-xs">
                 <div className="flex items-center gap-1 text-blue-400 font-medium">
                   <Zap className="h-3 w-3" />
-                  Rebalanceamento
+                  {t.aiInsights?.rebalancing || 'Rebalanceamento'}
                 </div>
-                <p className="text-gray-400 mt-1">Reduzir exposição BTC em 5%</p>
+                <p className="text-gray-400 mt-1">{t.aiInsights?.rebalanceDescription || 'Reduzir exposição BTC em 5%'}</p>
               </div>
               
               <div className="p-2 bg-green-900/20 border border-green-800/30 rounded text-xs">
                 <div className="flex items-center gap-1 text-green-400 font-medium">
                   <TrendingUp className="h-3 w-3" />
-                  Oportunidade
+                  {t.aiInsights?.opportunity || 'Oportunidade'}
                 </div>
-                <p className="text-gray-400 mt-1">Yield farming USDC/ETH</p>
+                <p className="text-gray-400 mt-1">{t.aiInsights?.yieldDescription || 'Yield farming USDC/ETH'}</p>
               </div>
               
               <div className="p-2 bg-yellow-900/20 border border-yellow-800/30 rounded text-xs">
                 <div className="flex items-center gap-1 text-yellow-400 font-medium">
                   <AlertTriangle className="h-3 w-3" />
-                  Alerta
+                  {t.aiInsights?.alert || 'Alerta'}
                 </div>
-                <p className="text-gray-400 mt-1">Alta correlação entre ativos</p>
+                <p className="text-gray-400 mt-1">{t.aiInsights?.correlationAlert || 'Alta correlação entre ativos'}</p>
               </div>
             </CardContent>
           </Card>

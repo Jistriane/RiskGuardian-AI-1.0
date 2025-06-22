@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { useRealTimeData } from '@/hooks/useRealTimeData';
 import { Zap, Settings, Shield, TrendingDown, RotateCcw, Play, Pause, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useI18n } from '@/contexts/i18n-context';
 
 interface AutomationRule {
   id: string;
@@ -86,7 +86,31 @@ export default function AutomationPage() {
 
   const [selectedRule, setSelectedRule] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const { t } = useTranslation();
+  const { t } = useI18n();
+
+  // Estados para configurações
+  const [hedgeConfig, setHedgeConfig] = useState({
+    asset: 'ETH',
+    dropLimit: 5,
+    maxValue: 1000
+  });
+
+  const [rebalanceConfig, setRebalanceConfig] = useState({
+    frequency: 'Semanal',
+    minDeviation: 10,
+    allocation: {
+      ETH: 40,
+      BTC: 30,
+      LINK: 20,
+      USDC: 10
+    }
+  });
+
+  const [switchStates, setSwitchStates] = useState({
+    autoHedge: true,
+    stopLoss: true,
+    rebalancing: false
+  });
 
   const toggleRuleStatus = (ruleId: string) => {
     setAutomationRules(prev => prev.map(rule => 
@@ -131,10 +155,10 @@ export default function AutomationPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t('automationTitle')}
+{t.automation.title}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
-            {t('automationSubtitle')}
+            {t.automation.subtitle}
           </p>
         </div>
 
@@ -150,8 +174,11 @@ export default function AutomationPage() {
             <CardContent>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm">{t('active')}</span>
-                  <Switch checked={true} onCheckedChange={() => {}} />
+                  <span className="text-sm">{switchStates.autoHedge ? t.common.active : t.common.inactive}</span>
+                  <Switch 
+                    checked={switchStates.autoHedge} 
+                    onCheckedChange={(checked) => setSwitchStates(prev => ({...prev, autoHedge: checked}))} 
+                  />
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-400">
                   ETH: Proteção contra queda &gt; 5%
@@ -170,8 +197,11 @@ export default function AutomationPage() {
             <CardContent>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm">{t('active')}</span>
-                  <Switch checked={true} onCheckedChange={() => {}} />
+                  <span className="text-sm">{switchStates.stopLoss ? t.common.active : t.common.inactive}</span>
+                  <Switch 
+                    checked={switchStates.stopLoss} 
+                    onCheckedChange={(checked) => setSwitchStates(prev => ({...prev, stopLoss: checked}))} 
+                  />
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-400">
                   Portfolio: Limite -15%
@@ -184,14 +214,17 @@ export default function AutomationPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                {t('rebalancing')}
+{t.automation.rebalancing}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm">{t('inactive')}</span>
-                  <Switch checked={false} onCheckedChange={() => {}} />
+                  <span className="text-sm">{switchStates.rebalancing ? t.common.active : t.common.inactive}</span>
+                  <Switch 
+                    checked={switchStates.rebalancing} 
+                    onCheckedChange={(checked) => setSwitchStates(prev => ({...prev, rebalancing: checked}))} 
+                  />
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-400">
                   Mensal: Última vez 15 dias atrás
@@ -210,10 +243,15 @@ export default function AutomationPage() {
             <CardContent className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Ativo para Hedge</label>
-                <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800">
-                  <option>ETH</option>
-                  <option>BTC</option>
-                  <option>LINK</option>
+                <select 
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
+                  value={hedgeConfig.asset}
+                  onChange={(e) => setHedgeConfig(prev => ({...prev, asset: e.target.value}))}
+                  title="Selecionar ativo para hedge"
+                >
+                  <option value="ETH">ETH</option>
+                  <option value="BTC">BTC</option>
+                  <option value="LINK">LINK</option>
                 </select>
               </div>
               <div>
@@ -221,6 +259,8 @@ export default function AutomationPage() {
                 <input
                   type="number"
                   placeholder="5"
+                  value={hedgeConfig.dropLimit}
+                  onChange={(e) => setHedgeConfig(prev => ({...prev, dropLimit: Number(e.target.value)}))}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
                 />
               </div>
@@ -229,10 +269,18 @@ export default function AutomationPage() {
                 <input
                   type="number"
                   placeholder="1000"
+                  value={hedgeConfig.maxValue}
+                  onChange={(e) => setHedgeConfig(prev => ({...prev, maxValue: Number(e.target.value)}))}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
                 />
               </div>
-              <Button className="w-full">
+              <Button 
+                className="w-full"
+                onClick={() => {
+                  console.log('Configuração de hedge atualizada:', hedgeConfig);
+                  // Aqui você pode adicionar a lógica para salvar a configuração
+                }}
+              >
                 Atualizar Configuração
               </Button>
             </CardContent>
@@ -240,15 +288,20 @@ export default function AutomationPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Configurar {t('rebalancing')}</CardTitle>
+              <CardTitle>Configurar {t.automation.rebalancing}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Frequência</label>
-                <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800">
-                  <option>Semanal</option>
-                  <option>Mensal</option>
-                  <option>Trimestral</option>
+                <select 
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
+                  value={rebalanceConfig.frequency}
+                  onChange={(e) => setRebalanceConfig(prev => ({...prev, frequency: e.target.value}))}
+                  title="Selecionar frequência de rebalanceamento"
+                >
+                  <option value="Semanal">Semanal</option>
+                  <option value="Mensal">Mensal</option>
+                  <option value="Trimestral">Trimestral</option>
                 </select>
               </div>
               <div>
@@ -256,6 +309,8 @@ export default function AutomationPage() {
                 <input
                   type="number"
                   placeholder="10"
+                  value={rebalanceConfig.minDeviation}
+                  onChange={(e) => setRebalanceConfig(prev => ({...prev, minDeviation: Number(e.target.value)}))}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
                 />
               </div>
@@ -264,24 +319,67 @@ export default function AutomationPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span>ETH</span>
-                    <input type="number" placeholder="40" className="w-20 px-2 py-1 border rounded" />
+                    <input 
+                      type="number" 
+                      placeholder="40" 
+                      value={rebalanceConfig.allocation.ETH}
+                      onChange={(e) => setRebalanceConfig(prev => ({
+                        ...prev, 
+                        allocation: {...prev.allocation, ETH: Number(e.target.value)}
+                      }))}
+                      className="w-20 px-2 py-1 border rounded" 
+                    />
                   </div>
                   <div className="flex justify-between items-center">
                     <span>BTC</span>
-                    <input type="number" placeholder="30" className="w-20 px-2 py-1 border rounded" />
+                    <input 
+                      type="number" 
+                      placeholder="30" 
+                      value={rebalanceConfig.allocation.BTC}
+                      onChange={(e) => setRebalanceConfig(prev => ({
+                        ...prev, 
+                        allocation: {...prev.allocation, BTC: Number(e.target.value)}
+                      }))}
+                      className="w-20 px-2 py-1 border rounded" 
+                    />
                   </div>
                   <div className="flex justify-between items-center">
                     <span>LINK</span>
-                    <input type="number" placeholder="20" className="w-20 px-2 py-1 border rounded" />
+                    <input 
+                      type="number" 
+                      placeholder="20" 
+                      value={rebalanceConfig.allocation.LINK}
+                      onChange={(e) => setRebalanceConfig(prev => ({
+                        ...prev, 
+                        allocation: {...prev.allocation, LINK: Number(e.target.value)}
+                      }))}
+                      className="w-20 px-2 py-1 border rounded" 
+                    />
                   </div>
                   <div className="flex justify-between items-center">
                     <span>USDC</span>
-                    <input type="number" placeholder="10" className="w-20 px-2 py-1 border rounded" />
+                    <input 
+                      type="number" 
+                      placeholder="10" 
+                      value={rebalanceConfig.allocation.USDC}
+                      onChange={(e) => setRebalanceConfig(prev => ({
+                        ...prev, 
+                        allocation: {...prev.allocation, USDC: Number(e.target.value)}
+                      }))}
+                      className="w-20 px-2 py-1 border rounded" 
+                    />
                   </div>
                 </div>
               </div>
-              <Button className="w-full">
-                Ativar {t('rebalancing')}
+              <Button 
+                className="w-full"
+                onClick={() => {
+                  console.log('Configuração de rebalanceamento atualizada:', rebalanceConfig);
+                  setSwitchStates(prev => ({...prev, rebalancing: true}));
+                  // Aqui você pode adicionar a lógica para salvar a configuração
+                }}
+              >
+                Ativar {t.automation.rebalancing}
               </Button>
             </CardContent>
           </Card>

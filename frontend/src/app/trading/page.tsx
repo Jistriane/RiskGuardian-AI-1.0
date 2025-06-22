@@ -19,7 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TradingChart } from '@/components/ui/trading-chart';
 import { TrendingUp, TrendingDown, RefreshCw, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useI18n } from '@/contexts/i18n-context';
 
 const tradingPairs = [
   { symbol: 'ETH/USDC', base: 'ETH', quote: 'USDC', basePrice: 2487.52, change: 3.24, volume: 1250000, icon: '🔷' },
@@ -39,7 +39,7 @@ export default function TradingPage() {
   const [buyPrice, setBuyPrice] = useState('');
   const [sellAmount, setSellAmount] = useState('');
   const [sellPrice, setSellPrice] = useState('');
-  const { t } = useTranslation();
+  const { t } = useI18n();
 
   const selectedPairData = tradingPairs.find(pair => pair.symbol === selectedPair);
   const baseSymbol = selectedPairData?.base || 'ETH';
@@ -137,10 +137,10 @@ export default function TradingPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                {t('tradingTitle')}
+                {t.trading.title}
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-2">
-                {t('tradingSubtitle')}
+                {t.trading.subtitle}
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -148,7 +148,7 @@ export default function TradingPage() {
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${isLive ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  {isLive ? 'Ao Vivo' : 'Pausado'}
+                  {isLive ? t.trading.live : t.trading.paused}
                 </span>
                 <Button
                   variant="outline"
@@ -190,7 +190,7 @@ export default function TradingPage() {
           <Card className="lg:col-span-3">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>{selectedPair} - {t('priceChart')}</span>
+                <span>{selectedPair} - {t.trading.priceChart}</span>
                 <div className="flex items-center gap-4">
                   <div className="text-2xl font-bold">
                     {formatCurrency(currentPrice)}
@@ -210,13 +210,13 @@ export default function TradingPage() {
           {/* Order Book */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">{t('orderBook')}</CardTitle>
+              <CardTitle className="text-sm">{t.trading.orderBook}</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               <div className="space-y-4">
                 {/* Sell Orders (Asks) */}
                 <div>
-                  <h4 className="text-xs font-medium text-red-600 mb-2 uppercase">{t('sell')}</h4>
+                  <h4 className="text-xs font-medium text-red-600 mb-2 uppercase">{t.trading.sell}</h4>
                   <div className="space-y-1">
                     {orderBook.asks.slice(0, 8).reverse().map((order: any, i: number) => (
                       <div key={i} className="flex justify-between text-xs">
@@ -239,7 +239,7 @@ export default function TradingPage() {
 
                 {/* Buy Orders (Bids) */}
                 <div>
-                  <h4 className="text-xs font-medium text-green-600 mb-2 uppercase">{t('buy')}</h4>
+                  <h4 className="text-xs font-medium text-green-600 mb-2 uppercase">{t.trading.buy}</h4>
                   <div className="space-y-1">
                     {orderBook.bids.slice(0, 8).map((order: any, i: number) => (
                       <div key={i} className="flex justify-between text-xs">
@@ -261,12 +261,12 @@ export default function TradingPage() {
             <CardHeader>
               <CardTitle className="text-green-600 flex items-center">
                 <ArrowUpRight className="h-5 w-5 mr-2" />
-                {t('buy')} {baseSymbol}
+{t.trading.buy} {baseSymbol}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">{t('price')} (USDC)</label>
+                <label className="block text-sm font-medium mb-2">{t.common.price} (USDC)</label>
                 <input
                   type="number"
                   value={buyPrice}
@@ -275,7 +275,7 @@ export default function TradingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">{t('amount')} ({baseSymbol})</label>
+                <label className="block text-sm font-medium mb-2">{t.trading.amount} ({baseSymbol})</label>
                 <input
                   type="number"
                   value={buyAmount}
@@ -285,7 +285,7 @@ export default function TradingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">{t('total')} (USDC)</label>
+                <label className="block text-sm font-medium mb-2">{t.trading.total} (USDC)</label>
                 <input
                   type="number"
                   value={buyPrice && buyAmount ? (parseFloat(buyPrice) * parseFloat(buyAmount)).toFixed(2) : ''}
@@ -294,7 +294,7 @@ export default function TradingPage() {
                 />
               </div>
               <Button className="w-full bg-green-600 hover:bg-green-700">
-                {t('buy')} {baseSymbol}
+                {t.trading.buy} {baseSymbol}
               </Button>
             </CardContent>
           </Card>
@@ -304,12 +304,12 @@ export default function TradingPage() {
             <CardHeader>
               <CardTitle className="text-red-600 flex items-center">
                 <ArrowDownRight className="h-5 w-5 mr-2" />
-                {t('sell')} {baseSymbol}
+                {t.trading.sell} {baseSymbol}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">{t('price')} (USDC)</label>
+                <label className="block text-sm font-medium mb-2">{t.common.price} (USDC)</label>
                 <input
                   type="number"
                   value={sellPrice}
@@ -318,7 +318,7 @@ export default function TradingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">{t('amount')} ({baseSymbol})</label>
+                <label className="block text-sm font-medium mb-2">{t.trading.amount} ({baseSymbol})</label>
                 <input
                   type="number"
                   value={sellAmount}
@@ -328,7 +328,7 @@ export default function TradingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">{t('total')} (USDC)</label>
+                <label className="block text-sm font-medium mb-2">{t.trading.total} (USDC)</label>
                 <input
                   type="number"
                   value={sellPrice && sellAmount ? (parseFloat(sellPrice) * parseFloat(sellAmount)).toFixed(2) : ''}
@@ -337,7 +337,7 @@ export default function TradingPage() {
                 />
               </div>
               <Button className="w-full bg-red-600 hover:bg-red-700">
-                {t('sell')} {baseSymbol}
+                {t.trading.sell} {baseSymbol}
               </Button>
             </CardContent>
           </Card>
@@ -347,7 +347,7 @@ export default function TradingPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
           <Card>
             <CardContent className="p-4">
-              <div className="text-sm text-gray-600 dark:text-gray-400">{t('high')} 24h</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">{t.trading.high} 24h</div>
               <div className="text-lg font-semibold">
                 {formatCurrency(currentPrice * 1.05)}
               </div>
@@ -355,7 +355,7 @@ export default function TradingPage() {
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="text-sm text-gray-600 dark:text-gray-400">{t('low')} 24h</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">{t.trading.low} 24h</div>
               <div className="text-lg font-semibold">
                 {formatCurrency(currentPrice * 0.95)}
               </div>
@@ -363,7 +363,7 @@ export default function TradingPage() {
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="text-sm text-gray-600 dark:text-gray-400">{t('volume')} 24h</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">{t.trading.volume} 24h</div>
               <div className="text-lg font-semibold">
                 {formatVolume(selectedPairData?.volume || 0)} {baseSymbol}
               </div>
@@ -371,7 +371,7 @@ export default function TradingPage() {
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="text-sm text-gray-600 dark:text-gray-400">{t('change')} 24h</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">{t.common.change24h} 24h</div>
               <div className={`text-lg font-semibold ${priceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {priceChange >= 0 ? '+' : ''}{typeof priceChange === 'number' ? priceChange.toFixed(2) : '0.00'}%
               </div>

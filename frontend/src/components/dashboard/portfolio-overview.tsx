@@ -12,70 +12,78 @@
 
 'use client';
 
-import { useAccount } from 'wagmi';
-import { useWalletData } from '@/hooks/useWalletData';
-import { useClientTime } from '@/hooks/useClientTime';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, Wallet, Shield, AlertTriangle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Wallet, AlertTriangle, TrendingUp, Shield } from 'lucide-react';
+import { useRealTimeData } from '@/hooks/useRealTimeData';
+import { useI18n } from '@/contexts/i18n-context';
+import { useAccount } from 'wagmi';
+
+interface Asset {
+  symbol: string;
+  balance: string;
+  value: string;
+  price?: number;
+}
+
+interface Portfolio {
+  totalValue: string;
+  assets: Asset[];
+}
+
+interface RiskMetrics {
+  portfolioRisk: number;
+  diversification: number;
+  liquidityRisk: number;
+  smartContractRisk: number;
+}
+
+interface WalletData {
+  totalChange24h?: number;
+}
 
 function formatCurrency(value: string | number): string {
-  const num = typeof value === 'string' ? parseFloat(value) : value;
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'USD',
-  }).format(num);
+  }).format(numValue);
 }
 
 function getRiskColor(score: number): string {
-  if (score < 30) return 'text-green-500';
-  if (score < 60) return 'text-yellow-500';
-  return 'text-red-500';
+  if (score < 30) return 'text-green-400';
+  if (score < 70) return 'text-yellow-400';
+  return 'text-red-400';
 }
 
 export function PortfolioOverview() {
-  const { isConnected, address } = useAccount();
-  const { walletData } = useWalletData();
-  const { formatTime } = useClientTime();
+  const { data, loading } = useRealTimeData();
+  const { t } = useI18n();
+  const { isConnected } = useAccount();
 
-  // Dados reais do portfolio da carteira conectada
-  const portfolio = isConnected && walletData ? {
-    totalValue: walletData.totalValue.toString(),
-    lastUpdate: walletData.lastUpdated,
-    assets: [
-      {
-        symbol: walletData.nativeBalance.symbol,
-        balance: walletData.nativeBalance.formatted,
-        value: walletData.nativeBalance.value.toString(),
-        price: walletData.nativeBalance.value / parseFloat(walletData.nativeBalance.formatted)
-      },
-      ...walletData.balances.map(token => ({
-        symbol: token.symbol,
-        balance: token.balance,
-        value: token.value.toString(),
-        price: token.value / parseFloat(token.balance)
-      }))
-    ]
+  // Extrair dados do hook com fallbacks seguros
+  const portfolio: Portfolio = data?.portfolio ? {
+    totalValue: data.portfolio.totalValue.toString(),
+    assets: data.portfolio.assets.map(asset => ({
+      symbol: asset.symbol,
+      balance: asset.balance.toString(),
+      value: asset.value.toString(),
+      price: asset.value / asset.balance
+    }))
   } : {
     totalValue: '0',
-    lastUpdate: null,
     assets: []
   };
 
-  // Métricas de risco calculadas baseadas no portfolio real
-  const riskMetrics = isConnected && walletData ? {
-    portfolioRisk: Math.min(90, Math.round((walletData.totalValue / 10000) * 100)),
-    diversification: Math.min(100, Math.round((walletData.balances.length + 1) * 25)),
-    liquidityRisk: Math.round(Math.random() * 30 + 10),
-    smartContractRisk: Math.round(walletData.balances.length * 12)
-  } : {
-    portfolioRisk: 0,
-    diversification: 0,
-    liquidityRisk: 0,
-    smartContractRisk: 0
+  const riskMetrics: RiskMetrics = {
+    portfolioRisk: data?.riskMetrics?.volatility ? Math.round(data.riskMetrics.volatility * 100) : 45,
+    diversification: portfolio.assets.length * 25,
+    liquidityRisk: 20,
+    smartContractRisk: 15
   };
 
-  const formatAddress = (addr: string) => {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  const walletData: WalletData = {
+    totalChange24h: data?.portfolio?.totalChange24h || 0
   };
 
   if (!isConnected) {
@@ -85,7 +93,7 @@ export function PortfolioOverview() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Wallet className="h-5 w-5" />
-              Visão Geral do Portfolio
+              {t.dashboard.portfolioOverview}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -94,13 +102,32 @@ export function PortfolioOverview() {
                 <Wallet className="h-8 w-8 text-gray-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-200 mb-2">
-                Carteira Não Conectada
+                {t.wallet.walletNotConnected}
               </h3>
               <p className="text-gray-400 mb-4">
-                Conecte sua carteira para ver seu portfolio em tempo real
+                {t.wallet.connectToViewPortfolio}
               </p>
               <div className="px-4 py-2 bg-blue-600/20 border border-blue-600/30 rounded-lg text-blue-400 text-sm">
-                🔗 Use o botão &quot;Connect Wallet&quot; no menu lateral
+                🔗 {t.wallet.connectWallet}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="animate-pulse space-y-4">
+              <div className="h-4 bg-gray-700 rounded w-1/4"></div>
+              <div className="h-8 bg-gray-700 rounded w-1/2"></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="h-20 bg-gray-700 rounded"></div>
+                <div className="h-20 bg-gray-700 rounded"></div>
               </div>
             </div>
           </CardContent>
@@ -114,56 +141,51 @@ export function PortfolioOverview() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 border-gray-700/50">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center justify-between text-lg">
-            <div className="flex items-center gap-2">
-              <Wallet className="h-5 w-5 text-blue-400" />
-              <span className="text-white">Portfolio em Tempo Real</span>
-            </div>
-            <div className="text-xs text-gray-400">
-              📍 {address && formatAddress(address)}
-            </div>
+      {/* Card Principal - Portfolio Overview */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wallet className="h-5 w-5" />
+            {t.dashboard.portfolioRealTime}
+            <Badge variant="outline" className="bg-green-900/20 text-green-400 border-green-800/30">
+              {t.dashboard.live}
+            </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-400">Última Atualização</span>
-            <span className="text-sm font-medium text-gray-300">
-              {portfolio.lastUpdate ? formatTime(portfolio.lastUpdate.toISOString()) : '--:--:--'}
-            </span>
-          </div>
-          
-          <div className="bg-gray-800/40 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-300">Valor Total</span>
-              <div className="text-right">
-                <div className="text-xl font-bold text-white">{formatCurrency(totalValue)}</div>
-                <div className="text-sm text-green-400 font-medium">
-                  {walletData?.totalChange24h ? 
-                    `${walletData.totalChange24h >= 0 ? '+' : ''}${walletData.totalChange24h.toFixed(2)}% hoje` 
-                    : '+0.0% hoje'
-                  }
-                </div>
+        <CardContent>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-sm text-gray-400 mb-1">{t.dashboard.totalValue}</p>
+              <p className="text-xs text-gray-500">
+                {t.dashboard.lastUpdate}: {new Date().toLocaleTimeString('pt-BR')}
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-xl font-bold text-white">{formatCurrency(totalValue)}</div>
+              <div className="text-sm text-green-400 font-medium">
+                {walletData?.totalChange24h ? 
+                  `${walletData.totalChange24h >= 0 ? '+' : ''}${walletData.totalChange24h.toFixed(2)}% ${t.dashboard.today}` 
+                  : `+0.0% ${t.dashboard.today}`
+                }
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-gray-800/40 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">Score de Risco</div>
+              <div className="text-xs text-gray-400 mb-1">{t.dashboard.riskScore}</div>
               <div className="text-lg font-bold text-white">{riskMetrics.portfolioRisk}/100</div>
               <div className="text-xs text-orange-400">
-                {riskMetrics.portfolioRisk < 30 ? 'Risco Baixo' : 
-                 riskMetrics.portfolioRisk < 70 ? 'Risco Médio' : 'Risco Alto'}
+                {riskMetrics.portfolioRisk < 30 ? t.dashboard.lowRisk : 
+                 riskMetrics.portfolioRisk < 70 ? t.dashboard.mediumRisk : t.dashboard.highRisk}
               </div>
             </div>
             
             <div className="bg-gray-800/40 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">Diversificação</div>
+              <div className="text-xs text-gray-400 mb-1">{t.dashboard.diversification}</div>
               <div className="text-lg font-bold text-white">{riskMetrics.diversification}%</div>
               <div className="text-xs text-green-400">
-                {riskMetrics.diversification > 70 ? 'Bem Diversificado' : 'Concentrado'}
+                {riskMetrics.diversification > 70 ? t.dashboard.wellDiversified : t.dashboard.concentrated}
               </div>
             </div>
           </div>
@@ -175,12 +197,12 @@ export function PortfolioOverview() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Wallet className="h-5 w-5" />
-              Ativos ({portfolio.assets.length})
+              {t.dashboard.assets} ({portfolio.assets.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {portfolio.assets.map((asset, index) => {
+              {portfolio.assets.map((asset: Asset, index: number) => {
                 const allocation = (parseFloat(asset.value) / totalValue) * 100;
                 return (
                   <div key={index} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
@@ -206,7 +228,7 @@ export function PortfolioOverview() {
                         {formatCurrency(asset.value)}
                       </div>
                       <div className="text-sm text-gray-400">
-                        {allocation.toFixed(1)}% do Portfolio
+                        {allocation.toFixed(1)}% {t.dashboard.ofPortfolio}
                       </div>
                     </div>
                   </div>
@@ -220,7 +242,7 @@ export function PortfolioOverview() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-yellow-500" />
-              Nenhum Ativo Encontrado
+              {t.dashboard.noAssetsFound}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -229,10 +251,10 @@ export function PortfolioOverview() {
                 <Wallet className="h-8 w-8 text-gray-400" />
               </div>
               <p className="text-gray-400 mb-4">
-                Nenhum ativo encontrado na carteira conectada
+                {t.dashboard.noAssetsInWallet}
               </p>
               <div className="text-sm text-gray-500">
-                Certifique-se de que sua carteira contém ETH, USDC ou LINK
+                {t.dashboard.ensureWalletHasAssets}
               </div>
             </div>
           </CardContent>
@@ -245,7 +267,7 @@ export function PortfolioOverview() {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold">
               <AlertTriangle className="h-5 w-5 text-yellow-500" />
-              Alertas Ativos
+              {t.dashboard.activeAlerts}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -256,15 +278,15 @@ export function PortfolioOverview() {
                     <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
                       <h4 className="text-base font-semibold text-red-400 mb-1">
-                        Alto Risco Detectado
+                        {t.dashboard.highRiskDetected}
                       </h4>
                       <p className="text-sm text-red-300">
-                        Score de Risco: {riskMetrics.portfolioRisk}/100
+                        {t.dashboard.riskScore}: {riskMetrics.portfolioRisk}/100
                       </p>
                     </div>
                   </div>
                   <p className="text-sm text-gray-300 leading-relaxed pl-8">
-                    Considere diversificar seu portfolio para reduzir o risco
+                    {t.dashboard.considerDiversifying}
                   </p>
                 </div>
               )}
@@ -275,15 +297,15 @@ export function PortfolioOverview() {
                     <AlertTriangle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
                       <h4 className="text-base font-semibold text-yellow-400 mb-1">
-                        Portfolio Concentrado
+                        {t.dashboard.concentratedPortfolio}
                       </h4>
                       <p className="text-sm text-yellow-300">
-                        Diversificação: {riskMetrics.diversification}%
+                        {t.dashboard.diversification}: {riskMetrics.diversification}%
                       </p>
                     </div>
                   </div>
                   <p className="text-sm text-gray-300 leading-relaxed pl-8">
-                    Adicione mais ativos para melhorar a diversificação
+                    {t.dashboard.addMoreAssets}
                   </p>
                 </div>
               )}
@@ -293,28 +315,28 @@ export function PortfolioOverview() {
                   <div className="flex items-center gap-3 mb-4">
                     <Shield className="h-5 w-5 text-green-400 flex-shrink-0" />
                     <h4 className="text-base font-semibold text-green-400">
-                      Nenhum Alerta Ativo
+                      {t.dashboard.noActiveAlerts}
                     </h4>
                   </div>
                   
-                                      <div className="space-y-3">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-gray-800/50 rounded-lg p-3 text-center">
-                          <div className="text-xs text-gray-400 mb-1 font-medium">Risco</div>
-                          <div className="text-lg font-bold text-green-400">{riskMetrics.portfolioRisk}/100</div>
-                        </div>
-                        <div className="bg-gray-800/50 rounded-lg p-3 text-center">
-                          <div className="text-xs text-gray-400 mb-1 font-medium">Diversificação</div>
-                          <div className="text-lg font-bold text-green-400">{riskMetrics.diversification}%</div>
-                        </div>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-gray-800/50 rounded-lg p-3 text-center">
+                        <div className="text-xs text-gray-400 mb-1 font-medium">{t.dashboard.riskScore}</div>
+                        <div className="text-lg font-bold text-green-400">{riskMetrics.portfolioRisk}/100</div>
                       </div>
-                      
-                      <div className="bg-gray-800/30 rounded-lg p-3">
-                        <p className="text-xs text-gray-300 text-center leading-relaxed">
-                          ✅ Todas as métricas estão dentro dos parâmetros normais
-                        </p>
+                      <div className="bg-gray-800/50 rounded-lg p-3 text-center">
+                        <div className="text-xs text-gray-400 mb-1 font-medium">{t.dashboard.diversification}</div>
+                        <div className="text-lg font-bold text-green-400">{riskMetrics.diversification}%</div>
                       </div>
                     </div>
+                    
+                    <div className="bg-gray-800/30 rounded-lg p-3">
+                      <p className="text-xs text-gray-300 text-center leading-relaxed">
+                        ✅ {t.dashboard.allMetricsNormal}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -326,7 +348,7 @@ export function PortfolioOverview() {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold">
               <TrendingUp className="h-5 w-5 text-blue-500" />
-              Performance 24h
+              {t.dashboard.performance24h}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -334,13 +356,13 @@ export function PortfolioOverview() {
               {/* Valores Principais */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-2 bg-gray-800/30 rounded-lg">
-                  <span className="text-xs font-medium text-gray-300">Valor Inicial</span>
+                  <span className="text-xs font-medium text-gray-300">{t.dashboard.initialValue}</span>
                   <span className="text-sm font-semibold text-white">
                     {formatCurrency(totalValue * 0.976)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-gray-800/30 rounded-lg">
-                  <span className="text-xs font-medium text-gray-300">Valor Atual</span>
+                  <span className="text-xs font-medium text-gray-300">{t.dashboard.currentValue}</span>
                   <span className="text-sm font-semibold text-white">
                     {formatCurrency(totalValue)}
                   </span>
@@ -354,24 +376,17 @@ export function PortfolioOverview() {
                     ? 'bg-green-900/20 border-green-800/30' 
                     : 'bg-red-900/20 border-red-800/30'
                 }`}>
-                  <span className="text-xs font-medium text-gray-300">Variação</span>
-                  <div className="flex items-center gap-1">
-                    {walletData?.totalChange24h && walletData.totalChange24h >= 0 ? (
-                      <TrendingUp className="h-3 w-3 text-green-400" />
-                    ) : (
-                      <TrendingUp className="h-3 w-3 text-red-400 rotate-180" />
-                    )}
-                    <span className={`text-sm font-bold ${
-                      walletData?.totalChange24h && walletData.totalChange24h >= 0 
-                        ? 'text-green-400' 
-                        : 'text-red-400'
-                    }`}>
-                      {walletData?.totalChange24h ? 
-                        `${walletData.totalChange24h >= 0 ? '+' : ''}${walletData.totalChange24h.toFixed(2)}%` 
-                        : '+0.0%'
-                      }
-                    </span>
-                  </div>
+                  <span className="text-xs font-medium text-gray-300">{t.dashboard.variation}</span>
+                  <span className={`text-sm font-bold ${
+                    walletData?.totalChange24h && walletData.totalChange24h >= 0 
+                      ? 'text-green-400' 
+                      : 'text-red-400'
+                  }`}>
+                    {walletData?.totalChange24h ? 
+                      `${walletData.totalChange24h >= 0 ? '+' : ''}${walletData.totalChange24h.toFixed(2)}%` 
+                      : '0.0%'
+                    }
+                  </span>
                 </div>
                 
                 <div className={`flex items-center justify-between p-2 rounded-lg border ${
@@ -379,7 +394,7 @@ export function PortfolioOverview() {
                     ? 'bg-green-900/20 border-green-800/30' 
                     : 'bg-red-900/20 border-red-800/30'
                 }`}>
-                  <span className="text-xs font-medium text-gray-300">P&L (24h)</span>
+                  <span className="text-xs font-medium text-gray-300">{t.dashboard.pnl24h}</span>
                   <span className={`text-sm font-bold ${
                     walletData?.totalChange24h && walletData.totalChange24h >= 0 
                       ? 'text-green-400' 
@@ -398,16 +413,16 @@ export function PortfolioOverview() {
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-blue-400">📊</span>
                   <span className="text-xs text-blue-400 font-semibold">
-                    Resumo do Portfolio
+                    {t.dashboard.portfolioSummary}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="text-center">
-                    <div className="text-xs text-gray-400 mb-1">Ativos</div>
+                    <div className="text-xs text-gray-400 mb-1">{t.dashboard.assets}</div>
                     <div className="text-sm font-bold text-white">{portfolio.assets.length}</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xs text-gray-400 mb-1">Score de Risco</div>
+                    <div className="text-xs text-gray-400 mb-1">{t.dashboard.riskScore}</div>
                     <div className={`text-sm font-bold ${getRiskColor(riskMetrics.portfolioRisk)}`}>
                       {riskMetrics.portfolioRisk}/100
                     </div>

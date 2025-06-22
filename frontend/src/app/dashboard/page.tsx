@@ -121,7 +121,7 @@ export default function DashboardPage() {
                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                {isLoading ? 'Atualizando...' : 'Atualizar'}
+                {isLoading ? t.common.loading : t.common.refresh}
               </button>
             )}
             
@@ -136,7 +136,7 @@ export default function DashboardPage() {
         {/* Indicador de erro */}
         {error && (
           <div className="bg-red-600/20 border border-red-600 text-red-400 px-4 py-3 rounded-lg">
-            <p className="font-medium">Erro ao carregar dados da carteira:</p>
+            <p className="font-medium">{t.common.error}:</p>
             <p className="text-sm">{error}</p>
           </div>
         )}
@@ -172,8 +172,8 @@ export default function DashboardPage() {
                 {isConnected && walletData && (
                   <DataSourceIndicator 
                     type="real" 
-                    label="ETH Real + Tokens" 
-                    description="Balance ETH da blockchain + tokens ERC20 reais"
+                    label={t.dashboard.realTimeAnalysis} 
+                    description={t.dashboard.blockchain}
                   />
                 )}
               </div>

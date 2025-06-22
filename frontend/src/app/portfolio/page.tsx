@@ -17,7 +17,7 @@ import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useI18n } from '@/contexts/i18n-context';
 import { useRealTimeData } from '@/hooks/useRealTimeData';
 import { formatCurrency, formatPercentage } from '@/lib/utils';
 import { 
@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 
 export default function PortfolioPage() {
-  const { t } = useTranslation();
+  const { t } = useI18n();
   const { data, loading, error, lastUpdate, refresh, isRealTime } = useRealTimeData(3000); // Atualiza a cada 3 segundos
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
 
@@ -41,7 +41,7 @@ export default function PortfolioPage() {
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <span className="ml-3 text-lg">{t('loading')}</span>
+          <span className="ml-3 text-lg">{t.common.loading}</span>
             </div>
       </DashboardLayout>
     );
@@ -54,7 +54,7 @@ export default function PortfolioPage() {
           <p className="text-red-500 text-lg">{error}</p>
           <Button onClick={refresh} variant="outline">
             <RefreshCw className="w-4 h-4 mr-2" />
-            Tentar Novamente
+            {t.common.tryAgain}
           </Button>
           </div>
       </DashboardLayout>
@@ -65,7 +65,7 @@ export default function PortfolioPage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-muted-foreground">Nenhum dado disponível</p>
+          <p className="text-muted-foreground">{t.common.noData}</p>
             </div>
       </DashboardLayout>
     );
@@ -80,12 +80,12 @@ export default function PortfolioPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold">{t('portfolio')}</h1>
+            <h1 className="text-3xl font-bold">{t.portfolio.title}</h1>
             <div className="flex items-center gap-2 mt-2">
               {isRealTime && (
                 <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
-                  Tempo Real
+{t.common.realTime}
                 </Badge>
               )}
               {lastUpdate && (
@@ -98,7 +98,7 @@ export default function PortfolioPage() {
           </div>
           <Button onClick={refresh} variant="outline" disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            {t('refresh')}
+{t.common.refresh}
           </Button>
         </div>
 
@@ -108,7 +108,7 @@ export default function PortfolioPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
-                  {t('totalValue')}
+{t.common.totalValue}
                 </p>
                 <p className="text-2xl font-bold">
                   {formatCurrency(portfolio.totalValue)}
@@ -122,7 +122,7 @@ export default function PortfolioPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
-                  Mudança 24h
+{t.common.change24h}
                 </p>
                 <div className="flex items-center gap-1">
                   <p className={`text-2xl font-bold ${
@@ -145,7 +145,7 @@ export default function PortfolioPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
-                  Total de {t('assets')}
+{t.common.assets}
                 </p>
                 <p className="text-2xl font-bold">
                   {portfolio.assets.length}
@@ -159,7 +159,7 @@ export default function PortfolioPage() {
             <div className="flex items-center justify-between">
                     <div>
                 <p className="text-sm font-medium text-muted-foreground">
-                  {t('performance')}
+{t.common.performance}
                 </p>
                 <p className={`text-2xl font-bold ${
                   portfolio.totalChange24h >= 0 ? 'text-green-600' : 'text-red-600'
@@ -174,17 +174,17 @@ export default function PortfolioPage() {
 
         {/* Assets Table */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">{t('assets')}</h2>
+          <h2 className="text-xl font-semibold mb-4">{t.common.assets}</h2>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                 <tr className="border-b">
-                  <th className="text-left py-3 px-4 font-medium">Ativo</th>
-                  <th className="text-right py-3 px-4 font-medium">{t('balance')}</th>
-                  <th className="text-right py-3 px-4 font-medium">Preço</th>
-                  <th className="text-right py-3 px-4 font-medium">{t('value')}</th>
-                  <th className="text-right py-3 px-4 font-medium">Mudança 24h</th>
-                  <th className="text-right py-3 px-4 font-medium">Alocação</th>
+                                      <th className="text-left py-3 px-4 font-medium">{t.common.assets}</th>
+                  <th className="text-right py-3 px-4 font-medium">{t.common.balance}</th>
+                                      <th className="text-right py-3 px-4 font-medium">{t.common.price}</th>
+                                      <th className="text-right py-3 px-4 font-medium">{t.common.value}</th>
+                                      <th className="text-right py-3 px-4 font-medium">{t.common.change24h}</th>
+                                      <th className="text-right py-3 px-4 font-medium">{t.common.allocation}</th>
                   </tr>
                 </thead>
                 <tbody>

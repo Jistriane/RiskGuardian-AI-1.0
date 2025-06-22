@@ -20,12 +20,14 @@ const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap',
+  preload: true,
 });
 
 const firaCode = Fira_Code({
   subsets: ['latin'],
   variable: '--font-fira-code',
   display: 'swap',
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -78,9 +80,28 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-    width: 'device-width',
-    initialScale: 1,
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 };
+
+// Script de tema inline otimizado
+const themeScript = `
+  (function() {
+    try {
+      var theme = localStorage.getItem('theme');
+      var isDark = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.style.colorScheme = 'dark';
+      } else {
+        document.documentElement.style.colorScheme = 'light';
+      }
+    } catch (e) {
+      console.warn('Theme script error:', e);
+    }
+  })();
+`;
 
 export default function RootLayout({
   children,
@@ -88,37 +109,32 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning className={`${inter.variable} ${firaCode.variable}`}>
       <head>
-        {/* Preconnect para melhor performance */}
+        {/* Preconnect otimizado */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         
-        {/* Meta tags adicionais */}
+        {/* DNS Prefetch para melhor performance */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        
+        {/* Meta tags otimizadas */}
         <meta name="theme-color" content="#00d395" />
         <meta name="color-scheme" content="dark light" />
+        <meta name="format-detection" content="telephone=no" />
         
-        {/* Script de tema */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Previne flash de tema incorreto
-              try {
-                const theme = localStorage.getItem('theme');
-                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.documentElement.classList.add('dark');
-                }
-              } catch (e) {}
-            `,
-          }}
-        />
+        {/* Script de tema otimizado */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body 
-        className={`${inter.variable} ${firaCode.variable} antialiased`}
+        className="antialiased min-h-screen bg-background font-sans"
         suppressHydrationWarning
       >
         <RootProvider>
-          {children}
+          <div id="root-content" className="relative min-h-screen">
+            {children}
+          </div>
         </RootProvider>
       </body>
     </html>

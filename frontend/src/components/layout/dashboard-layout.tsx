@@ -30,9 +30,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const menuItems = [
-    { name: 'Dashboard', href: '/dashboard', icon: '📊' },
-    { name: 'Trading', href: '/trading', icon: '📈' },
-    { name: 'Portfolio', href: '/portfolio', icon: '💼' },
+    { name: t.navigation.dashboard, href: '/dashboard', icon: '📊' },
+    { name: t.navigation.trading, href: '/trading', icon: '📈' },
+    { name: t.navigation.portfolio, href: '/portfolio', icon: '💼' },
     { name: t.navigation.lending, href: '/lending', icon: '💰' },
     { name: t.navigation.riskAnalysis, href: '/risk-analysis', icon: '⚠️' },
     { name: t.navigation.automation, href: '/automation', icon: '🤖' },
@@ -51,9 +51,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 lg:hidden"
-              aria-label="Abrir menu"
+              aria-label={t.common.close}
             >
-              <span className="sr-only">Abrir menu</span>
+              <span className="sr-only">{t.common.close}</span>
               ☰
             </button>
             <h1 className="ml-4 text-xl font-bold text-white lg:ml-0">
