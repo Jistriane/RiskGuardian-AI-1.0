@@ -47,8 +47,8 @@ cd RiskGuardian-AI-1.0
 - 🎨 **Frontend**: http://localhost:3001
 - 🔧 **Backend**: http://localhost:8001
 - 🤖 **ElizaOS Agent**: http://localhost:3000
-- 🗄️ **PostgreSQL**: localhost:5432
-- 🔄 **Redis**: localhost:6379
+- 🗄️ **PostgreSQL**: http://localhost:5432
+- 🔄 **Redis**: http://localhost:6379
 - ⛓️ **Blockchain**: http://localhost:8545
 
 ## 🏗️ Architecture and Technologies
@@ -406,7 +406,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## 👨‍💻 **Developer**
 
-**Jistriane Santos**  
+**Jistriane Brunielli Silva de Oliveira**  
 🏢 **Senior Software Architect & Blockchain Developer**  
 📧 **Email**: jistriane@live.com  
 🌐 **Specialties**: DeFi, Smart Contracts, AI, Blockchain Automation  
@@ -432,5 +432,5 @@ Expert in developing complex DeFi systems with over 10 years of experience in so
 
 ⭐ **Star this project if it helped you!**
 
-**© 2025 RiskGuardian AI - Developed by Jistriane Santos**  
+**© 2025 RiskGuardian AI - Developed by Jistriane Brunielli Silva de Oliveira**  
 *Your intelligent financial guardian protecting DeFi investments 24/7* 🛡️ 
